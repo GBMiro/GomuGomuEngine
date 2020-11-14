@@ -27,8 +27,8 @@ bool ModuleTextures::cleanUp()
 	return true;
 }
 
-unsigned int ModuleTextures::loadTexture(const char* path) //This should return GLuint
-{
+unsigned int ModuleTextures::loadTexture(const char* path) {
+
 	ILuint imageId;
 	GLuint texture;
 	ilGenImages(1, &imageId);
@@ -42,7 +42,7 @@ unsigned int ModuleTextures::loadTexture(const char* path) //This should return 
 		}
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glObjectLabel(GL_TEXTURE, texture, -1, "Lenna texture");
+		glObjectLabel(GL_TEXTURE, texture, -1, path);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		

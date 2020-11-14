@@ -23,6 +23,7 @@ public:
 	void destroyVBO(unsigned vbo);
 	
 	void* getContext();
+	unsigned getProgram();
 
 private:
 	void* context;

@@ -13,7 +13,6 @@ public:
 	bool cleanUp();
 
 	unsigned int loadTexture(const char* path);
-public:
-	ILuint textId;
+
 };
 

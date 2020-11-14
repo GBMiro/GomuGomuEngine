@@ -157,6 +157,7 @@
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleDebugDraw.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -454,6 +455,7 @@
     </ClInclude>
     <ClInclude Include="ModuleDebugDraw.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

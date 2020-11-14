@@ -10,6 +10,7 @@
 #include "SDL/include/SDL.h"
 #include "GL/glew.h"
 #include "MathGeoLib/Geometry/Frustum.h"
+#include "Model.h"
 
 ModuleRender::ModuleRender()
 {
@@ -115,12 +116,13 @@ bool ModuleRender::Init()
 		1.0f, 0.0f, //v4 textcoord
 		1.0f, 1.0f //v5 textcoord
 	}; 
-
+	/*
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
-	text = App->textures->loadTexture("../Resources/Lenna.png");
+	text = App->textures->loadTexture("../Resources/Lenna.png");*/
 
+	App->model->Load("../Resources/BakerHouse.fbx");
 	return true;
 }
 
@@ -145,8 +147,8 @@ update_status ModuleRender::Update()
 	GLsizei h, w;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	App->debugDraw->Draw(view, proj, w, h);
-	renderVBO(vbo, programId);
-	
+	//renderVBO(vbo, programId);
+	App->model->Draw();
 	return UPDATE_CONTINUE;
 }
 
@@ -203,6 +205,11 @@ void ModuleRender::renderVBO(unsigned vbo, unsigned program)
 void* ModuleRender::getContext()
 {
 	return context;
+}
+
+unsigned ModuleRender::getProgram()
+{
+	return programId;
 }
 
 void ModuleRender::destroyVBO(unsigned vbo)
