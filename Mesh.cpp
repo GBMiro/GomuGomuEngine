@@ -22,6 +22,17 @@ void Mesh::LoadVBO(const aiMesh* mesh) {
 	unsigned bufferSize = vertexSize * mesh->mNumVertices;
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_STATIC_DRAW);
 
+	// Vertex coords follow up by texture coords. Interleaved
+	float* vertex = (float*)(glMapBufferRange(GL_ARRAY_BUFFER, 0, bufferSize, GL_MAP_WRITE_BIT));
+	for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
+		*(vertex++) = mesh->mVertices[i].x;
+		*(vertex++) = mesh->mVertices[i].y;
+		*(vertex++) = mesh->mVertices[i].z;
+
+		*(vertex++) = mesh->mTextureCoords[0][i].x;
+		*(vertex++) = mesh->mTextureCoords[0][i].y;
+	}
+	/*// Vertex coords at the beggining. Texture coords at the end
 	unsigned positionSize = sizeof(float) * 3 * mesh->mNumVertices;
 	glBufferSubData(GL_ARRAY_BUFFER, 0, positionSize, mesh->mVertices);
 
@@ -32,7 +43,7 @@ void Mesh::LoadVBO(const aiMesh* mesh) {
 
 	for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
 		uv[i] = float2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-	}
+	}*/
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 
 	numVertex = mesh->mNumVertices;
@@ -68,10 +79,12 @@ void Mesh::CreateVAO() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); //Consecutive vertex coords
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 3 * numVertex));
+	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 3 * numVertex)); //Consecutive texture coords
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3)); //Interleaved
 
 	glBindVertexArray(0);
 }
@@ -94,4 +107,5 @@ void Mesh::Draw(const std::vector<unsigned>& modelTextures) {
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
+	glBindVertexArray(0);
 }

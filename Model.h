@@ -17,7 +17,7 @@ public:
 	void Draw();
 
 private:
-	std::vector<unsigned int> materials;
+	std::vector<unsigned> materials;
 	std::vector<Mesh> meshes;
 };
 

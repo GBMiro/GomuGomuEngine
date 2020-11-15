@@ -13,6 +13,5 @@ public:
 	bool cleanUp();
 
 	unsigned int loadTexture(const char* path);
-
 };
 
