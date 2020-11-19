@@ -18,6 +18,6 @@ public:
 
 private:
 	std::vector<unsigned> materials;
-	std::vector<Mesh> meshes;
+	std::vector<Mesh> meshes; //Change to pointer
 };
 

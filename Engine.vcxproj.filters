@@ -456,6 +456,7 @@
     <ClInclude Include="ModuleDebugDraw.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Leaks.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

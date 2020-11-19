@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "ModuleCamera.h"
+#include "Leaks.h"
 
 ModuleWindow::ModuleWindow()
 {
@@ -68,3 +70,33 @@ bool ModuleWindow::CleanUp()
 	return true;
 }
 
+void ModuleWindow::setFlag(SDL_WindowFlags flag, bool state)
+{
+	switch (flag) {
+		case SDL_WINDOW_FULLSCREEN:
+			SDL_SetWindowFullscreen(window, state);
+			break;
+		case SDL_WINDOW_RESIZABLE:
+			SDL_SetWindowResizable(window, (SDL_bool)state);
+			break;
+		case SDL_WINDOW_BORDERLESS:
+			if (state) SDL_SetWindowBordered(window, SDL_FALSE);
+			else SDL_SetWindowBordered(window, SDL_TRUE);
+			break;
+		default:
+			break;
+	}
+}
+
+void ModuleWindow::setBrightness(float brightness) {
+	SDL_SetWindowBrightness(window, brightness);
+}
+
+void ModuleWindow::setWindowSize(int width, int height) {
+	SDL_SetWindowSize(window, width, height);
+	App->camera->SetFOV(width / height); //This does not work!
+}
+
+float ModuleWindow::getBrightness() const {
+	return SDL_GetWindowBrightness(window);
+}

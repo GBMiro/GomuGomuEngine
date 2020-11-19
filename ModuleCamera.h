@@ -25,7 +25,7 @@ public:
 
 	void updateProjectionMatrix();
 
-	void SetFOV(float fov, float aspectRatio);
+	void SetFOV(float aspectRatio);
 
 	void SetAspectRatio();
 

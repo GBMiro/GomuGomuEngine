@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "GL/glew.h"
 #include "SDL/include/SDL.h"
+#include "Leaks.h"
 
 ModuleCamera::ModuleCamera()
 {
@@ -67,9 +68,9 @@ void ModuleCamera::updateProjectionMatrix()
 	glLoadMatrixf(*projectionGL.v);
 }
 
-void ModuleCamera::SetFOV(float fov, float aspectRatio)
+void ModuleCamera::SetFOV(float aspectRatio)
 {
-	frustum.SetHorizontalFovAndAspectRatio(fov, aspectRatio);
+	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), aspectRatio);
 	//updateProjectionMatrix();
 }
 

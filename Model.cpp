@@ -6,6 +6,7 @@
 #include "Application.h"
 #include "ModuleTextures.h"
 #include "MathGeoLib/Math/float2.h"
+#include "Leaks.h"
 
 Model::Model() {
 
@@ -26,7 +27,6 @@ void Model::Load(const char* filename)
 	else {
 		LOG("Error loading %s: %s", filename, aiGetErrorString());
 	}
-	LOG("Model successfully loaded");
 }
 
 void Model::LoadMaterials(const aiScene* scene)

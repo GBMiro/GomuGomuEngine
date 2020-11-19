@@ -158,6 +158,7 @@
     <ClInclude Include="imgui-docking\imstb_rectpack.h" />
     <ClInclude Include="imgui-docking\imstb_textedit.h" />
     <ClInclude Include="imgui-docking\imstb_truetype.h" />
+    <ClInclude Include="Leaks.h" />
     <ClInclude Include="MathGeoLib\Algorithm\GJK.h" />
     <ClInclude Include="MathGeoLib\Algorithm\GJK2D.h" />
     <ClInclude Include="MathGeoLib\Algorithm\Random\LCG.h" />

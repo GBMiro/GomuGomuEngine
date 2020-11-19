@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "DevIL/include/IL/il.h"
 #include "GL/glew.h"
+#include "Leaks.h"
 
 ModuleTextures::ModuleTextures()
 {

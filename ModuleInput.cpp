@@ -5,6 +5,7 @@
 #include "ModuleCamera.h"
 #include "SDL/include/SDL.h"
 #include "backends/imgui_impl_sdl.h"
+#include "Leaks.h"
 
 #define MAX_KEYS 300
 
@@ -86,7 +87,7 @@ update_status ModuleInput::PreUpdate()
 	{
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		ImGuiIO& io = ImGui::GetIO();
-		if (io.WantCaptureMouse || io.WantCaptureKeyboard) return UPDATE_CONTINUE;
+		if (io.WantCaptureMouse) return UPDATE_CONTINUE;
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -111,7 +112,7 @@ update_status ModuleInput::PreUpdate()
 				windowEvents[WE_SHOW] = true;
 				break;
 			case SDL_WINDOWEVENT_RESIZED:
-				App->camera->SetFOV(DEGTORAD * 90.0f, event.window.data1/event.window.data2);
+				App->camera->SetFOV(event.window.data1/event.window.data2);
 				break;
 			}
 			break;

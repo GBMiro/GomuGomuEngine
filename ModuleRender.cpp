@@ -11,6 +11,7 @@
 #include "GL/glew.h"
 #include "MathGeoLib/Geometry/Frustum.h"
 #include "Model.h"
+#include "Leaks.h"
 
 ModuleRender::ModuleRender()
 {
@@ -162,8 +163,6 @@ update_status ModuleRender::PostUpdate()
 bool ModuleRender::CleanUp()
 {
 	LOG("Destroying renderer");
-
-	destroyVBO(vbo);
 	//Destroy window
 
 	return true;

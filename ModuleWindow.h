@@ -21,6 +21,14 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	float getBrightness() const;
+
+	void setFlag(SDL_WindowFlags flag, bool state);
+
+	void setBrightness(float brightness);
+
+	void setWindowSize(int width, int height);
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window = NULL;

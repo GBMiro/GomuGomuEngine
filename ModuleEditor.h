@@ -18,9 +18,6 @@ public:
 	bool cleanUp();
 
 private:
-	void windows();
-	bool showAboutWindow;
-	bool showLogWindow;
-	bool showHardwareWindow;
+	void showMenus();
 };
 

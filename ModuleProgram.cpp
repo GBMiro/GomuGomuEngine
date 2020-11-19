@@ -1,5 +1,6 @@
 #include "ModuleProgram.h"
 #include "GL/glew.h"
+#include "Leaks.h"
 
 ModuleProgram::ModuleProgram()
 {
