@@ -158,6 +158,15 @@
     <ClCompile Include="ModuleDebugDraw.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Window.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
+    <ClCompile Include="MonitorWindow.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigurationWindow.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -457,6 +466,15 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Leaks.h" />
+    <ClInclude Include="Window.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
+    <ClInclude Include="MonitorWindow.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigurationWindow.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">
@@ -476,6 +494,9 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{dbcefcd4-8325-488b-8e62-5836633405e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WindowUI">
+      <UniqueIdentifier>{87d6b671-9fec-469f-ad7e-acdf86359ed0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

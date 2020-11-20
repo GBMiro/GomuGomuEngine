@@ -66,7 +66,7 @@ bool ModuleRender::Init()
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-	SDL_GL_CreateContext(App->window->window);
+	context = SDL_GL_CreateContext(App->window->window);
 
 	GLenum err = glewInit();
 
@@ -148,7 +148,7 @@ update_status ModuleRender::Update()
 	GLsizei h, w;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	App->debugDraw->Draw(view, proj, w, h);
-	//renderVBO(vbo, programId);
+
 	App->model->Draw();
 	return UPDATE_CONTINUE;
 }
@@ -164,41 +164,12 @@ bool ModuleRender::CleanUp()
 {
 	LOG("Destroying renderer");
 	//Destroy window
-
+	SDL_GL_DeleteContext(context);
 	return true;
 }
 
 void ModuleRender::WindowResized(unsigned width, unsigned height)
 {
-}
-
-void ModuleRender::renderVBO(unsigned vbo, unsigned program)
-{
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	//Attribute number, + how many data per element, typof, normalized, stride, pointer to first textcoord element. This case is the first element
-
-	float4x4 proj = App->camera->getProjectionMatrix();
-	float4x4 view = App->camera->getViewMatrix();
-	float4x4 model = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f),
-		float4x4::RotateZ(pi / 4.0f),
-		float3(2.0f, 1.0f, 0.0f));
-
-	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, &model[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, &view[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &proj[0][0]);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float)*3*6));
-	//Attribute number, + how many data per element, typof, normalized, stride, pointer to first textcoord element. This case: 3 elements/vertex * 6 vertex
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, text);
-	glUniform1i(glGetUniformLocation(program, "mytexture"), 0);
-	glDrawArrays(GL_TRIANGLES, 0, 6); // Third parameter-> Number of vertices in our data
 }
 
 void* ModuleRender::getContext()
@@ -210,9 +181,3 @@ unsigned ModuleRender::getProgram()
 {
 	return programId;
 }
-
-void ModuleRender::destroyVBO(unsigned vbo)
-{
-	glDeleteBuffers(1, &vbo);
-}
-

@@ -51,8 +51,6 @@ private:
 	float posX, posY, posZ = 0.0f;
 	float cameraSpeed = 5.0f;
 	float angleSpeed = 30.0f;
-	float deltaTime;
-	float lastFrame;
 	float yaw, pitch = 0.0f;
 	iPoint mouseLastPos = { 0,0 };
 };

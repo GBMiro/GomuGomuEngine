@@ -37,8 +37,11 @@ public:
 	ModuleTextures* textures = nullptr;
 	Model* model = nullptr;
 
+	float deltaTime;
+
 private:
 
+	float lastFrame;
 	std::list<Module*> modules;
 
 };

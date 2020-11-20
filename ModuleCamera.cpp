@@ -8,7 +8,6 @@
 
 ModuleCamera::ModuleCamera()
 {
-	deltaTime = lastFrame =  0.0f;
 	yaw = pitch = 0.0f;
 }
 
@@ -24,7 +23,7 @@ bool ModuleCamera::Init()
 
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
 	frustum.SetViewPlaneDistances(0.1f, 200.0f);
-	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * 90.0f, 1.3f);
+	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * 90.0f, SCREEN_WIDTH/(float)SCREEN_HEIGHT);
 	frustum.SetPos(float3(posX, posY, posZ));//float3(1.5, 1, 2)); //Where the camera is
 	frustum.SetFront(float3(-float3::unitZ));// float3(-1, -1, -1)); //Where the camera is looking
 	frustum.SetUp(float3(float3::unitY));//float3(0, 1, 0)); //Where the up camera vector is pointing. This shows if camera is upside down or in another position
@@ -86,9 +85,6 @@ float4x4 ModuleCamera::getViewMatrix()
 
 void ModuleCamera::updateCamera()
 {
-	float currentFrame = SDL_GetPerformanceCounter(); //Should I use SDL_GetTicks()?
-	deltaTime = ((currentFrame - lastFrame) * 1000 / SDL_GetPerformanceFrequency()) / 1000;
-	lastFrame = currentFrame;
 	
 	float speed = cameraSpeed;
 	float cameraRotationSpeed = angleSpeed;
@@ -96,8 +92,8 @@ void ModuleCamera::updateCamera()
 		speed *= 2;
 		cameraRotationSpeed *= 2;
 	}
-	processKeyboardInput(deltaTime, speed, cameraRotationSpeed);
-	processMouseInput(deltaTime);	
+	processKeyboardInput(App->deltaTime, speed, cameraRotationSpeed);
+	processMouseInput(App->deltaTime);	
 }
 
 void ModuleCamera::rotateCamera(float3x3 &rotationMatrix)

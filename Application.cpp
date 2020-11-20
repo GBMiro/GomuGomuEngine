@@ -25,6 +25,8 @@ Application::Application()
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(editor = new ModuleEditor());
 	modules.push_back(camera = new ModuleCamera());
+
+	deltaTime = lastFrame = 0.0f;
 }
 
 Application::~Application()
@@ -49,6 +51,10 @@ update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
 
+	float currentFrame = SDL_GetPerformanceCounter(); 
+	deltaTime = ((currentFrame - lastFrame) * 1000 / SDL_GetPerformanceFrequency()) / 1000;
+	lastFrame = currentFrame;
+
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->PreUpdate();
 
@@ -57,6 +63,8 @@ update_status Application::Update()
 
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->PostUpdate();
+
+	editor->registerFPS(deltaTime);
 
 	return ret;
 }

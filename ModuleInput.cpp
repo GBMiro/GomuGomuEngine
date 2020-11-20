@@ -112,7 +112,7 @@ update_status ModuleInput::PreUpdate()
 				windowEvents[WE_SHOW] = true;
 				break;
 			case SDL_WINDOWEVENT_RESIZED:
-				App->camera->SetFOV(event.window.data1/event.window.data2);
+				App->camera->SetFOV(event.window.data1/(float)event.window.data2);
 				break;
 			}
 			break;

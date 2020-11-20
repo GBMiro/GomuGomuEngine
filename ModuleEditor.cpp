@@ -5,13 +5,20 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
+#include "MonitorWindow.h"
+#include "ConfigurationWindow.h"
+#include "Model.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
+	windows.push_back(monitor = new MonitorWindow("Monitor", 0));
+	windows.push_back(configuration = new ConfigurationWindow("Configuration", 1));
 }
 
-ModuleEditor::~ModuleEditor()
-{
+ModuleEditor::~ModuleEditor() {
+	for (unsigned i = 0; i < windows.size(); ++i) {
+		delete windows[i];
+	}
 }
 
 bool ModuleEditor::Init()
@@ -39,7 +46,8 @@ update_status ModuleEditor::PreUpdate()
 update_status ModuleEditor::Update()
 {
 	showMenus();
-	//ImGui::ShowDemoWindow();
+	Draw();
+	ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -71,7 +79,7 @@ bool ModuleEditor::cleanUp()
 void ModuleEditor::showMenus() {
 
 	static bool showConfiguration = true;
-	static bool showCameraWindow, showMetricsWindow, showLogWindow = true;
+	static bool showCameraWindow, showMetricsWindow, showLogWindow, showPropertiesWindow = false;
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -80,8 +88,9 @@ void ModuleEditor::showMenus() {
 		}
 		if (ImGui::BeginMenu("Windows")) {
 			if (ImGui::MenuItem("Camera", NULL, &showCameraWindow));
-			if (ImGui::MenuItem("Metrics", NULL, &showMetricsWindow));
+			if (ImGui::MenuItem("Metrics", NULL, &monitor->active));
 			if (ImGui::MenuItem("Log", NULL, &showLogWindow));
+			if (ImGui::MenuItem("Configuration", NULL, &configuration->active));
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("About")) {
@@ -91,45 +100,14 @@ void ModuleEditor::showMenus() {
 		}
 		ImGui::EndMainMenuBar();
 	}
-	// Window settings
-	static bool fullscreen, windowBorderless = false;
-	static bool windowResizable = true;
-	static int width = SCREEN_WIDTH;
-	static int height = SCREEN_HEIGHT;
-	static float brightness = App->window->getBrightness();
+}
 
-	if (showConfiguration) {
-		ImGui::Begin("Configuration");
-		if (ImGui::CollapsingHeader("Input")) {}
-		if (ImGui::CollapsingHeader("Renderer")) {}
-		if (ImGui::CollapsingHeader("Textures")) {}
-		if (ImGui::CollapsingHeader("Window")) {
-			if (ImGui::Checkbox("Fullscreen", &fullscreen)) App->window->setFlag(SDL_WINDOW_FULLSCREEN, fullscreen); ImGui::SameLine();
-			if (ImGui::Checkbox("Resizable", &windowResizable)) App->window->setFlag(SDL_WINDOW_RESIZABLE, windowResizable); ImGui::SameLine();
-			if (ImGui::Checkbox("Borderless", &windowBorderless)) App->window->setFlag(SDL_WINDOW_BORDERLESS, windowBorderless);
-			if (ImGui::SliderInt("Screen width", &width, 100, 1920)) App->window->setWindowSize(width, height);
-			if (ImGui::SliderInt("Screen height", &height, 100, 1080)) App->window->setWindowSize(width, height);
-			if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f, "%.3f")) App->window->setBrightness(brightness);
-		}
-		if (ImGui::CollapsingHeader("Metrics")) {}
-		ImGui::End();
+void ModuleEditor::Draw() {
+	for (unsigned i = 0; i < windows.size(); ++i) {
+		windows[i]->Draw();
 	}
+}
 
-	if (showLogWindow) {
-		ImGui::Begin("Log", &showLogWindow);
-		ImGui::Text("This is the log window");
-		ImGui::End();
-	}
-
-	if (showMetricsWindow) {
-		ImGui::Begin("Metrics", &showMetricsWindow);
-		ImGui::Text("This will show metrics");
-		ImGui::End();
-	}
-
-	if (showCameraWindow) {
-		ImGui::Begin("Camera", &showCameraWindow);
-		ImGui::Text("This will show camera options");
-		ImGui::End();
-	}
+void ModuleEditor::registerFPS(float deltaTime) {
+	monitor->addData(deltaTime);
 }

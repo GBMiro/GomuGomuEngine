@@ -46,16 +46,25 @@ void Model::LoadMeshes(const aiScene* scene)
 	meshes.reserve(scene->mNumMeshes);
 	for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
 		aiMesh* currentMesh = scene->mMeshes[i];
-		Mesh mesh;
-		mesh.LoadVBO(currentMesh);
-		mesh.LoadEBO(currentMesh);
-		mesh.CreateVAO();
+		Mesh* mesh = new Mesh();
+		mesh->LoadVBO(currentMesh);
+		mesh->LoadEBO(currentMesh);
+		mesh->CreateVAO();
 		meshes.push_back(mesh);
 	}
 }
 
 void Model::Draw()  {
 	for (unsigned i = 0; i < meshes.size(); ++i) {
-		meshes[i].Draw(materials);
+		meshes[i]->Draw(materials);
 	}
+}
+
+bool Model::CleanUp() {
+	for (unsigned i = 0; i < meshes.size(); ++i) {
+		delete (meshes[i]);
+	}
+	meshes.clear();
+	materials.clear();
+	return true;
 }

@@ -13,6 +13,12 @@ public:
 	void LoadEBO(const aiMesh* mesh);
 	void CreateVAO();
 
+	int getNumVertex() const { return numVertex; }
+
+	int getMaterialIndex() const { return materialIndex; }
+
+	int getNumIndices() const { return numIndices; }
+
 private:
 	unsigned int VBO;
 	unsigned int EBO;

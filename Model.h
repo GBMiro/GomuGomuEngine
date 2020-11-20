@@ -15,9 +15,11 @@ public:
 	void LoadMaterials(const aiScene* scene);
 	void LoadMeshes(const aiScene* mesh);
 	void Draw();
+	
+	bool CleanUp();
 
 private:
 	std::vector<unsigned> materials;
-	std::vector<Mesh> meshes; //Change to pointer
+	std::vector<Mesh*> meshes; //Change to pointer
 };
 

@@ -18,9 +18,6 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 	void WindowResized(unsigned width, unsigned height);
-
-	void renderVBO(unsigned vbo, unsigned program);
-	void destroyVBO(unsigned vbo);
 	
 	void* getContext();
 	unsigned getProgram();
@@ -28,6 +25,4 @@ public:
 private:
 	void* context;
 	unsigned programId;
-	unsigned vbo;
-	unsigned int text;
 };

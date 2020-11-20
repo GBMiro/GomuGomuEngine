@@ -8,9 +8,8 @@ class Module
 {
 public:
 
-	Module()
-	{
-	}
+	Module() {}
+	virtual ~Module() {};
 
 	virtual bool Init() 
 	{
