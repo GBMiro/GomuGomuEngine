@@ -15,14 +15,17 @@ Model::Model() {
 Model::~Model() {
 }
 
-void Model::Load(const char* filename)
-{
+void Model::Load(const char* filename) {
+	CleanUp();
+	LOG("Loading model...");
 	const aiScene* scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);
 	if (scene) {
 		// TODO: LoadTextures(scene->mMaterials, scene->mNumMaterials);
 		LoadMaterials(scene);
 		// TODO: LoadMeshes(scene->mMeshes, scene->mNumMeshes);
 		LoadMeshes(scene);
+		
+		LOG("Model Successfully loaded")
 	}
 	else {
 		LOG("Error loading %s: %s", filename, aiGetErrorString());
@@ -37,6 +40,10 @@ void Model::LoadMaterials(const aiScene* scene)
 	for (unsigned i = 0; i < scene->mNumMaterials; ++i) {
 		if (scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
 			materials.push_back(App->textures->loadTexture(textureFileName.data));
+			LOG("Textures loaded");
+		}
+		else {
+			LOG("Couldn't load model textures");
 		}
 	}
 }
@@ -52,6 +59,7 @@ void Model::LoadMeshes(const aiScene* scene)
 		mesh->CreateVAO();
 		meshes.push_back(mesh);
 	}
+	LOG("Meshes loaded")
 }
 
 void Model::Draw()  {
@@ -61,6 +69,7 @@ void Model::Draw()  {
 }
 
 bool Model::CleanUp() {
+	LOG("Removing model...");
 	for (unsigned i = 0; i < meshes.size(); ++i) {
 		delete (meshes[i]);
 	}

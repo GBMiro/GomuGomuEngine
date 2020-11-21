@@ -6,6 +6,7 @@
 
 class MonitorWindow;
 class ConfigurationWindow;
+class ConsoleWindow;
 
 class ModuleEditor : public Module
 {
@@ -23,11 +24,13 @@ public:
 
 	bool cleanUp();
 
-	void registerFPS(float deltaTime);
+	void registerFPS(float deltaTime); // Make function const
+	void registerLog(const char* log); // Make function const
 
 public:
 	MonitorWindow* monitor = nullptr;
 	ConfigurationWindow* configuration = nullptr;
+	ConsoleWindow* console = nullptr;
 
 private:
 	void showMenus();

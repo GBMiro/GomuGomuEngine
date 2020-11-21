@@ -167,6 +167,9 @@
     <ClCompile Include="ConfigurationWindow.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
+    <ClCompile Include="ConsoleWindow.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -473,6 +476,9 @@
       <Filter>WindowUI</Filter>
     </ClInclude>
     <ClInclude Include="ConfigurationWindow.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleWindow.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
   </ItemGroup>

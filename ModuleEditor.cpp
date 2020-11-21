@@ -7,12 +7,14 @@
 #include "ModuleRender.h"
 #include "MonitorWindow.h"
 #include "ConfigurationWindow.h"
+#include "ConsoleWindow.h"
 #include "Model.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
 	windows.push_back(monitor = new MonitorWindow("Monitor", 0));
 	windows.push_back(configuration = new ConfigurationWindow("Configuration", 1));
+	windows.push_back(console = new ConsoleWindow("Console", 2));
 }
 
 ModuleEditor::~ModuleEditor() {
@@ -89,7 +91,7 @@ void ModuleEditor::showMenus() {
 		if (ImGui::BeginMenu("Windows")) {
 			if (ImGui::MenuItem("Camera", NULL, &showCameraWindow));
 			if (ImGui::MenuItem("Metrics", NULL, &monitor->active));
-			if (ImGui::MenuItem("Log", NULL, &showLogWindow));
+			if (ImGui::MenuItem("Log", NULL, &console->active));
 			if (ImGui::MenuItem("Configuration", NULL, &configuration->active));
 			ImGui::EndMenu();
 		}
@@ -110,4 +112,9 @@ void ModuleEditor::Draw() {
 
 void ModuleEditor::registerFPS(float deltaTime) {
 	monitor->addData(deltaTime);
+}
+
+void ModuleEditor::registerLog(const char* log) {
+
+	console->addLog(log);
 }

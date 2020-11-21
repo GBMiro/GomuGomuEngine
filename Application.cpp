@@ -51,8 +51,8 @@ update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
 
-	float currentFrame = SDL_GetPerformanceCounter(); 
-	deltaTime = ((currentFrame - lastFrame) * 1000 / SDL_GetPerformanceFrequency()) / 1000;
+	float currentFrame = SDL_GetTicks(); 
+	deltaTime = (currentFrame - lastFrame) / (float) 1000.0f;
 	lastFrame = currentFrame;
 
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)

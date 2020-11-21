@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "ModuleEditor.h"
 #include "ModuleCamera.h"
+#include "Model.h"
 #include "SDL/include/SDL.h"
 #include "backends/imgui_impl_sdl.h"
 #include "Leaks.h"
@@ -92,6 +93,10 @@ update_status ModuleInput::PreUpdate()
 		{
 		case SDL_QUIT:
 			windowEvents[WE_QUIT] = true;
+			break;
+		
+		case SDL_DROPFILE:
+			App->model->Load(event.drop.file);
 			break;
 
 		case SDL_WINDOWEVENT:
