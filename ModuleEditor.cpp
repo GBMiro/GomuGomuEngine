@@ -8,6 +8,8 @@
 #include "MonitorWindow.h"
 #include "ConfigurationWindow.h"
 #include "ConsoleWindow.h"
+#include "PropertiesWindow.h"
+#include "AboutWindow.h"
 #include "Model.h"
 #include "Leaks.h"
 
@@ -15,6 +17,8 @@ ModuleEditor::ModuleEditor() {
 	windows.push_back(monitor = new MonitorWindow("Monitor", 0));
 	windows.push_back(configuration = new ConfigurationWindow("Configuration", 1));
 	windows.push_back(console = new ConsoleWindow("Console", 2));
+	windows.push_back(properties = new PropertiesWindow("Properties", 3));
+	windows.push_back(about = new AboutWindow("About", 3));
 }
 
 ModuleEditor::~ModuleEditor() {
@@ -47,7 +51,7 @@ update_status ModuleEditor::PreUpdate()
 
 update_status ModuleEditor::Update()
 {
-	showMenus();
+	if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 	Draw();
 	ImGui::ShowDemoWindow();
 	ImGui::Render();
@@ -78,14 +82,16 @@ bool ModuleEditor::cleanUp()
 	return true;
 }
 
-void ModuleEditor::showMenus() {
+update_status ModuleEditor::showMainMenu() {
 
 	static bool showConfiguration = true;
 	static bool showCameraWindow, showMetricsWindow, showLogWindow, showPropertiesWindow = false;
 
+	update_status keepGoing = UPDATE_CONTINUE;
+
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("Quit", "ESC")) {}
+			if (ImGui::MenuItem("Quit")) keepGoing = UPDATE_STOP;
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Windows")) {
@@ -93,15 +99,17 @@ void ModuleEditor::showMenus() {
 			if (ImGui::MenuItem("Metrics", NULL, &monitor->active));
 			if (ImGui::MenuItem("Log", NULL, &console->active));
 			if (ImGui::MenuItem("Configuration", NULL, &configuration->active));
+			if (ImGui::MenuItem("Properties", NULL, &properties->active));
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("About")) {
-			if (ImGui::MenuItem("Visit github", "url")) {}
-			if (ImGui::MenuItem("ABout GomuGomuEngine", "Open mini window")) {}
+			if (ImGui::MenuItem("Visit github")) ShellExecuteA(NULL, "open", "https://github.com/GBMiro", NULL, NULL, SW_SHOWNORMAL);
+			if (ImGui::MenuItem("About GomuGomuEngine", NULL, &about->active));
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
 	}
+	return keepGoing;
 }
 
 void ModuleEditor::Draw() {
@@ -117,4 +125,8 @@ void ModuleEditor::registerFPS(float deltaTime) {
 void ModuleEditor::registerLog(const char* log) {
 
 	console->addLog(log);
+}
+
+void ModuleEditor::cleanProperties() {
+	properties->cleanProperties();
 }

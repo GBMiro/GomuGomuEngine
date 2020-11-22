@@ -54,3 +54,14 @@ unsigned int ModuleTextures::loadTexture(const char* path) {
 	ilDeleteImages(1, &imageId);
 	return texture;
 }
+
+void ModuleTextures::setMinMaxFilter(GLuint texture, bool active) {
+	if (active) {
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	else {
+	}
+}

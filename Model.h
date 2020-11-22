@@ -18,6 +18,11 @@ public:
 	
 	bool CleanUp();
 
+	void getMeshes(std::vector<Mesh*>& meshes) const;
+	void getTextures(std::vector<unsigned>& textures) const;
+
+	void setMinMaxFilter(bool active) const;
+
 private:
 	std::vector<unsigned> materials;
 	std::vector<Mesh*> meshes; //Change to pointer

@@ -7,6 +7,8 @@
 class MonitorWindow;
 class ConfigurationWindow;
 class ConsoleWindow;
+class PropertiesWindow;
+class AboutWindow;
 
 class ModuleEditor : public Module
 {
@@ -26,14 +28,17 @@ public:
 
 	void registerFPS(float deltaTime); // Make function const
 	void registerLog(const char* log); // Make function const
+	void cleanProperties();
 
 public:
 	MonitorWindow* monitor = nullptr;
 	ConfigurationWindow* configuration = nullptr;
 	ConsoleWindow* console = nullptr;
+	PropertiesWindow* properties = nullptr;
+	AboutWindow* about = nullptr;
 
 private:
-	void showMenus();
+	update_status showMainMenu();
 	void Draw();
 	std::vector<Window*> windows;
 

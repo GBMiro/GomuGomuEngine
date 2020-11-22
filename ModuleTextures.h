@@ -13,5 +13,7 @@ public:
 	bool cleanUp();
 
 	unsigned int loadTexture(const char* path);
+
+	void setMinMaxFilter(GLuint texture, bool active);
 };
 

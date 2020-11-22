@@ -170,6 +170,12 @@
     <ClCompile Include="ConsoleWindow.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
+    <ClCompile Include="PropertiesWindow.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutWindow.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -479,6 +485,12 @@
       <Filter>WindowUI</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleWindow.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertiesWindow.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutWindow.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
   </ItemGroup>

@@ -97,6 +97,7 @@ update_status ModuleInput::PreUpdate()
 		
 		case SDL_DROPFILE:
 			App->model->Load(event.drop.file);
+			App->editor->cleanProperties();
 			break;
 
 		case SDL_WINDOWEVENT:

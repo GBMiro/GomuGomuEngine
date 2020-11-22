@@ -13,8 +13,9 @@
 #include "Model.h"
 #include "Leaks.h"
 
-ModuleRender::ModuleRender()
-{
+ModuleRender::ModuleRender() {
+	gridColor = float3(0.f, 0.f, 1.f);
+	backgroundColor = float3(0.1f, 0.1f, 0.1f);
 }
 
 // Destructor
@@ -133,7 +134,7 @@ update_status ModuleRender::PreUpdate()
 	GLsizei w, h = 0;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	glViewport(0, 0, w, h);
-	glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 0.1f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return UPDATE_CONTINUE;
 }
@@ -143,7 +144,7 @@ update_status ModuleRender::Update()
 {
 	//OpenGLExercise
 	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
-	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, dd::colors::Blue);
+	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, gridColor);
 	float4x4 proj = App->camera->getProjectionMatrix();
 	float4x4 view = App->camera->getViewMatrix();
 	GLsizei h, w;
@@ -181,4 +182,25 @@ void* ModuleRender::getContext()
 unsigned ModuleRender::getProgram()
 {
 	return programId;
+}
+
+void ModuleRender::setGridColor(const float* color) {
+	gridColor = float3(color[0], color[1], color[2]);
+}
+
+void ModuleRender::getGridColor(float* color) const
+{
+	color[0] = gridColor.x;
+	color[1] = gridColor.y;
+	color[2] = gridColor.z;
+}
+
+void ModuleRender::setBackgroundColor(const float* color) {
+	backgroundColor = float3(color[0], color[1], color[2]);
+}
+
+void ModuleRender::getBackgroundColor(float* color) const {
+	color[0] = backgroundColor.x;
+	color[1] = backgroundColor.y;
+	color[2] = backgroundColor.z;
 }

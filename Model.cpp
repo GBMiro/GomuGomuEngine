@@ -73,7 +73,29 @@ bool Model::CleanUp() {
 	for (unsigned i = 0; i < meshes.size(); ++i) {
 		delete (meshes[i]);
 	}
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		glDeleteTextures(0, &(GLuint)materials[i]);
+	}
 	meshes.clear();
 	materials.clear();
 	return true;
+}
+
+void Model::getMeshes(std::vector<Mesh*>& mesh) const {
+	for (unsigned i = 0; i < meshes.size(); ++i) {
+		mesh.push_back(meshes[i]);
+	}
+}
+
+void Model::getTextures(std::vector<unsigned>& textures) const {
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		textures.push_back(materials[i]);
+	}
+}
+
+void Model::setMinMaxFilter(bool active) const
+{
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		App->textures->setMinMaxFilter(materials[i], active);
+	}
 }

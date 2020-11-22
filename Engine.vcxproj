@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AboutWindow.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="ConfigurationWindow.h" />
     <ClInclude Include="ConsoleWindow.h" />
@@ -250,9 +251,11 @@
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="MonitorWindow.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="PropertiesWindow.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AboutWindow.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ConfigurationWindow.cpp" />
     <ClCompile Include="ConsoleWindow.cpp" />
@@ -317,6 +320,7 @@
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
     <ClCompile Include="MonitorWindow.cpp" />
+    <ClCompile Include="PropertiesWindow.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
