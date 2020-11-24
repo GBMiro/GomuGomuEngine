@@ -9,6 +9,9 @@
 ModuleCamera::ModuleCamera()
 {
 	yaw = pitch = 0.0f;
+	fov = 90.0f;
+	nearPlane = 0.1f;
+	farPlane = 200.f;
 }
 
 ModuleCamera::~ModuleCamera()
@@ -19,16 +22,15 @@ bool ModuleCamera::Init()
 {
 	posX = 0.0f;
 	posY = 1.0f;
-	posZ = 4.0f;
+	posZ = 10.0f;
 
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
-	frustum.SetViewPlaneDistances(0.1f, 200.0f);
-	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * 90.0f, SCREEN_WIDTH/(float)SCREEN_HEIGHT);
-	frustum.SetPos(float3(posX, posY, posZ));//float3(1.5, 1, 2)); //Where the camera is
-	frustum.SetFront(float3(-float3::unitZ));// float3(-1, -1, -1)); //Where the camera is looking
-	frustum.SetUp(float3(float3::unitY));//float3(0, 1, 0)); //Where the up camera vector is pointing. This shows if camera is upside down or in another position
+	frustum.SetViewPlaneDistances(nearPlane, farPlane);
+	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, SCREEN_WIDTH/(float)SCREEN_HEIGHT);
+	frustum.SetPos(float3(posX, posY, posZ));
+	frustum.SetFront(float3(-float3::unitZ));
+	frustum.SetUp(float3(float3::unitY));
 	
-	//updateProjectionMatrix();
 
 	return true;
 }
@@ -41,11 +43,6 @@ update_status ModuleCamera::PreUpdate()
 update_status ModuleCamera::Update()
 {
 	updateCamera();
-
-	//float4x4 viewMatrix = frustum.ViewMatrix();
-
-	//glMatrixMode(GL_MODELVIEW);
-	//glLoadMatrixf(*(viewMatrix.Transposed()).v);
 
 	return UPDATE_CONTINUE;
 }
@@ -60,17 +57,37 @@ bool ModuleCamera::CleanUp()
 	return true;
 }
 
-void ModuleCamera::updateProjectionMatrix()
+void ModuleCamera::SetFOV(float fov)
 {
-	float4x4 projectionGL = frustum.ProjectionMatrix().Transposed(); //<-- Important to transpose!
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(*projectionGL.v);
+	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, frustum.AspectRatio());
 }
 
-void ModuleCamera::SetFOV(float aspectRatio)
-{
+void ModuleCamera::SetAspectRatio(float aspectRatio) {
 	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), aspectRatio);
-	//updateProjectionMatrix();
+}
+
+void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
+
+	float3 point = float3(0, 0, 0);
+	float3 up = frustum.Up().Normalized();
+	float3 right = frustum.WorldRight().Normalized();
+
+	float3 camFocusVector = frustum.Pos() - point;
+	float3x3 rotationMatrixY = frustum.ViewMatrix().RotatePart();
+	rotationMatrixY = rotationMatrixY.RotateAxisAngle(up, DEGTORAD * xOffset);
+	float3x3 rotationMatrixX = frustum.ViewMatrix().RotatePart();
+	rotationMatrixX = rotationMatrixX.RotateAxisAngle(right, DEGTORAD * yOffset);
+	camFocusVector = camFocusVector * rotationMatrixX;
+	camFocusVector = camFocusVector * rotationMatrixY;
+
+	frustum.SetPos(camFocusVector + point);
+	LookAt(point);
+}
+
+void ModuleCamera::LookAt(const float3& point) {
+	float3 direction = (point - frustum.Pos()).Normalized();
+	rotateCamera(float3x3::LookAt(frustum.Front(), direction, frustum.Up(), float3::unitY));
+	pitch = 0.0f;
 }
 
 float4x4 ModuleCamera::getProjectionMatrix()
@@ -108,31 +125,29 @@ void ModuleCamera::rotateCamera(float3x3 &rotationMatrix)
 void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed) 
 {
 	float movementSpeed = speed * deltaTime;
-
-	if (App->input->GetKey(SDL_SCANCODE_W)) frustum.SetPos(frustum.Pos() + frustum.Front() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_S)) frustum.SetPos(frustum.Pos() - frustum.Front() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_A)) frustum.SetPos(frustum.Pos() - frustum.WorldRight() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_D)) frustum.SetPos(frustum.Pos() + frustum.WorldRight() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_Q)) frustum.SetPos(frustum.Pos() + float3(float3::unitY) * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_E)) frustum.SetPos(frustum.Pos() - float3(float3::unitY) * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_F)) LookAt(float3(0,0,0));
+	if (App->input->GetKey(SDL_SCANCODE_W) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.Front() * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_S) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.Front() * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_A) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.WorldRight() * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_D) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.WorldRight() * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_Q) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.Up() * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_E) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.Up() * movementSpeed);
 
 	//Rotation
 	if (App->input->GetKey(SDL_SCANCODE_LEFT)) {
-		yaw += cameraRotationSpeed * deltaTime; // Reset yaw when doing 360º
+		yaw += cameraRotationSpeed * deltaTime;
 		float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
 		rotationMatrix = rotationMatrix.RotateY(DEGTORAD * deltaTime * cameraRotationSpeed);
 
 		rotateCamera(rotationMatrix);
-		LOG("Keyboard -> yaw: %f, pitch: %f", yaw, pitch);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT)) {
-		yaw -= cameraRotationSpeed * deltaTime; // Reset yaw when doing 360º
+		yaw -= cameraRotationSpeed * deltaTime;
 		float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
 		rotationMatrix = rotationMatrix.RotateY(DEGTORAD * -deltaTime * cameraRotationSpeed);
 
 		rotateCamera(rotationMatrix);
-		LOG("Keyboard -> yaw: %f, pitch: %f", yaw, pitch);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_UP)) {
@@ -143,7 +158,6 @@ void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float came
 		rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), DEGTORAD  * (pitch - oldPitch));
 
 		rotateCamera(rotationMatrix);
-		LOG("Keyboard -> yaw: %f, pitch: %f", yaw, pitch);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN)) {
@@ -154,7 +168,6 @@ void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float came
 		rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), DEGTORAD * (pitch - oldPitch));
 
 		rotateCamera(rotationMatrix);
-		LOG("Keyboard -> yaw: %f, pitch: %f", yaw, pitch);
 	}
 }
 
@@ -167,13 +180,12 @@ void ModuleCamera::processMouseInput(float deltaTime)
 	float xOffset = -motion.x * angleSpeed * deltaTime;
 	float yOffset = -motion.y * angleSpeed * deltaTime;
 
-	if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
 		if (xOffset != 0) {
 			yaw += xOffset;
 			float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
 			rotationMatrix = rotationMatrix.RotateY(DEGTORAD * xOffset);
 			rotateCamera(rotationMatrix);
-			LOG("Mouse -> yaw: %f, pitch: %f", yaw, pitch);
 		}
 
 		if (yOffset != 0) {
@@ -184,14 +196,16 @@ void ModuleCamera::processMouseInput(float deltaTime)
 			float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
 			rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), (DEGTORAD * (pitch - oldPitch)));
 			rotateCamera(rotationMatrix);
-			LOG("Mouse -> yaw: %f, pitch: %f", yaw, pitch);
 		}
 	}
+	if (App->input->GetKey(SDL_SCANCODE_LALT) && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT)) orbitCamera(xOffset, yOffset);
 
 	int wheelYOffset = App->input->GetMouseWheel();
 
 	if (wheelYOffset != 0) {
-		float3 newPos = frustum.Pos() + frustum.Front() * wheelYOffset * cameraSpeed * deltaTime;
-		frustum.SetPos(newPos);
+		fov -= wheelYOffset * zoomSpeed;
+		if (fov < 1.0f) fov = 1.0f;
+		if (fov > 90.0f) fov = 90.0f;
+		SetFOV(fov);
 	}
 }

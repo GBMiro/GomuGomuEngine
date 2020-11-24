@@ -5,6 +5,8 @@
 #include "assimp/scene.h"
 #include <vector>
 
+using namespace Assimp;
+
 class Model : public Module
 {
 public:
@@ -12,7 +14,7 @@ public:
 	~Model();
 
 	void Load(const char* filename);
-	void LoadMaterials(const aiScene* scene);
+	void LoadMaterials(const aiScene* scene, const char* filename);
 	void LoadMeshes(const aiScene* mesh);
 	void Draw();
 	

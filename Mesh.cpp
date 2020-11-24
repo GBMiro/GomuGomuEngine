@@ -23,11 +23,10 @@ void Mesh::LoadVBO(const aiMesh* mesh) {
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	unsigned vertexSize = sizeof(float) * 3 + sizeof(float) * 2; // 3 vertex coordinates + 2 texture coordinates
+	unsigned vertexSize = sizeof(float) * 3 + sizeof(float) * 2;
 	unsigned bufferSize = vertexSize * mesh->mNumVertices;
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_STATIC_DRAW);
 
-	// Vertex coords follow up by texture coords. Interleaved
 	float* vertex = (float*)(glMapBufferRange(GL_ARRAY_BUFFER, 0, bufferSize, GL_MAP_WRITE_BIT));
 	for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
 		*(vertex++) = mesh->mVertices[i].x;
@@ -37,18 +36,7 @@ void Mesh::LoadVBO(const aiMesh* mesh) {
 		*(vertex++) = mesh->mTextureCoords[0][i].x;
 		*(vertex++) = mesh->mTextureCoords[0][i].y;
 	}
-	/*// Vertex coords at the beggining. Texture coords at the end
-	unsigned positionSize = sizeof(float) * 3 * mesh->mNumVertices;
-	glBufferSubData(GL_ARRAY_BUFFER, 0, positionSize, mesh->mVertices);
 
-	unsigned uvOffset = positionSize; //Every 3 float vertex coordinates
-	unsigned uvSize = sizeof(float) * 2 * mesh->mNumVertices;
-
-	float2* uv = (float2*)(glMapBufferRange(GL_ARRAY_BUFFER, uvOffset, uvSize, GL_MAP_WRITE_BIT));
-
-	for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
-		uv[i] = float2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-	}*/
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 
 	numVertex = mesh->mNumVertices;
@@ -84,12 +72,10 @@ void Mesh::CreateVAO() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); //Consecutive vertex coords
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
 
 	glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 3 * numVertex)); //Consecutive texture coords
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3)); //Interleaved
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
 
 	glBindVertexArray(0);
 }

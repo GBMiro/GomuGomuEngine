@@ -3,6 +3,7 @@
 #include "DevIL/include/IL/il.h"
 #include "GL/glew.h"
 #include "Leaks.h"
+#include <string>
 
 ModuleTextures::ModuleTextures()
 {
@@ -28,13 +29,30 @@ bool ModuleTextures::cleanUp()
 	return true;
 }
 
-unsigned int ModuleTextures::loadTexture(const char* path) {
+unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPath) {
 
 	ILuint imageId;
 	GLuint texture;
 	ilGenImages(1, &imageId);
 	ilBindImage(imageId);
 	ILboolean success = ilLoadImage(path);
+	if (!success) {
+		char ownPath[100];
+		strcpy(ownPath, "../Resources/Textures/");
+		strcat(ownPath, path);
+		success = ilLoadImage(ownPath);
+		if (success) {
+			LOG("Texture loaded from %s", ownPath);
+		}
+		else {
+			char fullPath[150];
+			LOG("Texture loaded from %s", ownPath);
+			success = ilLoadImage("../Resources/Textures/black.jpg");
+		}
+	}
+	else {
+		LOG("Texture loaded from %s", path);
+	}
 	if (success) {
 		success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
@@ -49,7 +67,7 @@ unsigned int ModuleTextures::loadTexture(const char* path) {
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 	}
-	else LOG("Error loading texture file");
+	else LOG("No texture found");
 
 	ilDeleteImages(1, &imageId);
 	return texture;

@@ -8,20 +8,29 @@
 #include "MathGeoLib/Math/float2.h"
 #include "Leaks.h"
 
+void assimpToLOG(const char* msg, char* userData) {
+	LOG(msg);
+}
+
 Model::Model() {
 
 }
 
 Model::~Model() {
-}
+}	
 
 void Model::Load(const char* filename) {
 	CleanUp();
+
+	struct aiLogStream stream;
+	stream.callback = assimpToLOG;
+	aiAttachLogStream(&stream);
+
 	LOG("Loading model...");
 	const aiScene* scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);
 	if (scene) {
 		// TODO: LoadTextures(scene->mMaterials, scene->mNumMaterials);
-		LoadMaterials(scene);
+		LoadMaterials(scene, filename);
 		// TODO: LoadMeshes(scene->mMeshes, scene->mNumMeshes);
 		LoadMeshes(scene);
 		
@@ -32,14 +41,14 @@ void Model::Load(const char* filename) {
 	}
 }
 
-void Model::LoadMaterials(const aiScene* scene)
+void Model::LoadMaterials(const aiScene* scene, const char* filename)
 {
 	aiString textureFileName;
 	materials.reserve(scene->mNumMaterials);
 
 	for (unsigned i = 0; i < scene->mNumMaterials; ++i) {
 		if (scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
-			materials.push_back(App->textures->loadTexture(textureFileName.data));
+			materials.push_back(App->textures->loadTexture(textureFileName.data, filename));
 			LOG("Textures loaded");
 		}
 		else {

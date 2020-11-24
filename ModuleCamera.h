@@ -23,19 +23,13 @@ public:
 
 	bool CleanUp();
 
-	void updateProjectionMatrix();
+	void SetFOV(float fov);
 
-	void SetFOV(float aspectRatio);
+	void SetAspectRatio(float aspectRatio);
 
-	void SetAspectRatio();
+	void orbitCamera(float xOfsset, float yOffset);
 
-	void SetPlaneDistance();
-
-	void SetPosition();
-
-	void SetOrientation();
-
-	void LookAt();
+	void LookAt(const float3& point);
 
 	float4x4 getProjectionMatrix();
 	float4x4 getViewMatrix();
@@ -50,8 +44,10 @@ private:
 	Frustum frustum;
 	float posX, posY, posZ = 0.0f;
 	float cameraSpeed = 5.0f;
-	float angleSpeed = 30.0f;
+	float angleSpeed = 20.0f;
+	float zoomSpeed = 5.0f;
 	float yaw, pitch = 0.0f;
+	float fov, nearPlane, farPlane;
 	iPoint mouseLastPos = { 0,0 };
 };
 

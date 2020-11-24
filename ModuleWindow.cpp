@@ -94,7 +94,7 @@ void ModuleWindow::setBrightness(float brightness) {
 
 void ModuleWindow::setWindowSize(int width, int height) {
 	SDL_SetWindowSize(window, width, height);
-	App->camera->SetFOV(width / (float)height);
+	App->camera->SetAspectRatio(width / (float)height);
 }
 
 float ModuleWindow::getBrightness() const {
