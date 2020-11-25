@@ -6,28 +6,26 @@
 #include "Application.h"
 #include "ModuleTextures.h"
 #include "MathGeoLib/Math/float2.h"
+#include "MathGeoLib/Geometry/AABB.h"
+#include "MathGeoLib/Geometry/Sphere.h"
 #include "Leaks.h"
 
-void assimpToLOG(const char* msg, char* userData) {
-	LOG(msg);
-}
-
 Model::Model() {
-
+	struct aiLogStream stream;
+	stream.callback = assimpToLOG;
+	aiAttachLogStream(&stream);
+	modelCenter = float3(0, 0, 0);
+	sphereRadius = 0;
 }
 
 Model::~Model() {
 }	
 
 void Model::Load(const char* filename) {
+	
 	CleanUp();
-
-	struct aiLogStream stream;
-	stream.callback = assimpToLOG;
-	aiAttachLogStream(&stream);
-
 	LOG("Loading model...");
-	const aiScene* scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene* scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 	if (scene) {
 		// TODO: LoadTextures(scene->mMaterials, scene->mNumMaterials);
 		LoadMaterials(scene, filename);
@@ -52,7 +50,8 @@ void Model::LoadMaterials(const aiScene* scene, const char* filename)
 			LOG("Textures loaded");
 		}
 		else {
-			LOG("Couldn't load model textures");
+			LOG("No diffuse texture found. Loading my own texture...");
+			materials.push_back(App->textures->loadTexture("black.jpg", filename));
 		}
 	}
 }
@@ -66,9 +65,16 @@ void Model::LoadMeshes(const aiScene* scene)
 		mesh->LoadVBO(currentMesh);
 		mesh->LoadEBO(currentMesh);
 		mesh->CreateVAO();
+		mesh->boundingBox.xMax = currentMesh->mAABB.mMax.x;
+		mesh->boundingBox.yMax = currentMesh->mAABB.mMax.y;
+		mesh->boundingBox.zMax = currentMesh->mAABB.mMax.z;
+		mesh->boundingBox.xMin = currentMesh->mAABB.mMin.x;
+		mesh->boundingBox.yMin = currentMesh->mAABB.mMin.y;
+		mesh->boundingBox.zMin = currentMesh->mAABB.mMin.z;
 		meshes.push_back(mesh);
 	}
-	LOG("Meshes loaded")
+	LOG("Meshes loaded");
+	calculateModelCenter();
 }
 
 void Model::Draw()  {
@@ -100,6 +106,45 @@ void Model::getTextures(std::vector<unsigned>& textures) const {
 	for (unsigned i = 0; i < materials.size(); ++i) {
 		textures.push_back(materials[i]);
 	}
+}
+
+void Model::calculateModelCenter() {
+	AABB modelAABB = AABB();
+	float xMax, xMin, yMax, yMin, zMax, zMin;
+	xMax = xMin = yMax = yMin = zMax = zMin = 0;
+	if (meshes.size() >= 1) {
+		xMax = meshes[0]->boundingBox.xMax;
+		xMin = meshes[0]->boundingBox.xMin;
+		yMax = meshes[0]->boundingBox.yMax;
+		yMin = meshes[0]->boundingBox.yMin;
+		zMax = meshes[0]->boundingBox.zMax;
+		zMin = meshes[0]->boundingBox.zMin;
+
+		for (unsigned i = 1; i < meshes.size(); ++i) {
+			if (xMax < meshes[i]->boundingBox.xMax) xMax = meshes[i]->boundingBox.xMax;
+			if (xMin > meshes[i]->boundingBox.xMin) xMin = meshes[i]->boundingBox.xMin;
+			if (yMax < meshes[i]->boundingBox.yMax) yMax = meshes[i]->boundingBox.yMax;
+			if (yMin > meshes[i]->boundingBox.yMin) yMin = meshes[i]->boundingBox.yMin;
+			if (zMax < meshes[i]->boundingBox.zMax) zMax = meshes[i]->boundingBox.zMax;
+			if (zMin > meshes[i]->boundingBox.zMin) zMin = meshes[i]->boundingBox.zMin;
+		}
+
+		modelAABB.maxPoint = vec(xMax, yMax, zMax);
+		modelAABB.minPoint = vec(xMin, yMin, zMin);
+
+		vec center = modelAABB.CenterPoint();
+		modelCenter.x = center.x;
+		modelCenter.y = center.y;
+		modelCenter.z = center.z;
+
+		sphereRadius = (modelAABB.MinimalEnclosingSphere()).Diameter() / (float)2.0f;
+	}
+	else {
+		modelCenter = float3(0, 0, 0);
+		sphereRadius = 0;
+	}
+	
+	
 }
 
 void Model::setMinMaxFilter(bool active) const

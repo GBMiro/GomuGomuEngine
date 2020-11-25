@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "Globals.h"
 #include "assimp/scene.h"
+#include "MathGeoLib/Math/float3.h"
 #include <vector>
 
 using namespace Assimp;
@@ -26,7 +27,17 @@ public:
 	void setMinMaxFilter(bool active) const;
 
 private:
+	void calculateModelCenter();
+
+public:
+	float3 modelCenter;
+	float sphereRadius;
+
+private:
 	std::vector<unsigned> materials;
-	std::vector<Mesh*> meshes; //Change to pointer
+	std::vector<Mesh*> meshes;
 };
 
+inline void assimpToLOG(const char* msg, char* userData) {
+	LOG(msg);
+}

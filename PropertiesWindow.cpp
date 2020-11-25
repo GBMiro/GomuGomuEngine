@@ -30,7 +30,7 @@ void PropertiesWindow::Draw() {
 			ImGui::NewLine();
 			for (unsigned i = 0; i < meshes.size(); ++i) {
 				ImGui::Text("Num. Vertex: %d", meshes[i]->getNumVertex());
-				ImGui::Text("Num. Triangles: %d", meshes[i]->getNumVertex() / 3);
+				ImGui::Text("Num. Triangles: %d", meshes[i]->getNumIndices() / 3);
 				ImGui::Text("Num. Indices: %d", meshes[i]->getNumIndices());
 				ImGui::Text("---------------------");
 			}

@@ -25,7 +25,6 @@ bool ModuleTextures::Init()
 
 bool ModuleTextures::cleanUp()
 {
-	// Here should delete all texture with glDeleteImage and empty map
 	return true;
 }
 
@@ -37,17 +36,24 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 	ilBindImage(imageId);
 	ILboolean success = ilLoadImage(path);
 	if (!success) {
-		char ownPath[100];
-		strcpy(ownPath, "../Resources/Textures/");
-		strcat(ownPath, path);
-		success = ilLoadImage(ownPath);
+		std::string fullPath(objectPath);
+		fullPath = fullPath.substr(0, fullPath.find_last_of("\\/"));
+		fullPath = fullPath + "\\" + std::string(path);
+		success = ilLoadImage(fullPath.c_str());
 		if (success) {
-			LOG("Texture loaded from %s", ownPath);
+			LOG("Texture loaded from %s", fullPath.c_str());
 		}
 		else {
-			char fullPath[150];
-			LOG("Texture loaded from %s", ownPath);
-			success = ilLoadImage("../Resources/Textures/black.jpg");
+			std::string myPath("../Resources/Textures/");
+			myPath = myPath + std::string(path);
+			success = ilLoadImage(myPath.c_str());
+			if (success) {
+				LOG("Texture loaded from %s", myPath.c_str());
+			}
+			else {
+				LOG("Texture not found. Loading defualt texture...")
+				success = ilLoadImage("../Resources/Textures/black.jpg");
+			}
 		}
 	}
 	else {
@@ -61,13 +67,11 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 		}
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glObjectLabel(GL_TEXTURE, texture, -1, path);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 	}
-	else LOG("No texture found");
 
 	ilDeleteImages(1, &imageId);
 	return texture;

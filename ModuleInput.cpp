@@ -98,6 +98,7 @@ update_status ModuleInput::PreUpdate()
 		case SDL_DROPFILE:
 			App->model->Load(event.drop.file);
 			App->editor->cleanProperties();
+			App->camera->setCameraPosition();
 			break;
 
 		case SDL_WINDOWEVENT:
@@ -139,7 +140,6 @@ update_status ModuleInput::PreUpdate()
 			break;
 		
 		case SDL_MOUSEWHEEL:
-			LOG("Wheel detected");
 			mouse_wheel = event.wheel.y;
 			break;
 		}

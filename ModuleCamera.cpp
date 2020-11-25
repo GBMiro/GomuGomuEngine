@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "GL/glew.h"
 #include "SDL/include/SDL.h"
+#include "Model.h"
 #include "Leaks.h"
 
 ModuleCamera::ModuleCamera()
@@ -22,7 +23,7 @@ bool ModuleCamera::Init()
 {
 	posX = 0.0f;
 	posY = 1.0f;
-	posZ = 10.0f;
+	posZ = -10.0f;
 
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
 	frustum.SetViewPlaneDistances(nearPlane, farPlane);
@@ -30,7 +31,8 @@ bool ModuleCamera::Init()
 	frustum.SetPos(float3(posX, posY, posZ));
 	frustum.SetFront(float3(-float3::unitZ));
 	frustum.SetUp(float3(float3::unitY));
-	
+
+	setCameraPosition();
 
 	return true;
 }
@@ -66,13 +68,18 @@ void ModuleCamera::SetAspectRatio(float aspectRatio) {
 	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), aspectRatio);
 }
 
+void ModuleCamera::setCameraPosition() {
+	LookAt(App->model->modelCenter);
+	float distance = (App->model->sphereRadius / Abs(sin(DEGTORAD * fov / 2)));
+	frustum.SetPos(App->model->modelCenter + frustum.Front().Neg() * distance * 2);
+}
+
 void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
 
-	float3 point = float3(0, 0, 0);
 	float3 up = frustum.Up().Normalized();
 	float3 right = frustum.WorldRight().Normalized();
 
-	float3 camFocusVector = frustum.Pos() - point;
+	float3 camFocusVector = frustum.Pos() - App->model->modelCenter;
 	float3x3 rotationMatrixY = frustum.ViewMatrix().RotatePart();
 	rotationMatrixY = rotationMatrixY.RotateAxisAngle(up, DEGTORAD * xOffset);
 	float3x3 rotationMatrixX = frustum.ViewMatrix().RotatePart();
@@ -80,8 +87,8 @@ void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
 	camFocusVector = camFocusVector * rotationMatrixX;
 	camFocusVector = camFocusVector * rotationMatrixY;
 
-	frustum.SetPos(camFocusVector + point);
-	LookAt(point);
+	frustum.SetPos(camFocusVector + App->model->modelCenter);
+	LookAt(App->model->modelCenter);
 }
 
 void ModuleCamera::LookAt(const float3& point) {
@@ -90,12 +97,12 @@ void ModuleCamera::LookAt(const float3& point) {
 	pitch = 0.0f;
 }
 
-float4x4 ModuleCamera::getProjectionMatrix()
+float4x4 ModuleCamera::getProjectionMatrix() const
 {
 	return frustum.ProjectionMatrix();
 }
 
-float4x4 ModuleCamera::getViewMatrix()
+float4x4 ModuleCamera::getViewMatrix() const
 {
 	return float4x4(frustum.ViewMatrix());
 }
@@ -125,13 +132,13 @@ void ModuleCamera::rotateCamera(float3x3 &rotationMatrix)
 void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed) 
 {
 	float movementSpeed = speed * deltaTime;
-	if (App->input->GetKey(SDL_SCANCODE_F)) LookAt(float3(0,0,0));
+	if (App->input->GetKey(SDL_SCANCODE_F)) setCameraPosition();
 	if (App->input->GetKey(SDL_SCANCODE_W) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.Front() * movementSpeed);
 	if (App->input->GetKey(SDL_SCANCODE_S) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.Front() * movementSpeed);
 	if (App->input->GetKey(SDL_SCANCODE_A) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.WorldRight() * movementSpeed);
 	if (App->input->GetKey(SDL_SCANCODE_D) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.WorldRight() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_Q) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.Up() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_E) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.Up() * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_Q) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + float3::unitY * movementSpeed);
+	if (App->input->GetKey(SDL_SCANCODE_E) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - float3::unitY * movementSpeed);
 
 	//Rotation
 	if (App->input->GetKey(SDL_SCANCODE_LEFT)) {
@@ -177,14 +184,14 @@ void ModuleCamera::processMouseInput(float deltaTime)
 
 	iPoint motion = App->input->GetMouseMotion();
 	const float sensitivity = 0.1f;
-	float xOffset = -motion.x * angleSpeed * deltaTime;
-	float yOffset = -motion.y * angleSpeed * deltaTime;
+	float xOffset = motion.x * angleSpeed * deltaTime;
+	float yOffset = motion.y * angleSpeed * deltaTime;
 
 	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
 		if (xOffset != 0) {
 			yaw += xOffset;
 			float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
-			rotationMatrix = rotationMatrix.RotateY(DEGTORAD * xOffset);
+			rotationMatrix = rotationMatrix.RotateY(DEGTORAD * -xOffset);
 			rotateCamera(rotationMatrix);
 		}
 
@@ -194,7 +201,7 @@ void ModuleCamera::processMouseInput(float deltaTime)
 			if (pitch < -89.0f) pitch = -89.0f;
 			pitch += yOffset;
 			float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
-			rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), (DEGTORAD * (pitch - oldPitch)));
+			rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), (DEGTORAD * -(pitch - oldPitch)));
 			rotateCamera(rotationMatrix);
 		}
 	}

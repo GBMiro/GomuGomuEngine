@@ -27,12 +27,14 @@ public:
 
 	void SetAspectRatio(float aspectRatio);
 
+	void setCameraPosition();
+
 	void orbitCamera(float xOfsset, float yOffset);
 
 	void LookAt(const float3& point);
 
-	float4x4 getProjectionMatrix();
-	float4x4 getViewMatrix();
+	float4x4 getProjectionMatrix() const;
+	float4x4 getViewMatrix() const;
 
 
 	void updateCamera();
