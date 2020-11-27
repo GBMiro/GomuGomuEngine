@@ -21,7 +21,7 @@ void MonitorWindow::Draw() {
 		ImGui::End();
 		return;
 	}
-	if (ImGui::CollapsingHeader("Hardware")) {
+	if (ImGui::CollapsingHeader("Hardware", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::Text("CPU cores: "); ImGui::SameLine();
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CPU cores: %d (Cache: %dkb)", hw.cpuCores, hw.cpuCache);
 		ImGui::Text("RAM: "); ImGui::SameLine();
@@ -29,7 +29,7 @@ void MonitorWindow::Draw() {
 		ImGui::Text("GPU: "); ImGui::SameLine();
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s, %s", glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 	}
-	if (ImGui::CollapsingHeader("Memory consumption")) {
+	if (ImGui::CollapsingHeader("Memory consumption", ImGuiTreeNodeFlags_DefaultOpen)) {
 		static int availableKb, budgetKb, usageKb, reservedKb = 0;
 		glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &budgetKb);
 		glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &availableKb);
@@ -44,14 +44,14 @@ void MonitorWindow::Draw() {
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Calculate");
 	
 	}
-	if (ImGui::CollapsingHeader("Metrics graph")) {
+	if (ImGui::CollapsingHeader("Metrics graph", ImGuiTreeNodeFlags_DefaultOpen)) {
 		static char title[25];
 		sprintf_s(title, 25, "Framerate %.1f", fps_log[fps_log.size() - 1]);
 		ImGui::PlotHistogram("##framerate", &fps_log[0], fps_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 		sprintf_s(title, 25, "Miliseconds %0.3f", ms_log[ms_log.size() - 1]);
 		ImGui::PlotHistogram("##miliseconds", &ms_log[0], ms_log.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
 	}
-	if (ImGui::CollapsingHeader("Software versions")) {
+	if (ImGui::CollapsingHeader("Software versions", ImGuiTreeNodeFlags_DefaultOpen)) {
 		static int ilVersion = ilGetInteger(IL_VERSION_NUM);
 		SDL_version compiled;
 		SDL_VERSION(&compiled);

@@ -7,29 +7,22 @@
 #include "Model.h"
 #include "Leaks.h"
 
-ModuleCamera::ModuleCamera()
+ModuleCamera::ModuleCamera() : posX(0.0f), posY(1.0f), posZ(-10.0f)
 {
-	yaw = pitch = 0.0f;
-	fov = 90.0f;
-	nearPlane = 0.1f;
-	farPlane = 200.f;
+
 }
 
 ModuleCamera::~ModuleCamera()
 {
 }
 
-bool ModuleCamera::Init()
-{
-	posX = 0.0f;
-	posY = 1.0f;
-	posZ = -10.0f;
+bool ModuleCamera::Init() {
 
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
 	frustum.SetViewPlaneDistances(nearPlane, farPlane);
 	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, SCREEN_WIDTH/(float)SCREEN_HEIGHT);
 	frustum.SetPos(float3(posX, posY, posZ));
-	frustum.SetFront(float3(-float3::unitZ));
+	frustum.SetFront(float3(float3::unitZ));
 	frustum.SetUp(float3(float3::unitY));
 
 	setCameraPosition();
@@ -62,16 +55,24 @@ bool ModuleCamera::CleanUp()
 void ModuleCamera::SetFOV(float fov)
 {
 	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, frustum.AspectRatio());
+	this->fov = fov;
 }
 
 void ModuleCamera::SetAspectRatio(float aspectRatio) {
 	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), aspectRatio);
 }
 
+void ModuleCamera::setPlanes(float zNear, float zFar) {
+	frustum.SetViewPlaneDistances(zNear, zFar);
+	nearPlane = zNear;
+	farPlane = zFar;
+}
+
 void ModuleCamera::setCameraPosition() {
-	LookAt(App->model->modelCenter);
+
 	float distance = (App->model->sphereRadius / Abs(sin(DEGTORAD * fov / 2)));
 	frustum.SetPos(App->model->modelCenter + frustum.Front().Neg() * distance * 2);
+	LookAt(App->model->modelCenter);
 }
 
 void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
@@ -105,6 +106,11 @@ float4x4 ModuleCamera::getProjectionMatrix() const
 float4x4 ModuleCamera::getViewMatrix() const
 {
 	return float4x4(frustum.ViewMatrix());
+}
+
+void ModuleCamera::getPlanes(float* zNear, float* zFar) const {
+	*zNear = frustum.NearPlaneDistance();
+	*zFar = frustum.FarPlaneDistance();
 }
 
 void ModuleCamera::updateCamera()
@@ -212,7 +218,7 @@ void ModuleCamera::processMouseInput(float deltaTime)
 	if (wheelYOffset != 0) {
 		fov -= wheelYOffset * zoomSpeed;
 		if (fov < 1.0f) fov = 1.0f;
-		if (fov > 90.0f) fov = 90.0f;
+		if (fov > 179.0f) fov = 179.0f;
 		SetFOV(fov);
 	}
 }

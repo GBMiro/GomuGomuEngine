@@ -4,7 +4,7 @@ Window::Window(std::string name, int windowID)
 {
 	this->name = name;
 	this->windowID = windowID;
-	active = true;
+	active = false;
 }
 
 Window::~Window()

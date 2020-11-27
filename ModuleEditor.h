@@ -29,6 +29,7 @@ public:
 	void registerFPS(float deltaTime); // Make function const
 	void registerLog(const char* log); // Make function const
 	void cleanProperties();
+	void fileDropped(const char* filename) const;
 
 public:
 	MonitorWindow* monitor = nullptr;

@@ -9,6 +9,7 @@
 #include "MathGeoLib/Geometry/AABB.h"
 #include "MathGeoLib/Geometry/Sphere.h"
 #include "Leaks.h"
+#include <string>
 
 Model::Model() {
 	struct aiLogStream stream;
@@ -23,7 +24,6 @@ Model::~Model() {
 
 void Model::Load(const char* filename) {
 	
-	CleanUp();
 	LOG("Loading model...");
 	const aiScene* scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 	if (scene) {
@@ -84,15 +84,12 @@ void Model::Draw()  {
 }
 
 bool Model::CleanUp() {
+
 	LOG("Removing model...");
-	for (unsigned i = 0; i < meshes.size(); ++i) {
-		delete (meshes[i]);
-	}
-	for (unsigned i = 0; i < materials.size(); ++i) {
-		glDeleteTextures(0, &(GLuint)materials[i]);
-	}
-	meshes.clear();
-	materials.clear();
+	deleteMeshes();
+	deleteTextures();
+	LOG("Model removed");
+
 	return true;
 }
 
@@ -147,9 +144,45 @@ void Model::calculateModelCenter() {
 	
 }
 
+void Model::loadNewTexture(const char* textureName, const char* filename) {
+	deleteTextures();
+	materials.reserve(1);
+	materials.push_back(App->textures->loadTexture(textureName, filename));
+}
+
 void Model::setMinMaxFilter(bool active) const
 {
 	for (unsigned i = 0; i < materials.size(); ++i) {
 		App->textures->setMinMaxFilter(materials[i], active);
 	}
+}
+
+void Model::processFile(const char* filename) {
+
+	std::string file(filename);
+	int posExtension = file.find_last_of(".") + 1;
+	int posTextureName = file.find_last_of("\\/") + 1;
+	std::string extension = file.substr(posExtension);
+	std::string textureName = file.substr(posTextureName);
+	if (extension == "fbx") {
+		CleanUp();
+		Load(filename);
+	}
+	else if (extension == "dds" || extension == "png" || extension == "jpg") loadNewTexture(textureName.c_str(), filename);
+}
+
+void Model::deleteMeshes() {
+
+	for (unsigned i = 0; i < meshes.size(); ++i) {
+		delete (meshes[i]);
+	}
+	meshes.clear();
+}
+
+void Model::deleteTextures() {
+
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		glDeleteTextures(0, &(GLuint)materials[i]);
+	}
+	materials.clear();
 }

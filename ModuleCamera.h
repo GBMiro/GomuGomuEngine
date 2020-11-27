@@ -6,6 +6,10 @@
 #include "Module.h"
 #include "Point.h"
 
+#define MaxRotSpeed 30.0f
+#define MaxMovSpeed 10.0f
+#define MaxZoomSpeed 5.0f
+
 class ModuleCamera : public Module
 {
 public:
@@ -27,6 +31,8 @@ public:
 
 	void SetAspectRatio(float aspectRatio);
 
+	void setPlanes(float zNear, float zFar);
+
 	void setCameraPosition();
 
 	void orbitCamera(float xOfsset, float yOffset);
@@ -35,21 +41,33 @@ public:
 
 	float4x4 getProjectionMatrix() const;
 	float4x4 getViewMatrix() const;
+	void getPlanes(float* zNear, float* zFar) const;
+	float3 getUpVector() const { return frustum.Up(); }
+	float3 getRightVector() const { return frustum.WorldRight(); }
+	float3 getFrontVector() const { return frustum.Front(); }
+	float3 getCameraPosition() const { return frustum.Pos(); }
+	float getAspectRatio() const { return frustum.AspectRatio(); }
+	float getFOV() const { return fov; }
 
-
+private:
 	void updateCamera();
 	void rotateCamera(float3x3 &rotationMatrix);
 	void processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed);
 	void processMouseInput(float deltaTime);
 
-private:
-	Frustum frustum;
-	float posX, posY, posZ = 0.0f;
+public:
 	float cameraSpeed = 5.0f;
 	float angleSpeed = 20.0f;
 	float zoomSpeed = 5.0f;
-	float yaw, pitch = 0.0f;
-	float fov, nearPlane, farPlane;
+
+private:
+	Frustum frustum;
+	float posX, posY, posZ;
+	float yaw = 0.0f;
+	float pitch = 0.0f;
+	float fov = 90.0f;
+	float nearPlane = 0.1f;
+	float farPlane = 200.0f;
 	iPoint mouseLastPos = { 0,0 };
 };
 

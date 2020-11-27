@@ -25,9 +25,14 @@ public:
 	void getTextures(std::vector<unsigned>& textures) const;
 
 	void setMinMaxFilter(bool active) const;
+	void processFile(const char* filename);
+
+	void deleteMeshes();
+	void deleteTextures();
 
 private:
 	void calculateModelCenter();
+	void loadNewTexture(const char* textureName, const char* filename);
 
 public:
 	float3 modelCenter;

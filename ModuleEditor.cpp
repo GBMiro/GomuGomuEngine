@@ -53,7 +53,7 @@ update_status ModuleEditor::Update()
 {
 	if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 	Draw();
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -85,7 +85,7 @@ bool ModuleEditor::cleanUp()
 update_status ModuleEditor::showMainMenu() {
 
 	static bool showConfiguration = true;
-	static bool showCameraWindow, showMetricsWindow, showLogWindow, showPropertiesWindow = false;
+	static bool showMetricsWindow, showLogWindow, showPropertiesWindow = false;
 
 	update_status keepGoing = UPDATE_CONTINUE;
 
@@ -95,7 +95,6 @@ update_status ModuleEditor::showMainMenu() {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Windows")) {
-			if (ImGui::MenuItem("Camera", NULL, &showCameraWindow));
 			if (ImGui::MenuItem("Metrics", NULL, &monitor->active));
 			if (ImGui::MenuItem("Log", NULL, &console->active));
 			if (ImGui::MenuItem("Configuration", NULL, &configuration->active));
@@ -129,4 +128,8 @@ void ModuleEditor::registerLog(const char* log) {
 
 void ModuleEditor::cleanProperties() {
 	properties->cleanProperties();
+}
+
+void ModuleEditor::fileDropped(const char* filename) const {
+	App->model->processFile(filename);
 }

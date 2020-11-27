@@ -96,7 +96,8 @@ update_status ModuleInput::PreUpdate()
 			break;
 		
 		case SDL_DROPFILE:
-			App->model->Load(event.drop.file);
+			//App->model->Load(event.drop.file);
+			App->editor->fileDropped(event.drop.file);
 			App->editor->cleanProperties();
 			App->camera->setCameraPosition();
 			break;
