@@ -8,6 +8,10 @@
 #include "Model.h"
 #include "MathGeoLib/Math/float3.h"
 #include "Point.h"
+#include "GL/glew.h"
+
+const char* filterModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
+const char* wrapModes[] = { "Clamp to borde", "Clamp", "Repeat", "Mirrored repeat" };
 
 ConfigurationWindow::ConfigurationWindow(std::string name, int windowID) : Window(name, windowID) {
 }
@@ -78,17 +82,51 @@ void ConfigurationWindow::Draw() {
 		}
 	}
 	if (ImGui::CollapsingHeader("Textures")) {
-		static bool WRAP, MAXMIN, MIPMAPS;
-		if (ImGui::Checkbox("WRAP Mode", &WRAP));
-		if (ImGui::Checkbox("MAX/MIN Filter", &MAXMIN)) App->model->setMinMaxFilter(MAXMIN);
-		if (ImGui::Checkbox("Mipmap", &MIPMAPS));
+		static int indexMin = 0;
+		static int indexMax = 0;
+		static int indexWrap = 0;
+		if (ImGui::BeginCombo("Min Filter", filterModes[indexMin])) {
+			for (unsigned i = 0; i < IM_ARRAYSIZE(filterModes); ++i) {
+				const bool is_selected = (indexMin == i);
+				if (ImGui::Selectable(filterModes[i], is_selected)) {
+					indexMin = i;
+					ImGui::SetItemDefaultFocus();
+					App->model->setMinFilter(indexMin);
+				}
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::BeginCombo("Max Filter", filterModes[indexMax])) {
+			for (unsigned i = 0; i < IM_ARRAYSIZE(filterModes); ++i) {
+				const bool is_selected = (indexMax == i);
+				if (ImGui::Selectable(filterModes[i], is_selected)) {
+					indexMax = i;
+					ImGui::SetItemDefaultFocus();
+					App->model->setMagFilter(indexMax);
+				}
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::BeginCombo("WRAP Mode", wrapModes[indexWrap])) {
+			for (unsigned i = 0; i < IM_ARRAYSIZE(wrapModes); ++i) {
+				const bool is_selected = (indexWrap == i);
+				if (ImGui::Selectable(wrapModes[i], is_selected)) {
+					indexWrap = i;
+					ImGui::SetItemDefaultFocus();
+					App->model->setWrapMode(indexWrap);
+				}
+			}
+			ImGui::EndCombo();
+		}
 	}
 	if (ImGui::CollapsingHeader("Window")) {
 		if (ImGui::Checkbox("Fullscreen", &fullscreen)) App->window->setFlag(SDL_WINDOW_FULLSCREEN, fullscreen); ImGui::SameLine();
 		if (ImGui::Checkbox("Resizable", &windowResizable)) App->window->setFlag(SDL_WINDOW_RESIZABLE, windowResizable); ImGui::SameLine();
 		if (ImGui::Checkbox("Borderless", &windowBorderless)) App->window->setFlag(SDL_WINDOW_BORDERLESS, windowBorderless);
-		if (ImGui::SliderInt("Screen width", &width, 100, 1920)) App->window->setWindowSize(width, height);
-		if (ImGui::SliderInt("Screen height", &height, 100, 1080)) App->window->setWindowSize(width, height);
+		if (!fullscreen) {
+			if (ImGui::SliderInt("Screen width", &width, 100, 1920)) App->window->setWindowSize(width, height);
+			if (ImGui::SliderInt("Screen height", &height, 100, 1080)) App->window->setWindowSize(width, height);
+		}
 		if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f, "%.3f")) App->window->setBrightness(brightness);
 	}
 	ImGui::End();

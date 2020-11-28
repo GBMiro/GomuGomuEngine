@@ -24,7 +24,10 @@ public:
 	void getMeshes(std::vector<Mesh*>& meshes) const;
 	void getTextures(std::vector<unsigned>& textures) const;
 
-	void setMinMaxFilter(bool active) const;
+	void setMinFilter(unsigned index) const;
+	void setMagFilter(unsigned index) const;
+	void setWrapMode(unsigned index) const;
+
 	void processFile(const char* filename);
 
 	void deleteMeshes();

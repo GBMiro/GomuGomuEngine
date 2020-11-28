@@ -5,6 +5,9 @@
 #include "Leaks.h"
 #include <string>
 
+const GLint filters[] = { GL_LINEAR, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_NEAREST };
+const GLint wrapsModes[] = { GL_CLAMP_TO_BORDER, GL_CLAMP, GL_REPEAT, GL_MIRRORED_REPEAT };
+
 ModuleTextures::ModuleTextures()
 {
 }
@@ -51,7 +54,7 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 				LOG("Texture loaded from %s", myPath.c_str());
 			}
 			else {
-				LOG("Texture not found. Loading defualt texture...")
+				LOG("Texture not found. Loading default texture...")
 				success = ilLoadImage("../Resources/Textures/black.jpg");
 			}
 		}
@@ -67,23 +70,32 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 		}
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
+		glGenerateMipmap(texture);
 	}
 
 	ilDeleteImages(1, &imageId);
 	return texture;
 }
 
-void ModuleTextures::setMinMaxFilter(GLuint texture, bool active) {
-	if (active) {
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	else {
-	}
+void ModuleTextures::setMinFilter(unsigned index, unsigned textureID) const {
+	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filters[index]);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void ModuleTextures::setMagFilter(unsigned index, unsigned textureID) const {
+	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filters[index]);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void ModuleTextures::setWrapMode(unsigned index, unsigned textureID) const {
+	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapsModes[index]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapsModes[index]);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

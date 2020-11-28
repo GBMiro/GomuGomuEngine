@@ -125,7 +125,7 @@ bool ModuleRender::Init()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
 	text = App->textures->loadTexture("../Resources/Lenna.png");*/
 
-	App->model->Load("BakerHouse.fbx");
+	App->model->Load("../Resources/Models/BakerHouse.fbx");
 	return true;
 }
 

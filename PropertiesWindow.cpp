@@ -21,7 +21,12 @@ void PropertiesWindow::Draw() {
 		return;
 	}
 	if (ImGui::CollapsingHeader("Transformations")) {
-		ImGui::Text("Transformations?");
+		static float3 position = float3(0, 0, 0);
+		static float3 rotation = float3(0, 0, 0);
+		static float3 scale = float3(1, 1, 1);
+		if (ImGui::InputFloat3("Position", &position[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
+		if (ImGui::InputFloat3("Rotation", &rotation[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
+		if (ImGui::InputFloat3("Scale", &scale[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
 	}
 	if (ImGui::CollapsingHeader("Geometry")) {
 		if (meshes.size() == 0) App->model->getMeshes(meshes);

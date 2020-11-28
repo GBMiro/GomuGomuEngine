@@ -14,6 +14,8 @@ public:
 
 	unsigned int loadTexture(const char* path, const char* objectPath);
 
-	void setMinMaxFilter(GLuint texture, bool active);
+	void setMinFilter(unsigned index, unsigned textureID) const;
+	void setMagFilter(unsigned index, unsigned textureID) const;
+	void setWrapMode(unsigned index, unsigned textureID) const;
 };
 

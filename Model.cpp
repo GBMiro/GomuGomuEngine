@@ -105,6 +105,24 @@ void Model::getTextures(std::vector<unsigned>& textures) const {
 	}
 }
 
+void Model::setMinFilter(unsigned index) const {
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		App->textures->setMinFilter(index, materials[i]);
+	}
+}
+
+void Model::setMagFilter(unsigned index) const {
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		App->textures->setMagFilter(index, materials[i]);
+	}
+}
+
+void Model::setWrapMode(unsigned index) const {
+	for (unsigned i = 0; i < materials.size(); ++i) {
+		App->textures->setWrapMode(index, materials[i]);
+	}
+}
+
 void Model::calculateModelCenter() {
 	AABB modelAABB = AABB();
 	float xMax, xMin, yMax, yMin, zMax, zMin;
@@ -150,12 +168,6 @@ void Model::loadNewTexture(const char* textureName, const char* filename) {
 	materials.push_back(App->textures->loadTexture(textureName, filename));
 }
 
-void Model::setMinMaxFilter(bool active) const
-{
-	for (unsigned i = 0; i < materials.size(); ++i) {
-		App->textures->setMinMaxFilter(materials[i], active);
-	}
-}
 
 void Model::processFile(const char* filename) {
 

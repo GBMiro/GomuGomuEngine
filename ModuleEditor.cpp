@@ -53,7 +53,7 @@ update_status ModuleEditor::Update()
 {
 	if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 	Draw();
-	//ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
