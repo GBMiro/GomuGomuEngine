@@ -35,6 +35,10 @@ public:
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface = NULL;
+
+	SDL_DisplayMode desktopSize;
+	int width;
+	int height;
 };
 
 #endif // __ModuleWindow_H__

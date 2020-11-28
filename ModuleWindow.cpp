@@ -27,18 +27,14 @@ bool ModuleWindow::Init()
 	else
 	{
 		//Create window
-		int width; 
-		int height;
-		SDL_DisplayMode dm;
-		if (SDL_GetDesktopDisplayMode(0, &dm) == 0) {
-			width = dm.w;
-			height = dm.h;
+		if (SDL_GetDesktopDisplayMode(0, &desktopSize) == 0) {
+			width = desktopSize.w / 2;
+			height = desktopSize.h / 2;
 		}
 		else {
 			width = SCREEN_WIDTH;
 			height = SCREEN_HEIGHT;
 		}
-		LOG("%d, %d", width, height);
 		Uint32 flags = SDL_WINDOW_SHOWN |  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
 		if(FULLSCREEN == true)
@@ -83,8 +79,15 @@ bool ModuleWindow::CleanUp()
 void ModuleWindow::setFlag(SDL_WindowFlags flag, bool state)
 {
 	switch (flag) {
-		case SDL_WINDOW_FULLSCREEN:
-			SDL_SetWindowFullscreen(window, state);
+		case SDL_WINDOW_FULLSCREEN_DESKTOP:
+			if (state) {
+				SDL_SetWindowFullscreen(window, flag);
+				App->camera->SetAspectRatio(desktopSize.w / (float)desktopSize.h);
+			}
+			else {
+				SDL_SetWindowFullscreen(window, 0);
+				App->camera->SetAspectRatio(width / (float)height);
+			}
 			break;
 		case SDL_WINDOW_RESIZABLE:
 			SDL_SetWindowResizable(window, (SDL_bool)state);
@@ -105,6 +108,8 @@ void ModuleWindow::setBrightness(float brightness) {
 void ModuleWindow::setWindowSize(int width, int height) {
 	SDL_SetWindowSize(window, width, height);
 	App->camera->SetAspectRatio(width / (float)height);
+	this->width = width;
+	this->height = height;
 }
 
 float ModuleWindow::getBrightness() const {

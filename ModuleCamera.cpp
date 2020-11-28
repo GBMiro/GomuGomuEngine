@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
+#include "ModuleWindow.h"
 #include "GL/glew.h"
 #include "SDL/include/SDL.h"
 #include "Model.h"
@@ -20,7 +21,7 @@ bool ModuleCamera::Init() {
 
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
 	frustum.SetViewPlaneDistances(nearPlane, farPlane);
-	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, SCREEN_WIDTH/(float)SCREEN_HEIGHT);
+	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, App->window->width / (float)App->window->height);
 	frustum.SetPos(float3(posX, posY, posZ));
 	frustum.SetFront(float3(float3::unitZ));
 	frustum.SetUp(float3(float3::unitY));

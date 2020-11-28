@@ -10,8 +10,9 @@
 #include "Point.h"
 #include "GL/glew.h"
 
-const char* filterModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
-const char* wrapModes[] = { "Clamp to borde", "Clamp", "Repeat", "Mirrored repeat" };
+constexpr char* filterMinModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
+constexpr char* filterMagModes[] = { "Linear", "Nearest" };
+constexpr char* wrapModes[] = { "Clamp to borde", "Clamp", "Repeat", "Mirrored repeat" };
 
 ConfigurationWindow::ConfigurationWindow(std::string name, int windowID) : Window(name, windowID) {
 }
@@ -85,10 +86,10 @@ void ConfigurationWindow::Draw() {
 		static int indexMin = 0;
 		static int indexMax = 0;
 		static int indexWrap = 0;
-		if (ImGui::BeginCombo("Min Filter", filterModes[indexMin])) {
-			for (unsigned i = 0; i < IM_ARRAYSIZE(filterModes); ++i) {
+		if (ImGui::BeginCombo("Min Filter", filterMinModes[indexMin])) {
+			for (unsigned i = 0; i < IM_ARRAYSIZE(filterMinModes); ++i) {
 				const bool is_selected = (indexMin == i);
-				if (ImGui::Selectable(filterModes[i], is_selected)) {
+				if (ImGui::Selectable(filterMinModes[i], is_selected)) {
 					indexMin = i;
 					ImGui::SetItemDefaultFocus();
 					App->model->setMinFilter(indexMin);
@@ -96,10 +97,10 @@ void ConfigurationWindow::Draw() {
 			}
 			ImGui::EndCombo();
 		}
-		if (ImGui::BeginCombo("Max Filter", filterModes[indexMax])) {
-			for (unsigned i = 0; i < IM_ARRAYSIZE(filterModes); ++i) {
+		if (ImGui::BeginCombo("Mag Filter", filterMagModes[indexMax])) {
+			for (unsigned i = 0; i < IM_ARRAYSIZE(filterMagModes); ++i) {
 				const bool is_selected = (indexMax == i);
-				if (ImGui::Selectable(filterModes[i], is_selected)) {
+				if (ImGui::Selectable(filterMagModes[i], is_selected)) {
 					indexMax = i;
 					ImGui::SetItemDefaultFocus();
 					App->model->setMagFilter(indexMax);
@@ -120,7 +121,7 @@ void ConfigurationWindow::Draw() {
 		}
 	}
 	if (ImGui::CollapsingHeader("Window")) {
-		if (ImGui::Checkbox("Fullscreen", &fullscreen)) App->window->setFlag(SDL_WINDOW_FULLSCREEN, fullscreen); ImGui::SameLine();
+		if (ImGui::Checkbox("Fullscreen", &fullscreen)) App->window->setFlag(SDL_WINDOW_FULLSCREEN_DESKTOP, fullscreen); ImGui::SameLine();
 		if (ImGui::Checkbox("Resizable", &windowResizable)) App->window->setFlag(SDL_WINDOW_RESIZABLE, windowResizable); ImGui::SameLine();
 		if (ImGui::Checkbox("Borderless", &windowBorderless)) App->window->setFlag(SDL_WINDOW_BORDERLESS, windowBorderless);
 		if (!fullscreen) {

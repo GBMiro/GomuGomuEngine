@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "ModuleEditor.h"
 #include "ModuleCamera.h"
+#include "ModuleWindow.h"
 #include "Model.h"
 #include "SDL/include/SDL.h"
 #include "backends/imgui_impl_sdl.h"
@@ -121,6 +122,8 @@ update_status ModuleInput::PreUpdate()
 				break;
 			case SDL_WINDOWEVENT_RESIZED:
 				App->camera->SetAspectRatio(event.window.data1/(float)event.window.data2);
+				App->window->width = event.window.data1;
+				App->window->height = event.window.data2;
 				break;
 			}
 			break;

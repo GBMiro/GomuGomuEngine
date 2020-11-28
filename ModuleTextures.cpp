@@ -5,8 +5,10 @@
 #include "Leaks.h"
 #include <string>
 
-const GLint filters[] = { GL_LINEAR, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_NEAREST };
-const GLint wrapsModes[] = { GL_CLAMP_TO_BORDER, GL_CLAMP, GL_REPEAT, GL_MIRRORED_REPEAT };
+constexpr GLint minFilters[] = { GL_LINEAR, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_NEAREST };
+constexpr GLint magFilters[] = { GL_LINEAR, GL_NEAREST };
+constexpr GLint wrapsModes[] = { GL_CLAMP_TO_BORDER, GL_CLAMP, GL_REPEAT, GL_MIRRORED_REPEAT };
+
 
 ModuleTextures::ModuleTextures()
 {
@@ -74,7 +76,7 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
-		glGenerateMipmap(texture);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	ilDeleteImages(1, &imageId);
@@ -83,13 +85,13 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 
 void ModuleTextures::setMinFilter(unsigned index, unsigned textureID) const {
 	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filters[index]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilters[index]);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void ModuleTextures::setMagFilter(unsigned index, unsigned textureID) const {
 	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filters[index]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilters[index]);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
