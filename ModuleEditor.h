@@ -4,11 +4,11 @@
 #include "Window.h"
 #include <vector>
 
-class MonitorWindow;
-class ConfigurationWindow;
-class ConsoleWindow;
-class PropertiesWindow;
-class AboutWindow;
+class WindowMonitor;
+class WindowConfiguration;
+class WindowConsole;
+class WindowProperties;
+class WindowAbout;
 
 class ModuleEditor : public Module
 {
@@ -32,11 +32,11 @@ public:
 	void fileDropped(const char* filename) const;
 
 public:
-	MonitorWindow* monitor = nullptr;
-	ConfigurationWindow* configuration = nullptr;
-	ConsoleWindow* console = nullptr;
-	PropertiesWindow* properties = nullptr;
-	AboutWindow* about = nullptr;
+	WindowMonitor* monitor = nullptr;
+	WindowConfiguration* configuration = nullptr;
+	WindowConsole* console = nullptr;
+	WindowProperties* properties = nullptr;
+	WindowAbout* about = nullptr;
 
 private:
 	update_status showMainMenu();

@@ -1,20 +1,21 @@
-#include "PropertiesWindow.h"
+#include "WindowProperties.h"
 #include "Model.h"
 #include "Mesh.h"
 #include "imgui.h"
 #include "Application.h"
 #include "GL/glew.h"
+#include "Leaks.h"
 #include <vector>
 
-PropertiesWindow::PropertiesWindow(std::string name, int windowID) : Window(name, windowID) {
+WindowProperties::WindowProperties(std::string name, int windowID) : Window(name, windowID) {
 
 }
 
-PropertiesWindow::~PropertiesWindow() {
+WindowProperties::~WindowProperties() {
 
 }
 
-void PropertiesWindow::Draw() {
+void WindowProperties::Draw() {
 	if (!active) return;
 	if (!ImGui::Begin(name.c_str(), &active)) {
 		ImGui::End();
@@ -69,7 +70,7 @@ void PropertiesWindow::Draw() {
 	ImGui::End();
 }
 
-void PropertiesWindow::cleanProperties() {
+void WindowProperties::cleanProperties() {
 	textures.clear();
 	meshes.clear();
 }

@@ -5,20 +5,20 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
-#include "MonitorWindow.h"
-#include "ConfigurationWindow.h"
-#include "ConsoleWindow.h"
-#include "PropertiesWindow.h"
-#include "AboutWindow.h"
+#include "WindowMonitor.h"
+#include "WindowConfiguration.h"
+#include "WindowConsole.h"
+#include "WindowProperties.h"
+#include "WindowAbout.h"
 #include "Model.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
-	windows.push_back(monitor = new MonitorWindow("Monitor", 0));
-	windows.push_back(configuration = new ConfigurationWindow("Configuration", 1));
-	windows.push_back(console = new ConsoleWindow("Console", 2));
-	windows.push_back(properties = new PropertiesWindow("Properties", 3));
-	windows.push_back(about = new AboutWindow("About", 3));
+	windows.push_back(monitor = new WindowMonitor("Monitor", 0));
+	windows.push_back(configuration = new WindowConfiguration("Configuration", 1));
+	windows.push_back(console = new WindowConsole("Console", 2));
+	windows.push_back(properties = new WindowProperties("Properties", 3));
+	windows.push_back(about = new WindowAbout("About", 3));
 }
 
 ModuleEditor::~ModuleEditor() {
@@ -53,7 +53,6 @@ update_status ModuleEditor::Update()
 {
 	if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 	Draw();
-	ImGui::ShowDemoWindow();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

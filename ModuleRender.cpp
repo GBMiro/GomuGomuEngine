@@ -100,30 +100,9 @@ bool ModuleRender::Init()
 	unsigned frgId = App->program->compileShader(GL_FRAGMENT_SHADER, frg_shader);
 
 	programId = App->program->createProgram(vtxId, frgId);
-
-	float vtx_data[] = { 
-		0.0f, 0.0f, 0.0f, //v0 pos
-		1.0f, 0.0f, 0.0f, //v1 pos
-		0.5f, 1.0f, 0.0f, //v2 pos
-		0.0f, 0.0f, 0.0f, //v3 pos
-		0.5f, -1.0f, 0.0f, //v4 pos
-		1.0f, 0.0f, 0.0f, //v5 pos
-
-		//Vertex printed counterclock
-
 	
-		0.0f, 0.0f, //v0 textcoord
-		1.0f, 1.0f, //v1 textcoord
-		0.0f, 1.0f, //v2 textcoord
-		0.0f, 0.0f, //v3 textcoord
-		1.0f, 0.0f, //v4 textcoord
-		1.0f, 1.0f //v5 textcoord
-	}; 
-	/*
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
-	text = App->textures->loadTexture("../Resources/Lenna.png");*/
+	RELEASE(vtx_shader);
+	RELEASE(frg_shader);
 
 	App->model->Load("../Resources/Models/BakerHouse.fbx");
 	return true;

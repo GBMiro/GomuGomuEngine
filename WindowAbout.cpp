@@ -1,15 +1,16 @@
-#include "AboutWindow.h"
+#include "WindowAbout.h"
 #include "imgui.h"
+#include "Leaks.h"
 
-AboutWindow::AboutWindow(std::string name, int windowID) : Window(name, windowID)
+WindowAbout::WindowAbout(std::string name, int windowID) : Window(name, windowID)
 {
 }
 
-AboutWindow::~AboutWindow()
+WindowAbout::~WindowAbout()
 {
 }
 
-void AboutWindow::Draw() {
+void WindowAbout::Draw() {
 	if (!active) return;
 	if (!ImGui::Begin(name.c_str(), &active)) {
 		ImGui::End();

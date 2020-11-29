@@ -1,17 +1,18 @@
-#include "ConsoleWindow.h"
+#include "WindowConsole.h"
+#include "Leaks.h"
 
-ConsoleWindow::ConsoleWindow(std::string name, int windowID) : Window(name, windowID)
+WindowConsole::WindowConsole(std::string name, int windowID) : Window(name, windowID)
 {
 	autoScroll = true;
 	buffer.clear();
 }
 
-ConsoleWindow::~ConsoleWindow()
+WindowConsole::~WindowConsole()
 {
     buffer.clear();
 }
 
-void ConsoleWindow::addLog(const char* fmt, ...) IM_FMTARGS(2)  {
+void WindowConsole::addLog(const char* fmt, ...) IM_FMTARGS(2)  {
 
     int old_size = buffer.size();
     va_list args;
@@ -21,7 +22,7 @@ void ConsoleWindow::addLog(const char* fmt, ...) IM_FMTARGS(2)  {
     autoScroll = true;
 }
 
-void ConsoleWindow::Draw() {
+void WindowConsole::Draw() {
     if (!active) return;
     if (!ImGui::Begin(name.c_str(), &active)) {
         ImGui::End();

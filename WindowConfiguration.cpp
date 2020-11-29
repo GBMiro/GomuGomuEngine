@@ -1,4 +1,4 @@
-#include "ConfigurationWindow.h"
+#include "WindowConfiguration.h"
 #include "imgui.h"
 #include "Application.h"
 #include "ModuleWindow.h"
@@ -9,19 +9,20 @@
 #include "MathGeoLib/Math/float3.h"
 #include "Point.h"
 #include "GL/glew.h"
+#include "Leaks.h"
 
 constexpr char* filterMinModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
 constexpr char* filterMagModes[] = { "Linear", "Nearest" };
 constexpr char* wrapModes[] = { "Clamp to borde", "Clamp", "Repeat", "Mirrored repeat" };
 
-ConfigurationWindow::ConfigurationWindow(std::string name, int windowID) : Window(name, windowID) {
+WindowConfiguration::WindowConfiguration(std::string name, int windowID) : Window(name, windowID) {
 }
 
-ConfigurationWindow::~ConfigurationWindow()
+WindowConfiguration::~WindowConfiguration()
 {
 }
 
-void ConfigurationWindow::Draw() {
+void WindowConfiguration::Draw() {
 
 	if (!active) return;
 	if (!ImGui::Begin(name.c_str(), &active)) {

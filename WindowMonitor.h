@@ -4,7 +4,7 @@
 
 #define MAX_SIZE 100
 
-class MonitorWindow : public Window {
+class WindowMonitor : public Window {
 
 	struct hwInfo {
 		unsigned cpuCores;
@@ -13,8 +13,8 @@ class MonitorWindow : public Window {
 	};
 
 public:
-	MonitorWindow(std::string name, int windowID);
-	~MonitorWindow();
+	WindowMonitor(std::string name, int windowID);
+	~WindowMonitor();
 
 	void Draw();
 

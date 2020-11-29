@@ -4,11 +4,11 @@
 
 class Mesh;
 
-class PropertiesWindow : public Window
+class WindowProperties : public Window
 {
 public:
-	PropertiesWindow(std::string name, int windowID);
-	~PropertiesWindow();
+	WindowProperties(std::string name, int windowID);
+	~WindowProperties();
 
 	void Draw();
 	void cleanProperties();

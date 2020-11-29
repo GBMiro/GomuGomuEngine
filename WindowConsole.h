@@ -2,12 +2,12 @@
 #include "Window.h"
 #include "imgui.h"
 
-class ConsoleWindow : public Window
+class WindowConsole : public Window
 {
 
 public:
-	ConsoleWindow(std::string name, int windowID);
-	~ConsoleWindow();
+	WindowConsole(std::string name, int windowID);
+	~WindowConsole();
 
 	void Draw();
 

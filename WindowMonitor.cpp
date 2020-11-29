@@ -1,20 +1,21 @@
-#include "MonitorWindow.h"
+#include "WindowMonitor.h"
 #include "imgui.h"
 #include "SDL/include/SDL.h"
 #include "GL/glew.h"
 #include "DevIL/include/IL/il.h"
+#include "Leaks.h"
 
 
-MonitorWindow::MonitorWindow(std::string name, int windowID) : Window(name, windowID), fps_log(MAX_SIZE), ms_log(MAX_SIZE) {
+WindowMonitor::WindowMonitor(std::string name, int windowID) : Window(name, windowID), fps_log(MAX_SIZE), ms_log(MAX_SIZE) {
 	hw.cpuCores = SDL_GetCPUCount();
 	hw.cpuCache = SDL_GetCPUCacheLineSize();
 	hw.RAM = SDL_GetSystemRAM() / (float)1024.f;
 }
 
-MonitorWindow::~MonitorWindow() {
+WindowMonitor::~WindowMonitor() {
 }
 
-void MonitorWindow::Draw() {
+void WindowMonitor::Draw() {
 
 	if (!active) return;
 	if (!ImGui::Begin(name.c_str(), &active)) {
@@ -67,7 +68,7 @@ void MonitorWindow::Draw() {
 	ImGui::End();
 }
 
-void MonitorWindow::addData(float deltaTime) {
+void WindowMonitor::addData(float deltaTime) {
 	
 	if (fps_log.size() == MAX_SIZE) {
 		for (unsigned i = 0; i < fps_log.size() - 1; ++i) {

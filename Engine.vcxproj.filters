@@ -161,19 +161,19 @@
     <ClCompile Include="Window.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
-    <ClCompile Include="MonitorWindow.cpp">
+    <ClCompile Include="WindowAbout.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigurationWindow.cpp">
+    <ClCompile Include="WindowConfiguration.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleWindow.cpp">
+    <ClCompile Include="WindowConsole.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
-    <ClCompile Include="PropertiesWindow.cpp">
+    <ClCompile Include="WindowMonitor.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
-    <ClCompile Include="AboutWindow.cpp">
+    <ClCompile Include="WindowProperties.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -478,19 +478,19 @@
     <ClInclude Include="Window.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
-    <ClInclude Include="MonitorWindow.h">
+    <ClInclude Include="WindowAbout.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigurationWindow.h">
+    <ClInclude Include="WindowConfiguration.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleWindow.h">
+    <ClInclude Include="WindowConsole.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
-    <ClInclude Include="PropertiesWindow.h">
+    <ClInclude Include="WindowMonitor.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
-    <ClInclude Include="AboutWindow.h">
+    <ClInclude Include="WindowProperties.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
   </ItemGroup>
