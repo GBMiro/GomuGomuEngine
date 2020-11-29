@@ -82,7 +82,7 @@ bool ModuleRender::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
-/*
+
 	//OpenGL Debugg
 #ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
@@ -91,7 +91,7 @@ bool ModuleRender::Init()
 	glDebugMessageCallback(OurOpenGLErrorFunction, nullptr);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
 #endif // _DEBUG
-*/
+
 
 	char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
 	char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
