@@ -12,7 +12,8 @@ WindowProperties::WindowProperties(std::string name, int windowID) : Window(name
 }
 
 WindowProperties::~WindowProperties() {
-
+	meshes.clear();
+	textures.clear();
 }
 
 void WindowProperties::Draw() {

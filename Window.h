@@ -4,7 +4,7 @@ class Window
 {
 public:
 	Window(std::string name, int windowID);
-	~Window();
+	virtual ~Window();
 
 	virtual void Draw() = 0;
 

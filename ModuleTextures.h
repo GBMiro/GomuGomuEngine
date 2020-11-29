@@ -10,7 +10,7 @@ public:
 
 	bool Init();
 
-	bool cleanUp();
+	bool CleanUp();
 
 	unsigned int loadTexture(const char* path, const char* objectPath);
 

@@ -28,7 +28,7 @@ bool ModuleTextures::Init()
 	return true;
 }
 
-bool ModuleTextures::cleanUp()
+bool ModuleTextures::CleanUp()
 {
 	return true;
 }

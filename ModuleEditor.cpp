@@ -25,6 +25,7 @@ ModuleEditor::~ModuleEditor() {
 	for (unsigned i = 0; i < windows.size(); ++i) {
 		delete windows[i];
 	}
+	windows.clear();
 }
 
 bool ModuleEditor::Init()
@@ -72,7 +73,7 @@ update_status ModuleEditor::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleEditor::cleanUp()
+bool ModuleEditor::CleanUp()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -101,7 +102,7 @@ update_status ModuleEditor::showMainMenu() {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("About")) {
-			if (ImGui::MenuItem("Visit github")) ShellExecuteA(NULL, "open", "https://github.com/GBMiro", NULL, NULL, SW_SHOWNORMAL);
+			if (ImGui::MenuItem("Visit github")) ShellExecuteA(NULL, "open", "https://github.com/GBMiro/GomuGomuEngine", NULL, NULL, SW_SHOWNORMAL);
 			if (ImGui::MenuItem("About GomuGomuEngine", NULL, &about->active));
 			ImGui::EndMenu();
 		}

@@ -24,7 +24,7 @@ public:
 
 	update_status PostUpdate();
 
-	bool cleanUp();
+	bool CleanUp();
 
 	void registerFPS(float deltaTime) const; 
 	void registerLog(const char* log) const; 
