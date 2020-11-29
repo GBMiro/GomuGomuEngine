@@ -11,7 +11,7 @@ ModuleProgram::~ModuleProgram()
 
 }
 
-char* ModuleProgram::loadShaderSource(const char* filename) {
+char* ModuleProgram::loadShaderSource(const char* filename) const {
     char* data = nullptr;
     FILE* file = nullptr;
     fopen_s(&file, filename, "rb");
@@ -32,8 +32,7 @@ char* ModuleProgram::loadShaderSource(const char* filename) {
     return data;
 }
 
-unsigned ModuleProgram::compileShader(unsigned type, const char* source)
-{
+unsigned ModuleProgram::compileShader(unsigned type, const char* source) const {
     unsigned shaderId = glCreateShader(type);
     glShaderSource(shaderId, 1, &source, 0);
     glCompileShader(shaderId);
@@ -55,8 +54,7 @@ unsigned ModuleProgram::compileShader(unsigned type, const char* source)
     return shaderId;
 }
 
-unsigned ModuleProgram::createProgram(unsigned vtx_shader, unsigned frg_shader)
-{
+unsigned ModuleProgram::createProgram(unsigned vtx_shader, unsigned frg_shader) const {
     unsigned programId = glCreateProgram();
     glAttachShader(programId, vtx_shader);
     glAttachShader(programId, frg_shader);

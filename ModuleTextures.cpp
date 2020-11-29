@@ -49,15 +49,15 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 			LOG("Texture loaded from %s", fullPath.c_str());
 		}
 		else {
-			std::string myPath("../Resources/Textures/");
+			std::string myPath("./Resources/Textures/");
 			myPath = myPath + std::string(path);
 			success = ilLoadImage(myPath.c_str());
 			if (success) {
 				LOG("Texture loaded from %s", myPath.c_str());
 			}
 			else {
-				LOG("Texture not found. Loading default texture...")
-				success = ilLoadImage("../Resources/Textures/black.jpg");
+				LOG("Texture not found. Be sure to not load a texture with an accent in the path. Loading default texture...")
+				success = ilLoadImage("./Resources/Textures/black.jpg");
 			}
 		}
 	}

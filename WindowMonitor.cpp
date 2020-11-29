@@ -36,13 +36,13 @@ void WindowMonitor::Draw() {
 		glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &availableKb);
 
 		ImGui::Text("VRAM Budget: "); ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f", budgetKb / (float) 1024.0f);
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f Mb", budgetKb / (float) 1024.0f);
 		ImGui::Text("VRAM Usage: "); ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f", (budgetKb - availableKb) / (float) 1024.0f);
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f Mb", (budgetKb - availableKb) / (float) 1024.0f);
 		ImGui::Text("VRAM Available: "); ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f", availableKb / (float)1024.0f);
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f Mb", availableKb / (float)1024.0f);
 		ImGui::Text("VRAM Reserved: "); ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Calculate");
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%0.2f Mb", float(0.0));
 	
 	}
 	if (ImGui::CollapsingHeader("Metrics graph", ImGuiTreeNodeFlags_DefaultOpen)) {

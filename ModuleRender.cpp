@@ -93,8 +93,8 @@ bool ModuleRender::Init()
 #endif // _DEBUG
 */
 
-	char* vtx_shader = App->program->loadShaderSource("../Shaders/default_vertex.glsl");
-	char* frg_shader = App->program->loadShaderSource("../Shaders/default_fragment.glsl");
+	char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
+	char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
 
 	unsigned vtxId = App->program->compileShader(GL_VERTEX_SHADER, vtx_shader);
 	unsigned frgId = App->program->compileShader(GL_FRAGMENT_SHADER, frg_shader);
@@ -104,7 +104,7 @@ bool ModuleRender::Init()
 	RELEASE(vtx_shader);
 	RELEASE(frg_shader);
 
-	App->model->Load("../Resources/Models/BakerHouse.fbx");
+	App->model->Load("./Resources/Models/BakerHouse.fbx");
 	return true;
 }
 
@@ -153,18 +153,12 @@ void ModuleRender::WindowResized(unsigned width, unsigned height)
 {
 }
 
-void* ModuleRender::getContext()
-{
+void* ModuleRender::getContext() const {
 	return context;
 }
 
-unsigned ModuleRender::getProgram()
-{
+unsigned ModuleRender::getProgram() const {
 	return programId;
-}
-
-void ModuleRender::setGridColor(const float* color) {
-	gridColor = float3(color[0], color[1], color[2]);
 }
 
 void ModuleRender::getGridColor(float* color) const
@@ -174,12 +168,18 @@ void ModuleRender::getGridColor(float* color) const
 	color[2] = gridColor.z;
 }
 
-void ModuleRender::setBackgroundColor(const float* color) {
-	backgroundColor = float3(color[0], color[1], color[2]);
-}
-
 void ModuleRender::getBackgroundColor(float* color) const {
 	color[0] = backgroundColor.x;
 	color[1] = backgroundColor.y;
 	color[2] = backgroundColor.z;
 }
+
+void ModuleRender::setGridColor(const float* color) {
+	gridColor = float3(color[0], color[1], color[2]);
+}
+
+void ModuleRender::setBackgroundColor(const float* color) {
+	backgroundColor = float3(color[0], color[1], color[2]);
+}
+
+

@@ -47,10 +47,9 @@ void Model::LoadMaterials(const aiScene* scene, const char* filename)
 	for (unsigned i = 0; i < scene->mNumMaterials; ++i) {
 		if (scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
 			materials.push_back(App->textures->loadTexture(textureFileName.data, filename));
-			LOG("Textures loaded");
 		}
 		else {
-			LOG("No diffuse texture found. Loading my own texture...");
+			LOG("No diffuse texture found in the fbx. Loading my own texture...");
 			materials.push_back(App->textures->loadTexture("black.jpg", filename));
 		}
 	}
@@ -59,22 +58,46 @@ void Model::LoadMaterials(const aiScene* scene, const char* filename)
 void Model::LoadMeshes(const aiScene* scene)
 {
 	meshes.reserve(scene->mNumMeshes);
+
+	float xMax, xMin, yMax, yMin, zMax, zMin;
+	xMax = xMin = yMax = yMin = zMax = zMin = 0;
+
 	for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
 		aiMesh* currentMesh = scene->mMeshes[i];
 		Mesh* mesh = new Mesh();
 		mesh->LoadVBO(currentMesh);
 		mesh->LoadEBO(currentMesh);
 		mesh->CreateVAO();
-		mesh->boundingBox.xMax = currentMesh->mAABB.mMax.x;
-		mesh->boundingBox.yMax = currentMesh->mAABB.mMax.y;
-		mesh->boundingBox.zMax = currentMesh->mAABB.mMax.z;
-		mesh->boundingBox.xMin = currentMesh->mAABB.mMin.x;
-		mesh->boundingBox.yMin = currentMesh->mAABB.mMin.y;
-		mesh->boundingBox.zMin = currentMesh->mAABB.mMin.z;
 		meshes.push_back(mesh);
+
+		if (i == 0) {
+			xMax = currentMesh->mAABB.mMax.x;
+			xMin = currentMesh->mAABB.mMin.x;
+			yMax = currentMesh->mAABB.mMax.y;
+			yMin = currentMesh->mAABB.mMin.y;
+			zMax = currentMesh->mAABB.mMax.z;
+			zMin = currentMesh->mAABB.mMin.z;
+		}
+		else {
+			if (xMax < currentMesh->mAABB.mMax.x) xMax = currentMesh->mAABB.mMax.x;
+			if (xMin > currentMesh->mAABB.mMin.x) xMin = currentMesh->mAABB.mMin.x;
+			if (yMax < currentMesh->mAABB.mMax.y) yMax = currentMesh->mAABB.mMax.y;
+			if (yMin > currentMesh->mAABB.mMin.y) yMin = currentMesh->mAABB.mMin.y;
+			if (zMax < currentMesh->mAABB.mMax.z) zMax = currentMesh->mAABB.mMax.z;
+			if (zMin > currentMesh->mAABB.mMin.z) zMin = currentMesh->mAABB.mMin.z;
+		}	
 	}
+	boundingBox.maxPoint = vec(xMax, yMax, zMax);
+	boundingBox.minPoint = vec(xMin, yMin, zMin);
+
+	vec center = boundingBox.CenterPoint();
+	modelCenter.x = center.x;
+	modelCenter.y = center.y;
+	modelCenter.z = center.z;
+
+	sphereRadius = (boundingBox.MinimalEnclosingSphere()).Diameter() / (float)2.0f;
+
 	LOG("Meshes loaded");
-	calculateModelCenter();
 }
 
 void Model::Draw()  {
@@ -87,8 +110,10 @@ bool Model::CleanUp() {
 
 	LOG("Removing model...");
 	deleteMeshes();
+	LOG("Meshes removed...")
 	deleteTextures();
-	LOG("Model removed");
+	LOG("Textures removed...")
+	LOG("Model removed!");
 
 	return true;
 }
@@ -123,45 +148,6 @@ void Model::setWrapMode(unsigned index) const {
 	}
 }
 
-void Model::calculateModelCenter() {
-	AABB modelAABB = AABB();
-	float xMax, xMin, yMax, yMin, zMax, zMin;
-	xMax = xMin = yMax = yMin = zMax = zMin = 0;
-	if (meshes.size() >= 1) {
-		xMax = meshes[0]->boundingBox.xMax;
-		xMin = meshes[0]->boundingBox.xMin;
-		yMax = meshes[0]->boundingBox.yMax;
-		yMin = meshes[0]->boundingBox.yMin;
-		zMax = meshes[0]->boundingBox.zMax;
-		zMin = meshes[0]->boundingBox.zMin;
-
-		for (unsigned i = 1; i < meshes.size(); ++i) {
-			if (xMax < meshes[i]->boundingBox.xMax) xMax = meshes[i]->boundingBox.xMax;
-			if (xMin > meshes[i]->boundingBox.xMin) xMin = meshes[i]->boundingBox.xMin;
-			if (yMax < meshes[i]->boundingBox.yMax) yMax = meshes[i]->boundingBox.yMax;
-			if (yMin > meshes[i]->boundingBox.yMin) yMin = meshes[i]->boundingBox.yMin;
-			if (zMax < meshes[i]->boundingBox.zMax) zMax = meshes[i]->boundingBox.zMax;
-			if (zMin > meshes[i]->boundingBox.zMin) zMin = meshes[i]->boundingBox.zMin;
-		}
-
-		modelAABB.maxPoint = vec(xMax, yMax, zMax);
-		modelAABB.minPoint = vec(xMin, yMin, zMin);
-
-		vec center = modelAABB.CenterPoint();
-		modelCenter.x = center.x;
-		modelCenter.y = center.y;
-		modelCenter.z = center.z;
-
-		sphereRadius = (modelAABB.MinimalEnclosingSphere()).Diameter() / (float)2.0f;
-	}
-	else {
-		modelCenter = float3(0, 0, 0);
-		sphereRadius = 0;
-	}
-	
-	
-}
-
 void Model::loadNewTexture(const char* textureName, const char* filename) {
 	deleteTextures();
 	materials.reserve(1);
@@ -176,11 +162,11 @@ void Model::processFile(const char* filename) {
 	int posTextureName = file.find_last_of("\\/") + 1;
 	std::string extension = file.substr(posExtension);
 	std::string textureName = file.substr(posTextureName);
-	if (extension == "fbx") {
+	if (_stricmp(extension.c_str(), "fbx") == 0) {
 		CleanUp();
 		Load(filename);
 	}
-	else if (extension == "dds" || extension == "png" || extension == "jpg") loadNewTexture(textureName.c_str(), filename);
+	else if (_stricmp(extension.c_str(), "dds") == 0 || _stricmp(extension.c_str(), "png") == 0 || _stricmp(extension.c_str(), "jpg") == 0) loadNewTexture(textureName.c_str(), filename);
 }
 
 void Model::deleteMeshes() {

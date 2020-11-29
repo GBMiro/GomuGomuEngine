@@ -9,6 +9,9 @@
 #define MaxRotSpeed 30.0f
 #define MaxMovSpeed 10.0f
 #define MaxZoomSpeed 5.0f
+#define MaxZNear 100.0f
+#define MaxZFar 200.0f
+#define MaxFOV 90.0f
 
 class ModuleCamera : public Module
 {

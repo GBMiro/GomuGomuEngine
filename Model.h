@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "assimp/scene.h"
 #include "MathGeoLib/Math/float3.h"
+#include "MathGeoLib/Geometry/AABB.h"
 #include <vector>
 
 using namespace Assimp;
@@ -34,7 +35,6 @@ public:
 	void deleteTextures();
 
 private:
-	void calculateModelCenter();
 	void loadNewTexture(const char* textureName, const char* filename);
 
 public:
@@ -42,6 +42,7 @@ public:
 	float sphereRadius;
 
 private:
+	AABB boundingBox;
 	std::vector<unsigned> materials;
 	std::vector<Mesh*> meshes;
 };

@@ -116,16 +116,16 @@ void ModuleEditor::Draw() {
 	}
 }
 
-void ModuleEditor::registerFPS(float deltaTime) {
+void ModuleEditor::registerFPS(float deltaTime) const {
 	monitor->addData(deltaTime);
 }
 
-void ModuleEditor::registerLog(const char* log) {
+void ModuleEditor::registerLog(const char* log) const {
 
 	console->addLog(log);
 }
 
-void ModuleEditor::cleanProperties() {
+void ModuleEditor::cleanProperties() const {
 	properties->cleanProperties();
 }
 

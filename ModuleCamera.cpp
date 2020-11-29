@@ -140,12 +140,14 @@ void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float came
 {
 	float movementSpeed = speed * deltaTime;
 	if (App->input->GetKey(SDL_SCANCODE_F)) setCameraPosition();
-	if (App->input->GetKey(SDL_SCANCODE_W) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.Front() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_S) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.Front() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_A) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - frustum.WorldRight() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_D) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + frustum.WorldRight() * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_Q) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() + float3::unitY * movementSpeed);
-	if (App->input->GetKey(SDL_SCANCODE_E) && App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) frustum.SetPos(frustum.Pos() - float3::unitY * movementSpeed);
+	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
+		if (App->input->GetKey(SDL_SCANCODE_W)) frustum.SetPos(frustum.Pos() + frustum.Front() * movementSpeed);
+		if (App->input->GetKey(SDL_SCANCODE_S)) frustum.SetPos(frustum.Pos() - frustum.Front() * movementSpeed);
+		if (App->input->GetKey(SDL_SCANCODE_A)) frustum.SetPos(frustum.Pos() - frustum.WorldRight() * movementSpeed);
+		if (App->input->GetKey(SDL_SCANCODE_D)) frustum.SetPos(frustum.Pos() + frustum.WorldRight() * movementSpeed);
+		if (App->input->GetKey(SDL_SCANCODE_Q)) frustum.SetPos(frustum.Pos() + float3::unitY * movementSpeed);
+		if (App->input->GetKey(SDL_SCANCODE_E)) frustum.SetPos(frustum.Pos() - float3::unitY * movementSpeed);
+	}
 
 	//Rotation
 	if (App->input->GetKey(SDL_SCANCODE_LEFT)) {
@@ -219,7 +221,7 @@ void ModuleCamera::processMouseInput(float deltaTime)
 	if (wheelYOffset != 0) {
 		fov -= wheelYOffset * zoomSpeed;
 		if (fov < 1.0f) fov = 1.0f;
-		if (fov > 179.0f) fov = 179.0f;
+		if (fov > MaxFOV) fov = MaxFOV;
 		SetFOV(fov);
 	}
 }

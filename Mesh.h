@@ -4,14 +4,6 @@
 
 class Mesh
 {
-	struct mAABB {
-		float xMin;
-		float xMax;
-		float yMin;
-		float yMax;
-		float zMin;
-		float zMax;
-	};
 
 public:
 	Mesh();
@@ -27,9 +19,6 @@ public:
 	int getMaterialIndex() const { return materialIndex; }
 
 	int getNumIndices() const { return numIndices; }
-
-public:
-	mAABB boundingBox;
 
 private:
 	unsigned int VBO;

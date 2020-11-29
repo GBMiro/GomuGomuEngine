@@ -58,9 +58,9 @@ void WindowConfiguration::Draw() {
 		if (ImGui::SliderFloat("Rotation Speed", &App->camera->angleSpeed, 1.0f, MaxRotSpeed));
 		if (ImGui::SliderFloat("Zoom Speed", &App->camera->zoomSpeed, 1.0f, MaxZoomSpeed));
 		ImGui::NewLine();
-		if (ImGui::SliderFloat("zNear", &zNear, 0.1f, 100.0f)) App->camera->setPlanes(zNear, zFar);
-		if (ImGui::SliderFloat("zFar", &zFar, 0.1f, 200.0f)) App->camera->setPlanes(zNear, zFar);
-		if (ImGui::SliderFloat("FOV", &fov, 1.0f, 179.0f)) App->camera->SetFOV(fov);
+		if (ImGui::SliderFloat("zNear", &zNear, 0.1f, MaxZNear)) App->camera->setPlanes(zNear, zFar);
+		if (ImGui::SliderFloat("zFar", &zFar, 0.1f, MaxZFar)) App->camera->setPlanes(zNear, zFar);
+		if (ImGui::SliderFloat("FOV", &fov, 1.0f, MaxFOV)) App->camera->SetFOV(fov);
 		if (ImGui::InputFloat("Aspect Ratio", &aspectRatio, 0.0f, 0.0f, "%.2f", ImGuiInputTextFlags_ReadOnly));
 	}
 	if (ImGui::CollapsingHeader("Input")) {

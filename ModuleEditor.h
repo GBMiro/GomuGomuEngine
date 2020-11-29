@@ -26,9 +26,9 @@ public:
 
 	bool cleanUp();
 
-	void registerFPS(float deltaTime); // Make function const
-	void registerLog(const char* log); // Make function const
-	void cleanProperties();
+	void registerFPS(float deltaTime) const; 
+	void registerLog(const char* log) const; 
+	void cleanProperties() const;
 	void fileDropped(const char* filename) const;
 
 public:

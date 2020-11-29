@@ -21,13 +21,13 @@ public:
 	bool CleanUp();
 	void WindowResized(unsigned width, unsigned height);
 	
-	void* getContext();
-	unsigned getProgram();
+	void* getContext() const;
+	unsigned getProgram() const;
+	void getGridColor(float* color) const;
+	void getBackgroundColor(float* color) const;
 
 	void setGridColor(const float* color);
-	void getGridColor(float* color) const;
 	void setBackgroundColor(const float* color);
-	void getBackgroundColor(float* color) const;
 
 private:
 	void* context;
