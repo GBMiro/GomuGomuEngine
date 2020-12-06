@@ -10,6 +10,7 @@
 #include "WindowConsole.h"
 #include "WindowProperties.h"
 #include "WindowAbout.h"
+#include "WindowGameObjectHierarchy.h"
 #include "Model.h"
 #include "Leaks.h"
 
@@ -18,7 +19,8 @@ ModuleEditor::ModuleEditor() {
 	windows.push_back(configuration = new WindowConfiguration("Configuration", 1));
 	windows.push_back(console = new WindowConsole("Console", 2));
 	windows.push_back(properties = new WindowProperties("Properties", 3));
-	windows.push_back(about = new WindowAbout("About", 3));
+	windows.push_back(about = new WindowAbout("About", 4));
+	windows.push_back(hierarchy = new WindowGameObjectHierarchy("hierarchy", 5));
 }
 
 ModuleEditor::~ModuleEditor() {
@@ -52,6 +54,7 @@ update_status ModuleEditor::PreUpdate()
 
 update_status ModuleEditor::Update()
 {
+
 	if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 	Draw();
 	ImGui::Render();
@@ -84,9 +87,6 @@ bool ModuleEditor::CleanUp()
 
 update_status ModuleEditor::showMainMenu() {
 
-	static bool showConfiguration = true;
-	static bool showMetricsWindow, showLogWindow, showPropertiesWindow = false;
-
 	update_status keepGoing = UPDATE_CONTINUE;
 
 	if (ImGui::BeginMainMenuBar()) {
@@ -99,6 +99,7 @@ update_status ModuleEditor::showMainMenu() {
 			if (ImGui::MenuItem("Log", NULL, &console->active));
 			if (ImGui::MenuItem("Configuration", NULL, &configuration->active));
 			if (ImGui::MenuItem("Properties", NULL, &properties->active));
+			if (ImGui::MenuItem("Heriarchy", NULL, &hierarchy->active));
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("About")) {

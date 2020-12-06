@@ -13,6 +13,7 @@ class ModuleProgram;
 class ModuleEditor;
 class ModuleDebugDraw;
 class ModuleTextures;
+class ModuleScene;
 class Model;
 
 class Application
@@ -35,6 +36,7 @@ public:
 	ModuleEditor* editor = nullptr;
 	ModuleDebugDraw* debugDraw = nullptr;
 	ModuleTextures* textures = nullptr;
+	ModuleScene* scene = nullptr;
 	Model* model = nullptr;
 
 	float deltaTime;

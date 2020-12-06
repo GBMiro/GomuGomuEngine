@@ -137,6 +137,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentMeshRenderer.h" />
+    <ClInclude Include="ComponentTransform.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="WindowAbout.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="WindowConfiguration.h" />
@@ -248,12 +253,18 @@
     <ClInclude Include="ModuleRender.h" />
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="ModuleWindow.h" />
+    <ClInclude Include="WindowGameObjectHierarchy.h" />
     <ClInclude Include="WindowMonitor.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="WindowProperties.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentMeshRenderer.cpp" />
+    <ClCompile Include="ComponentTransform.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="WindowAbout.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="WindowConfiguration.cpp" />
@@ -318,11 +329,14 @@
     <ClCompile Include="ModuleRender.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
+    <ClCompile Include="WindowGameObjectHierarchy.cpp" />
     <ClCompile Include="WindowMonitor.cpp" />
     <ClCompile Include="WindowProperties.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Game\Shaders\default_fragment.glsl" />
+    <None Include="Game\Shaders\default_vertex.glsl" />
     <None Include="MathGeoLib\Geometry\KDTree.inl" />
     <None Include="MathGeoLib\Geometry\QuadTree.inl" />
     <None Include="MathGeoLib\Geometry\TriangleMesh_IntersectRay_AVX.inl" />
@@ -330,8 +344,6 @@
     <None Include="MathGeoLib\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\Math\float2.inl" />
     <None Include="MathGeoLib\Math\Matrix.inl" />
-    <None Include="Shaders\default_fragment.glsl" />
-    <None Include="Shaders\default_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -176,6 +176,20 @@
     <ClCompile Include="WindowProperties.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentMeshRenderer.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTransform.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="WindowGameObjectHierarchy.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -493,6 +507,20 @@
     <ClInclude Include="WindowProperties.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentMeshRenderer.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTransform.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScene.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="WindowGameObjectHierarchy.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">
@@ -515,6 +543,9 @@
     </Filter>
     <Filter Include="WindowUI">
       <UniqueIdentifier>{87d6b671-9fec-469f-ad7e-acdf86359ed0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{76e8b024-5128-4ceb-a282-e71a19644a39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -539,10 +570,10 @@
     <None Include="MathGeoLib\Geometry\TriangleMesh_IntersectRay_SSE.inl">
       <Filter>MathGeoLib</Filter>
     </None>
-    <None Include="Shaders\default_fragment.glsl">
+    <None Include="Game\Shaders\default_fragment.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\default_vertex.glsl">
+    <None Include="Game\Shaders\default_vertex.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

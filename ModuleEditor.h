@@ -9,6 +9,7 @@ class WindowConfiguration;
 class WindowConsole;
 class WindowProperties;
 class WindowAbout;
+class WindowGameObjectHierarchy;
 
 class ModuleEditor : public Module
 {
@@ -37,6 +38,7 @@ public:
 	WindowConsole* console = nullptr;
 	WindowProperties* properties = nullptr;
 	WindowAbout* about = nullptr;
+	WindowGameObjectHierarchy* hierarchy = nullptr;
 
 private:
 	update_status showMainMenu();

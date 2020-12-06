@@ -104,7 +104,7 @@ bool ModuleRender::Init()
 	RELEASE(vtx_shader);
 	RELEASE(frg_shader);
 
-	App->model->Load("./Resources/Models/BakerHouse.fbx");
+	//App->model->Load("./Resources/Models/BakerHouse.fbx");
 	return true;
 }
 
@@ -130,7 +130,7 @@ update_status ModuleRender::Update()
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	App->debugDraw->Draw(view, proj, w, h);
 
-	App->model->Draw();
+	//App->model->Draw();
 	return UPDATE_CONTINUE;
 }
 
