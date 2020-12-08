@@ -12,6 +12,13 @@ public:
 
 	void Draw();
 
+	GameObject* GetGameObjectSelected() const { return gameObjectSelected; }
+
+private:
+
 	void DrawGameObjectHierarchy(GameObject* gameObject);
+
+public:
+	GameObject* gameObjectSelected = nullptr;
 };
 

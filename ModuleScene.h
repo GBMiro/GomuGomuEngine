@@ -27,6 +27,9 @@ public:
 	void CreateGameObject(const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 
+public:
+	std::vector<unsigned> materials;
+
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 

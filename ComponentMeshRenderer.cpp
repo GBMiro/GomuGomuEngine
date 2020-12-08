@@ -5,6 +5,8 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
+#include "ModuleScene.h"
+#include "GameObject.h"
 #include "Leaks.h"
 
 ComponentMeshRenderer::ComponentMeshRenderer(ComponentType type, const aiMesh* mesh) : Component(type) {
@@ -103,17 +105,17 @@ void ComponentMeshRenderer::Draw() {
 	unsigned program = App->renderer->getProgram();
 	const float4x4& view = App->camera->getViewMatrix();
 	const float4x4& proj = App->camera->getProjectionMatrix();
-	float4x4 model = float4x4::identity;
+	float4x4 model = parent->globalTransform;
 
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, (const float*)&model);
 	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, (const float*)&view);
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*)&proj);
-	/*
+	
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, modelTextures[materialIndex]);
+	glBindTexture(GL_TEXTURE_2D, App->scene->materials[materialIndex]);
 	glUniform1i(glGetUniformLocation(program, "diffuse"), 0);
-	*/
+	
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);

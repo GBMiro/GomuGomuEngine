@@ -1,10 +1,14 @@
 #include "WindowProperties.h"
+#include "WindowGameObjectHierarchy.h"
+#include "GameObject.h"
 #include "Model.h"
+#include "ModuleEditor.h"
 #include "Mesh.h"
 #include "imgui.h"
 #include "Application.h"
 #include "GL/glew.h"
 #include "Leaks.h"
+#include "ComponentTransform.h"
 #include <vector>
 
 WindowProperties::WindowProperties(std::string name, int windowID) : Window(name, windowID) {
@@ -22,14 +26,13 @@ void WindowProperties::Draw() {
 		ImGui::End();
 		return;
 	}
-	if (ImGui::CollapsingHeader("Transformations")) {
-		static float3 position = float3(0, 0, 0);
-		static float3 rotation = float3(0, 0, 0);
-		static float3 scale = float3(1, 1, 1);
-		if (ImGui::InputFloat3("Position", &position[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
-		if (ImGui::InputFloat3("Rotation", &rotation[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
-		if (ImGui::InputFloat3("Scale", &scale[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
+	GameObject* gameObjectSelected = App->editor->hierarchy->GetGameObjectSelected();
+	if (gameObjectSelected) {
+		for (std::vector<Component*>::const_iterator it = gameObjectSelected->components.begin(); it != gameObjectSelected->components.end(); ++it) {
+			(*it)->DrawOnEditor();
+		}
 	}
+	//All this goes to DrawOnEditor for each component
 	if (ImGui::CollapsingHeader("Geometry")) {
 		if (meshes.size() == 0) App->model->getMeshes(meshes);
 		if (meshes.size() > 0) {

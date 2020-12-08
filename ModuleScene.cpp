@@ -3,6 +3,8 @@
 #include "assimp/scene.h"
 #include "assimp/cimport.h"
 #include "assimp/postprocess.h"
+#include "Application.h"
+#include "ModuleTextures.h"
 #include "Leaks.h"
 
 ModuleScene::ModuleScene() {
@@ -11,9 +13,6 @@ ModuleScene::ModuleScene() {
 }
 
 ModuleScene::~ModuleScene() {
-	for (std::vector<GameObject*>::iterator it = root->childs.begin(); it != root->childs.end(); ++it) {
-		RELEASE(*it);
-	}
 
 	RELEASE(root);
 }
@@ -29,6 +28,9 @@ bool ModuleScene::Init() {
 }
 
 update_status ModuleScene::PreUpdate() {
+	for (std::vector<GameObject*>::iterator it = root->childs.begin(); it != root->childs.end(); ++it) {
+		(*it)->UpdateGameObjectsTransform(root->globalTransform);
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -64,6 +66,18 @@ void ModuleScene::AddObject(const char* path) {
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 	if (scene) {
 		CreateGameObject(scene, scene->mRootNode, root);
+		aiString textureFileName;
+		materials.reserve(scene->mNumMaterials);
+
+		for (unsigned i = 0; i < scene->mNumMaterials; ++i) {
+			if (scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
+				materials.push_back(App->textures->loadTexture(textureFileName.data, path));
+			}
+			else {
+				LOG("No diffuse texture found in the fbx. Loading my own texture...");
+				materials.push_back(App->textures->loadTexture("black.jpg", path));
+			}
+		}
 	}
 
 }

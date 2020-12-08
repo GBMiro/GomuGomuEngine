@@ -27,21 +27,22 @@ void WindowGameObjectHierarchy::Draw() {
 }
 
 void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
-	ImGuiTreeNodeFlags	node_flags;
-	if (gameObject->childs.size() > 0) {
-		node_flags = NULL;
-		bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)gameObject, node_flags, "%s", gameObject->GetName());
-		if (node_open) {
+	ImGuiTreeNodeFlags	node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick ;
+	if (gameObject->childs.size() == 0) node_flags |= ImGuiTreeNodeFlags_Leaf;
 
-			for (std::vector<GameObject*>::const_iterator it = gameObject->childs.begin(); it != gameObject->childs.end(); ++it) {
-				DrawGameObjectHierarchy(*it);
-			}
-			ImGui::TreePop();
+	if (gameObjectSelected == gameObject) {
+		node_flags |= ImGuiTreeNodeFlags_Selected;
+	}
+
+	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), node_flags);
+
+	if (ImGui::IsItemClicked())	gameObjectSelected = gameObject;
+
+	if (node_open) {
+
+		for (std::vector<GameObject*>::const_iterator it = gameObject->childs.begin(); it != gameObject->childs.end(); ++it) {
+			DrawGameObjectHierarchy(*it);
 		}
+		ImGui::TreePop();
 	}
-	else {
-		node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-		ImGui::TreeNodeEx((void*)(intptr_t)gameObject, node_flags, "%s", gameObject->GetName());
-	}
-
 }
