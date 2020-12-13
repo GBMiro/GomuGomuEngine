@@ -12,5 +12,6 @@ public:
 	std::string name;
 	bool active;
 	int windowID;
+	int flags;
 };
 

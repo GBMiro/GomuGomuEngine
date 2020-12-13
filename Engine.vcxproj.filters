@@ -190,6 +190,9 @@
     <ClCompile Include="WindowGameObjectHierarchy.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
+    <ClCompile Include="WindowScene.cpp">
+      <Filter>WindowUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -519,6 +522,9 @@
     <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="WindowGameObjectHierarchy.h">
+      <Filter>WindowUI</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowScene.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
   </ItemGroup>

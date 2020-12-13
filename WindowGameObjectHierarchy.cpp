@@ -27,14 +27,14 @@ void WindowGameObjectHierarchy::Draw() {
 }
 
 void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
-	ImGuiTreeNodeFlags	node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick ;
-	if (gameObject->childs.size() == 0) node_flags |= ImGuiTreeNodeFlags_Leaf;
+	ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick ;
+	if (gameObject->childs.size() == 0) nodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
 	if (gameObjectSelected == gameObject) {
-		node_flags |= ImGuiTreeNodeFlags_Selected;
+		nodeFlags |= ImGuiTreeNodeFlags_Selected;
 	}
 
-	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), node_flags);
+	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags);
 
 	if (ImGui::IsItemClicked())	gameObjectSelected = gameObject;
 

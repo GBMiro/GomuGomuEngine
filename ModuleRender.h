@@ -25,6 +25,7 @@ public:
 	unsigned getProgram() const;
 	void getGridColor(float* color) const;
 	void getBackgroundColor(float* color) const;
+	unsigned int getFrameTexture() const { return textureColorbuffer; }
 
 	void setGridColor(const float* color);
 	void setBackgroundColor(const float* color);
@@ -34,4 +35,7 @@ private:
 	unsigned programId;
 	float3 gridColor;
 	float3 backgroundColor;
+	unsigned int framebuffer;
+	unsigned int textureColorbuffer;
+	unsigned int rbo;
 };

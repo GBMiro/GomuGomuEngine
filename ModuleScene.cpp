@@ -18,7 +18,7 @@ ModuleScene::~ModuleScene() {
 }
 
 bool ModuleScene::Init() {
-	AddObject("./Resources/Models/BakerHouse.fbx");
+	
 	//AddObject("./Resources/Models/Fox.fbx");
 	//AddObject("./Resources/Models/Crow.fbx");
 	//AddObject("./Resources/Models/Sword.fbx");

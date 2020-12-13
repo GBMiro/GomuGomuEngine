@@ -4,6 +4,7 @@
 #include "ModuleEditor.h"
 #include "ModuleCamera.h"
 #include "ModuleWindow.h"
+#include "ModuleRender.h"
 #include "Model.h"
 #include "SDL/include/SDL.h"
 #include "backends/imgui_impl_sdl.h"
@@ -89,7 +90,7 @@ update_status ModuleInput::PreUpdate()
 	{
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		ImGuiIO& io = ImGui::GetIO();
-		if (io.WantCaptureMouse) return UPDATE_CONTINUE;
+		if (io.WantCaptureMouse && !App->editor->GetGameWindowStatus()) return UPDATE_CONTINUE;
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -120,9 +121,11 @@ update_status ModuleInput::PreUpdate()
 				windowEvents[WE_SHOW] = true;
 				break;
 			case SDL_WINDOWEVENT_RESIZED:
-				App->camera->SetAspectRatio(event.window.data1/(float)event.window.data2);
+				//App->camera->SetAspectRatio(event.window.data1/(float)event.window.data2);
 				App->window->width = event.window.data1;
 				App->window->height = event.window.data2;
+				App->renderer->WindowResized(App->window->width, App->window->height);
+				LOG("Input: %d,    %d", App->window->width, App->window->height);
 				break;
 			}
 			break;

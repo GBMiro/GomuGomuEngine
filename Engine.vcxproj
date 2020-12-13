@@ -258,6 +258,7 @@
     <ClInclude Include="Point.h" />
     <ClInclude Include="WindowProperties.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WindowScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
@@ -333,6 +334,7 @@
     <ClCompile Include="WindowMonitor.cpp" />
     <ClCompile Include="WindowProperties.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WindowScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Game\Shaders\default_fragment.glsl" />

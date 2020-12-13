@@ -82,11 +82,11 @@ void ModuleWindow::setFlag(SDL_WindowFlags flag, bool state)
 		case SDL_WINDOW_FULLSCREEN_DESKTOP:
 			if (state) {
 				SDL_SetWindowFullscreen(window, flag);
-				App->camera->SetAspectRatio(desktopSize.w / (float)desktopSize.h);
+				//App->camera->SetAspectRatio(desktopSize.w / (float)desktopSize.h);
 			}
 			else {
 				SDL_SetWindowFullscreen(window, 0);
-				App->camera->SetAspectRatio(width / (float)height);
+				//App->camera->SetAspectRatio(width / (float)height);
 			}
 			break;
 		case SDL_WINDOW_RESIZABLE:
@@ -107,7 +107,7 @@ void ModuleWindow::setBrightness(float brightness) {
 
 void ModuleWindow::setWindowSize(int width, int height) {
 	SDL_SetWindowSize(window, width, height);
-	App->camera->SetAspectRatio(width / (float)height);
+	//App->camera->SetAspectRatio(width / (float)height);
 	this->width = width;
 	this->height = height;
 }

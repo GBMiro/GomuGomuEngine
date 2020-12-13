@@ -10,6 +10,7 @@ class WindowConsole;
 class WindowProperties;
 class WindowAbout;
 class WindowGameObjectHierarchy;
+class WindowScene;
 
 class ModuleEditor : public Module
 {
@@ -31,6 +32,8 @@ public:
 	void registerLog(const char* log) const; 
 	void cleanProperties() const;
 	void fileDropped(const char* filename) const;
+	void SetGameWindowStatus(bool state) { gameWindowSelectedOrHovered = state; }
+	bool GetGameWindowStatus() const { return gameWindowSelectedOrHovered; }
 
 public:
 	WindowMonitor* monitor = nullptr;
@@ -39,12 +42,12 @@ public:
 	WindowProperties* properties = nullptr;
 	WindowAbout* about = nullptr;
 	WindowGameObjectHierarchy* hierarchy = nullptr;
+	WindowScene* game = nullptr;
 
 private:
 	update_status showMainMenu();
 	void Draw();
 	std::vector<Window*> windows;
-
-	
+	bool gameWindowSelectedOrHovered = false;
 };
 

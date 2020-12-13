@@ -10,6 +10,7 @@
 #include "SDL/include/SDL.h"
 #include "GL/glew.h"
 #include "MathGeoLib/Geometry/Frustum.h"
+#include "ModuleScene.h"
 #include "Model.h"
 #include "Leaks.h"
 
@@ -82,7 +83,7 @@ bool ModuleRender::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
-
+/*
 	//OpenGL Debugg
 #ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
@@ -91,7 +92,7 @@ bool ModuleRender::Init()
 	glDebugMessageCallback(OurOpenGLErrorFunction, nullptr);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
 #endif // _DEBUG
-
+*/
 
 	char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
 	char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
@@ -104,6 +105,29 @@ bool ModuleRender::Init()
 	RELEASE(vtx_shader);
 	RELEASE(frg_shader);
 
+	App->scene->AddObject("./Resources/Models/BakerHouse.fbx");
+
+	
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// create a color attachment texture
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, App->window->width, App->window->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, App->window->width, App->window->height); 
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		LOG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//App->model->Load("./Resources/Models/BakerHouse.fbx");
 	return true;
 }
@@ -115,12 +139,18 @@ update_status ModuleRender::PreUpdate()
 	glViewport(0, 0, w, h);
 	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 0.1f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 0.1f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return UPDATE_CONTINUE;
 }
 
 // Called every draw update
 update_status ModuleRender::Update()
 {
+
 	//OpenGLExercise
 	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
 	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, gridColor);
@@ -129,6 +159,9 @@ update_status ModuleRender::Update()
 	GLsizei h, w;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	App->debugDraw->Draw(view, proj, w, h);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
 
 	//App->model->Draw();
 	return UPDATE_CONTINUE;
@@ -149,8 +182,25 @@ bool ModuleRender::CleanUp()
 	return true;
 }
 
-void ModuleRender::WindowResized(unsigned width, unsigned height)
-{
+void ModuleRender::WindowResized(unsigned width, unsigned height) {
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, App->window->width, App->window->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+	
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, App->window->width, App->window->height); 
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+	
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		LOG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void* ModuleRender::getContext() const {

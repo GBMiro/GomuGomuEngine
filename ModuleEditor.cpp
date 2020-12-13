@@ -11,6 +11,7 @@
 #include "WindowProperties.h"
 #include "WindowAbout.h"
 #include "WindowGameObjectHierarchy.h"
+#include "WindowScene.h"
 #include "Model.h"
 #include "Leaks.h"
 
@@ -20,7 +21,8 @@ ModuleEditor::ModuleEditor() {
 	windows.push_back(console = new WindowConsole("Console", 2));
 	windows.push_back(properties = new WindowProperties("Properties", 3));
 	windows.push_back(about = new WindowAbout("About", 4));
-	windows.push_back(hierarchy = new WindowGameObjectHierarchy("hierarchy", 5));
+	windows.push_back(hierarchy = new WindowGameObjectHierarchy("Hierarchy", 5));
+	windows.push_back(game = new WindowScene("Scene", 6));
 }
 
 ModuleEditor::~ModuleEditor() {
@@ -35,7 +37,6 @@ bool ModuleEditor::Init()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Needed to be able to take windows outside engine
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer->getContext());
 	ImGui_ImplOpenGL3_Init();
 
@@ -54,9 +55,20 @@ update_status ModuleEditor::PreUpdate()
 
 update_status ModuleEditor::Update()
 {
-
-	if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
-	Draw();
+	int windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->GetWorkPos());
+	ImGui::SetNextWindowSize(viewport->GetWorkSize());
+	ImGui::SetNextWindowViewport(viewport->ID);
+	windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	static bool dockSpace = true;
+	if (ImGui::Begin("Docking", &dockSpace, windowFlags)) {
+		ImGui::DockSpace(ImGui::GetID("Docking"));
+		if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
+		Draw();
+	}
+	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -65,14 +77,6 @@ update_status ModuleEditor::Update()
 
 update_status ModuleEditor::PostUpdate()
 {
-	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)	{ // Needed to be able to take windows outside engine
-		SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-		SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-	}
-
 	return UPDATE_CONTINUE;
 }
 
@@ -89,7 +93,7 @@ update_status ModuleEditor::showMainMenu() {
 
 	update_status keepGoing = UPDATE_CONTINUE;
 
-	if (ImGui::BeginMainMenuBar()) {
+	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit")) keepGoing = UPDATE_STOP;
 			ImGui::EndMenu();
@@ -100,6 +104,7 @@ update_status ModuleEditor::showMainMenu() {
 			if (ImGui::MenuItem("Configuration", NULL, &configuration->active));
 			if (ImGui::MenuItem("Properties", NULL, &properties->active));
 			if (ImGui::MenuItem("Heriarchy", NULL, &hierarchy->active));
+			if (ImGui::MenuItem("Scene", NULL, &game->active));
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("About")) {
@@ -107,7 +112,7 @@ update_status ModuleEditor::showMainMenu() {
 			if (ImGui::MenuItem("About GomuGomuEngine", NULL, &about->active));
 			ImGui::EndMenu();
 		}
-		ImGui::EndMainMenuBar();
+		ImGui::EndMenuBar();
 	}
 	return keepGoing;
 }
