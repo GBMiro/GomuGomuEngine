@@ -24,7 +24,7 @@ public:
 
 	void AddObject(const char* path);
 
-	void CreateGameObject(const aiScene* scene, const aiNode* node, GameObject* parent);
+	void CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 
 public:

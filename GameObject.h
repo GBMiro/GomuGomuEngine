@@ -6,6 +6,9 @@
 
 class aiNode;
 class aiMesh;
+class Component;
+class ComponentTransform;
+class ComponentMeshRenderer;
 
 class GameObject {
 
@@ -17,8 +20,8 @@ public:
 
 	void CleanUp();
 
-	Component* CreateTransformComponent(const aiNode* node);
-	Component* CreateMeshRendererComponent(const aiMesh* mesh);
+	ComponentTransform* CreateTransformComponent(const aiNode* node);
+	ComponentMeshRenderer* CreateMeshRendererComponent(const aiMesh* mesh);
 
 	void UpdateGameObjectsTransform(const float4x4& parentTransform);
 

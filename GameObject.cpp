@@ -37,14 +37,14 @@ void GameObject::CleanUp() {
 	}
 }
 
-Component* GameObject::CreateTransformComponent(const aiNode* node) {
-	ComponentTransform* com = new ComponentTransform(TRANSFORM, node);
+ComponentTransform* GameObject::CreateTransformComponent(const aiNode* node) {
+	ComponentTransform* com = new ComponentTransform(TRANSFORM, node, this);
 	com->parent = this;
 	return com;
 }
 
-Component* GameObject::CreateMeshRendererComponent(const aiMesh* mesh) {
-	ComponentMeshRenderer* com = new ComponentMeshRenderer(RENDERER, mesh);
+ComponentMeshRenderer* GameObject::CreateMeshRendererComponent(const aiMesh* mesh) {
+	ComponentMeshRenderer* com = new ComponentMeshRenderer(RENDERER, mesh, this);
 	com->parent = this;
 	return com;
 }

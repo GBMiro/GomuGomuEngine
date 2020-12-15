@@ -5,11 +5,11 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
-#include "ModuleScene.h"
+#include "ModuleTextures.h"
 #include "GameObject.h"
 #include "Leaks.h"
 
-ComponentMeshRenderer::ComponentMeshRenderer(ComponentType type, const aiMesh* mesh) : Component(type) {
+ComponentMeshRenderer::ComponentMeshRenderer(ComponentType type, const aiMesh* mesh, GameObject* parent) : Component(type, parent) {
 	EBO = VAO = VBO = 0;
 	numIndices = numVertex = materialIndex = -1;
 	CreateBuffers(mesh);
@@ -113,7 +113,7 @@ void ComponentMeshRenderer::Draw() {
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*)&proj);
 	
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, App->scene->materials[materialIndex]);
+	glBindTexture(GL_TEXTURE_2D, App->textures->ExistsTexture(textureName.c_str()));
 	glUniform1i(glGetUniformLocation(program, "diffuse"), 0);
 	
 

@@ -1,12 +1,12 @@
 #pragma once
 #include "Component.h"
-
+#include <string>
 class aiMesh;
 
 class ComponentMeshRenderer : public Component {
 
 public:
-	ComponentMeshRenderer(ComponentType type, const aiMesh* mesh);
+	ComponentMeshRenderer(ComponentType type, const aiMesh* mesh, GameObject* parent);
 	~ComponentMeshRenderer();
 
 	void Enable();
@@ -14,6 +14,8 @@ public:
 	void Disable();
 
 	void Draw();
+
+	void SetTextureName(std::string name) { textureName = name; }
 
 private:
 	void CreateBuffers(const aiMesh* mesh);
@@ -26,6 +28,7 @@ public:
 	int materialIndex;
 	int numVertex;
 	int numIndices;
+	std::string textureName = "";
 
 private:
 	unsigned EBO;

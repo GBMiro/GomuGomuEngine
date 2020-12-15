@@ -11,7 +11,7 @@ class GameObject;
 class Component {
 
 public:
-	Component(ComponentType type);
+	Component(ComponentType type, GameObject* parent);
 	virtual ~Component();
 
 	virtual void Enable() = 0;

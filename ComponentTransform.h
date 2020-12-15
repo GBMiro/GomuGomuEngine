@@ -9,7 +9,7 @@ class aiNode;
 class ComponentTransform : public Component {
 
 public:
-	ComponentTransform(ComponentType type, const aiNode* node);
+	ComponentTransform(ComponentType type, const aiNode* node, GameObject* parent);
 	~ComponentTransform();
 
 	void Enable();

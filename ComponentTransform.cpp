@@ -5,7 +5,7 @@
 #include "Leaks.h"
 
 
-ComponentTransform::ComponentTransform(ComponentType type, const aiNode* node) : Component(type) {
+ComponentTransform::ComponentTransform(ComponentType type, const aiNode* node, GameObject* parent) : Component(type, parent) {
 
 	position = float3(0.0);
 	rotation = Quat::identity;

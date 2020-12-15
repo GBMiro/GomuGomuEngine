@@ -5,6 +5,8 @@
 #include "assimp/postprocess.h"
 #include "Application.h"
 #include "ModuleTextures.h"
+#include "ComponentMeshRenderer.h"
+#include "ComponentTransform.h"
 #include "Leaks.h"
 
 ModuleScene::ModuleScene() {
@@ -65,7 +67,8 @@ void ModuleScene::AddObject(const char* path) {
 	LOG("Loading object...");
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 	if (scene) {
-		CreateGameObject(scene, scene->mRootNode, root);
+		CreateGameObject(path, scene, scene->mRootNode, root);
+		/*
 		aiString textureFileName;
 		materials.reserve(scene->mNumMaterials);
 
@@ -78,27 +81,45 @@ void ModuleScene::AddObject(const char* path) {
 				materials.push_back(App->textures->loadTexture("black.jpg", path));
 			}
 		}
+		*/
 	}
 
 }
 
-void ModuleScene::CreateGameObject(const aiScene* scene, const aiNode* node, GameObject* parent) {
+void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
 	const char* name = node->mName.C_Str();
 	GameObject* object = new GameObject(name);
 	object->parent = parent;
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
-			CreateGameObject(scene, node->mChildren[i], object);
+			CreateGameObject(path, scene, node->mChildren[i], object);
 		}
 	}
 	else {
 		if (node->mNumMeshes > 0) {
 			for (unsigned i = 0; i < node->mNumMeshes; ++i) {
-				object->components.push_back(object->CreateMeshRendererComponent(scene->mMeshes[node->mMeshes[i]]));
+				ComponentMeshRenderer* meshRenderer = object->CreateMeshRendererComponent(scene->mMeshes[node->mMeshes[i]]);	
+				aiString textureFileName;
+				if (scene->mMaterials[meshRenderer->materialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
+					std::string name(textureFileName.data);
+					int textureID = App->textures->ExistsTexture(name.c_str());
+					if (textureID < 0) App->textures->loadTexture(name.c_str(), path);
+					else LOG("Texture %s already loaded", name.c_str());
+					meshRenderer->SetTextureName(name);
+				}
+				else {
+					LOG("No diffuse texture found in the fbx. Loading my own texture...");
+					int textureID = App->textures->ExistsTexture("black.jpg");
+					if (textureID < 0) App->textures->loadTexture("black.jpg", path);
+					else LOG("Texture black.jpg already loaded");
+					meshRenderer->SetTextureName("black.jpg");
+				}
+				object->components.push_back(meshRenderer);
 			}
 		}
 	}
-	object->components.push_back(object->CreateTransformComponent(node));
+	ComponentTransform* transform = object->CreateTransformComponent(node);
+	object->components.push_back(transform);
 	parent->childs.push_back(object);
 }
 
