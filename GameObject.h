@@ -24,13 +24,15 @@ public:
 	ComponentMeshRenderer* CreateMeshRendererComponent(const aiMesh* mesh);
 
 	void UpdateGameObjectsTransform(const float4x4& parentTransform);
+	void ChangeParent(GameObject* parent);
+	bool IsAChild(const GameObject* gameObject) const;
 
 	const float4x4& GetTransformationMatrix() const;
 
 	const char* GetName() const;
 
 public:
-	const char* name;
+	std::string name;
 	std::vector<GameObject*> childs;
 	std::vector<Component*> components;
 	GameObject* parent = nullptr;

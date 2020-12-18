@@ -10,6 +10,7 @@
 #include "ModuleTextures.h"
 #include "ModuleScene.h"
 #include "Model.h"
+#include "Brofiler/include/Brofiler.h"
 #include "Leaks.h"
 
 using namespace std;
@@ -57,12 +58,15 @@ update_status Application::Update()
 	deltaTime = (currentFrame - lastFrame) / (float) 1000.0f;
 	lastFrame = currentFrame;
 
+	BROFILER_CATEGORY("PreUpdate", Profiler::Color::Orchid)
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->PreUpdate();
 
+	BROFILER_CATEGORY("Update", Profiler::Color::Orchid)
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->Update();
 
+	BROFILER_CATEGORY("PostUpdate", Profiler::Color::Orchid)
 	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 		ret = (*it)->PostUpdate();
 

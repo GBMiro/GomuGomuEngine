@@ -26,6 +26,7 @@ public:
 
 	void CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
+	GameObject* GetRoot() const { return root; }
 
 public:
 	std::vector<unsigned> materials;

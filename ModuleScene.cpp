@@ -68,20 +68,6 @@ void ModuleScene::AddObject(const char* path) {
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 	if (scene) {
 		CreateGameObject(path, scene, scene->mRootNode, root);
-		/*
-		aiString textureFileName;
-		materials.reserve(scene->mNumMaterials);
-
-		for (unsigned i = 0; i < scene->mNumMaterials; ++i) {
-			if (scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
-				materials.push_back(App->textures->loadTexture(textureFileName.data, path));
-			}
-			else {
-				LOG("No diffuse texture found in the fbx. Loading my own texture...");
-				materials.push_back(App->textures->loadTexture("black.jpg", path));
-			}
-		}
-		*/
 	}
 
 }
@@ -124,7 +110,7 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 }
 
 void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {
-	for (std::vector<GameObject*>::iterator it = root->childs.begin(); it != root->childs.end(); ++it) {
+	for (std::vector<GameObject*>::const_iterator it = root->childs.begin(); it != root->childs.end(); ++it) {
 		gameObjects.push_back(*it);
 	}
 }

@@ -20,5 +20,6 @@ private:
 
 public:
 	GameObject* gameObjectSelected = nullptr;
+	GameObject* gameObjectDrop = nullptr;
 };
 

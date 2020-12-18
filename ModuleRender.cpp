@@ -12,6 +12,7 @@
 #include "MathGeoLib/Geometry/Frustum.h"
 #include "ModuleScene.h"
 #include "Model.h"
+#include "Brofiler/include/Brofiler.h"
 #include "Leaks.h"
 
 ModuleRender::ModuleRender() {
@@ -71,6 +72,9 @@ bool ModuleRender::Init()
 	context = SDL_GL_CreateContext(App->window->window);
 
 	GLenum err = glewInit();
+
+	if (SDL_GL_SetSwapInterval(VSYNC) < 0)
+		LOG("Warning: Unable to set VSync! SDL Error: %s", SDL_GetError());
 
 	// ... check for errors
 	LOG("Using Glew %s", glewGetString(GLEW_VERSION));
@@ -173,6 +177,7 @@ update_status ModuleRender::Update()
 
 update_status ModuleRender::PostUpdate()
 {
+	BROFILER_CATEGORY("Post Update Render", Profiler::Color::Orchid)
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }

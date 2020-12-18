@@ -56,6 +56,28 @@ void GameObject::UpdateGameObjectsTransform(const float4x4& parentTransform) {
 	}
 }
 
+void GameObject::ChangeParent(GameObject* newParent) {
+	if (newParent != parent) {
+		this->parent->childs.erase(std::remove(this->parent->childs.begin(), this->parent->childs.end(), this), this->parent->childs.end());
+		parent = newParent;
+		newParent->childs.push_back(this);
+		LOG("%s's new parent: %s", GetName(), newParent->GetName());
+	}
+	else LOG("Same parent");
+}
+
+bool GameObject::IsAChild(const GameObject* gameObject) const {
+	bool found = false;
+	for (std::vector<GameObject*>::const_iterator it = childs.begin(); it != childs.end() && !found; ++it) {
+		if ((*it) == gameObject) found = true;
+		else {
+			if((*it)->IsAChild(gameObject)) found = true;
+		}
+	}
+	if (gameObject == this) found = true;
+	return found;
+}
+
 const float4x4& GameObject::GetTransformationMatrix() const {
 	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
 		if ((*it)->type == TRANSFORM) return ((ComponentTransform*)(*it))->transform;
@@ -63,5 +85,5 @@ const float4x4& GameObject::GetTransformationMatrix() const {
 }
 
 const char* GameObject::GetName() const {
-	return name;
+	return name.c_str();
 }

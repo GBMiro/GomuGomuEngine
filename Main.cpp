@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 #include "SDL/include/SDL.h"
+#include "Brofiler/include/Brofiler.h"
 #include "Leaks.h"
 #pragma comment( lib, "SDL/lib/SDL2.lib" )
 #pragma comment( lib, "SDL/lib/SDL2main.lib" )
@@ -60,6 +61,7 @@ int main(int argc, char ** argv)
 
 		case MAIN_UPDATE:
 		{
+			BROFILER_FRAME("Main Update");
 			int update_return = App->Update();
 
 			if (update_return == UPDATE_ERROR)

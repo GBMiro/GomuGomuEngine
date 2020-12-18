@@ -17,13 +17,11 @@ void WindowGameObjectHierarchy::Draw() {
 		ImGui::End();
 		return;
 	}
-	std::vector<GameObject*> sceneGameObjects;
-	App->scene->GetSceneGameObjects(sceneGameObjects);
-
-	for (std::vector<GameObject*>::const_iterator it = sceneGameObjects.begin(); it != sceneGameObjects.end(); ++it) {
-			DrawGameObjectHierarchy(*it);
-	}
+	DrawGameObjectHierarchy(App->scene->GetRoot());
 	ImGui::End();
+
+	if (gameObjectDrop) gameObjectSelected->ChangeParent(gameObjectDrop);
+	gameObjectDrop = nullptr;
 }
 
 void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
@@ -34,9 +32,24 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) 
 		nodeFlags |= ImGuiTreeNodeFlags_Selected;
 	}
 
-	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags);
+	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags); //Here I'll use UUID instead of Name
 
 	if (ImGui::IsItemClicked())	gameObjectSelected = gameObject;
+	if (ImGui::BeginDragDropSource()) {
+		gameObjectSelected = gameObject;
+		ImGui::SetDragDropPayload("Source", &gameObject, sizeof(GameObject*));
+		ImGui::EndDragDropSource();
+	}
+	if (ImGui::BeginDragDropTarget()) {
+		LOG("%s's new parent: %s", gameObjectSelected->GetName(), gameObject->GetName());
+		if (ImGui::AcceptDragDropPayload("Source")) {
+			if (gameObject != gameObjectSelected) {
+				if (!gameObjectSelected->IsAChild(gameObject)) gameObjectDrop = gameObject;
+				else LOG("You can't move a parent into a child");
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
 
 	if (node_open) {
 
