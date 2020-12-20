@@ -26,6 +26,12 @@ public:
 
 	const char* GetName() const;
 
+	AABB GetAABB() const;
+	void GetChildsAABB(std::vector<AABB>& aabb) const;
+
+	Component* GetComponentByType(ComponentType type) const;
+
+
 public:
 	std::string name;
 	std::vector<GameObject*> childs;

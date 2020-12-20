@@ -18,7 +18,7 @@ private:
 
 	void DrawGameObjectHierarchy(GameObject* gameObject);
 
-public:
+private:
 	GameObject* gameObjectSelected = nullptr;
 	GameObject* gameObjectDrop = nullptr;
 };

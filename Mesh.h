@@ -1,6 +1,7 @@
 #pragma once
 #include "assimp/scene.h"
 #include "MathGeoLib/Math/float4x4.h"
+#include "MathGeoLib/Geometry/AABB.h"
 #include <string.h>
 #include <vector>
 
@@ -15,6 +16,7 @@ public:
 	void LoadVBO(const aiMesh* mesh);
 	void LoadEBO(const aiMesh* mesh);
 	void CreateVAO();
+	void CreateAABB(const aiMesh* mesh);
 
 	int getNumVertex() const { return numVertex; }
 
@@ -24,7 +26,10 @@ public:
 
 	int GetMaterialIndex() const { return materialIndex; }
 
+	const AABB& GetAABB() const { return axisAlignedBB; }
+
 private:
+	AABB axisAlignedBB;
 	unsigned int VBO;
 	unsigned int EBO;
 	unsigned int VAO;

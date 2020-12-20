@@ -12,6 +12,7 @@ Mesh::Mesh(const aiMesh* mesh) {
 	LoadVBO(mesh);
 	LoadEBO(mesh);
 	CreateVAO();
+	CreateAABB(mesh);
 }
 
 Mesh::~Mesh() {
@@ -80,6 +81,11 @@ void Mesh::CreateVAO() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
 
 	glBindVertexArray(0);
+}
+
+void Mesh::CreateAABB(const aiMesh* mesh) {
+	axisAlignedBB.maxPoint= vec(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
+	axisAlignedBB.minPoint = vec(mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z);
 }
 
 void Mesh::Draw(const std::string& textureName, const float4x4& model) {

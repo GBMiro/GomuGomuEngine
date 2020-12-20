@@ -37,7 +37,6 @@ public:
 	ModuleDebugDraw* debugDraw = nullptr;
 	ModuleTextures* textures = nullptr;
 	ModuleScene* scene = nullptr;
-	Model* model = nullptr;
 
 	float deltaTime;
 

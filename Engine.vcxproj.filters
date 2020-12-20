@@ -192,7 +192,6 @@
     <ClCompile Include="WindowScene.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -526,7 +525,6 @@
     <ClInclude Include="WindowScene.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

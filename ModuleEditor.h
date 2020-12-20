@@ -11,6 +11,7 @@ class WindowProperties;
 class WindowAbout;
 class WindowGameObjectHierarchy;
 class WindowScene;
+class GameObject;
 
 class ModuleEditor : public Module
 {
@@ -34,6 +35,7 @@ public:
 	void fileDropped(const char* filename) const;
 	void SetGameWindowStatus(bool state) { gameWindowSelectedOrHovered = state; }
 	bool GetGameWindowStatus() const { return gameWindowSelectedOrHovered; }
+	GameObject* GetGameObjectSelected() const;
 
 public:
 	WindowMonitor* monitor = nullptr;

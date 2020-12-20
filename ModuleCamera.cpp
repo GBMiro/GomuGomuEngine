@@ -3,9 +3,12 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleWindow.h"
+#include "ModuleEditor.h"
+#include "MathGeoLib/Geometry/AABB.h"
+#include "MathGeoLib/Geometry/Sphere.h"
 #include "GL/glew.h"
 #include "SDL/include/SDL.h"
-#include "Model.h"
+#include "GameObject.h"
 #include "Leaks.h"
 
 ModuleCamera::ModuleCamera() : posX(0.0f), posY(1.0f), posZ(-10.0f)
@@ -70,10 +73,16 @@ void ModuleCamera::setPlanes(float zNear, float zFar) {
 }
 
 void ModuleCamera::setCameraPosition() {
-
-	float distance = (App->model->sphereRadius / Abs(sin(DEGTORAD * fov / 2)));
-	frustum.SetPos(App->model->modelCenter + frustum.Front().Neg() * distance * 2);
-	LookAt(App->model->modelCenter);
+	GameObject* selection = App->editor->GetGameObjectSelected();
+	float distance = 0;
+	vec center = vec(0, 0, 0);
+	if (selection) {
+		AABB aaBB = selection->GetAABB();
+		distance = (aaBB.MinimalEnclosingSphere().Diameter() / 2) / Abs(sin(DEGTORAD * fov / 2));
+		center = aaBB.CenterPoint();
+	}
+	frustum.SetPos(center + frustum.Front().Neg() * distance * 2);
+	LookAt(center);
 }
 
 void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
@@ -81,7 +90,11 @@ void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
 	float3 up = frustum.Up().Normalized();
 	float3 right = frustum.WorldRight().Normalized();
 
-	float3 camFocusVector = frustum.Pos() - App->model->modelCenter;
+	vec center = vec(0, 0, 0);
+	GameObject* selection = App->editor->GetGameObjectSelected();
+	if (selection) center = selection->GetAABB().CenterPoint();
+
+	float3 camFocusVector = frustum.Pos() - center;
 	float3x3 rotationMatrixY = frustum.ViewMatrix().RotatePart();
 	rotationMatrixY = rotationMatrixY.RotateAxisAngle(up, DEGTORAD * xOffset);
 	float3x3 rotationMatrixX = frustum.ViewMatrix().RotatePart();
@@ -89,8 +102,8 @@ void ModuleCamera::orbitCamera(float xOffset, float yOffset) {
 	camFocusVector = camFocusVector * rotationMatrixX;
 	camFocusVector = camFocusVector * rotationMatrixY;
 
-	frustum.SetPos(camFocusVector + App->model->modelCenter);
-	LookAt(App->model->modelCenter);
+	frustum.SetPos(camFocusVector + center);
+	LookAt(center);
 }
 
 void ModuleCamera::LookAt(const float3& point) {

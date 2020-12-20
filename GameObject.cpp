@@ -2,6 +2,7 @@
 #include "ComponentMeshRenderer.h"
 #include "ComponentTransform.h"
 #include "assimp/scene.h"
+#include "Mesh.h"
 #include "Globals.h"
 #include "MathGeoLib/Math/float4x4.h"
 #include "Leaks.h"
@@ -105,4 +106,54 @@ const float4x4& GameObject::GetTransformationMatrix() const {
 
 const char* GameObject::GetName() const {
 	return name.c_str();
+}
+
+AABB GameObject::GetAABB() const {
+	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::RENDERER);
+	AABB globalAABB;
+	std::vector<AABB> aabb;
+	GetChildsAABB(aabb);
+
+	float xMax, xMin, yMax, yMin, zMax, zMin;
+	xMax = xMin = yMax = yMin = zMax = zMin = 0;
+	if (aabb.size() > 0) {
+		xMax = aabb[0].MaxX();
+		xMin = aabb[0].MinX();
+		yMax = aabb[0].MaxY();
+		yMin = aabb[0].MinY();
+		zMax = aabb[0].MaxZ();
+		zMin = aabb[0].MinZ();
+		for (unsigned int i = 1; i < aabb.size(); ++i) {
+			if (xMax < aabb[i].MaxX()) xMax = aabb[i].MaxX();
+			if (xMin > aabb[i].MinX()) xMin = aabb[i].MinX();
+			if (yMax < aabb[i].MaxY()) yMax = aabb[i].MaxY();
+			if (yMin > aabb[i].MinY()) yMin = aabb[i].MinY();
+			if (zMax < aabb[i].MaxZ()) zMax = aabb[i].MaxZ();
+			if (zMin > aabb[i].MinZ()) zMin = aabb[i].MinZ();
+		}
+		globalAABB.minPoint = vec(xMin, yMin, zMin);
+		globalAABB.maxPoint = vec(xMax, yMax, zMax);
+	}
+	else {
+		globalAABB.minPoint = vec(0, 0, 0);
+		globalAABB.maxPoint = vec(0, 0, 0);
+	}
+	return globalAABB;
+}
+
+void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
+	for (std::vector<GameObject*>::const_iterator it = childs.begin(); it != childs.end(); ++it) {
+		(*it)->GetChildsAABB(aabb);
+	}
+	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::RENDERER);
+	if (cRenderer) {
+		aabb.push_back(cRenderer->mesh->GetAABB());
+	}
+}
+
+Component* GameObject::GetComponentByType(ComponentType type) const {
+	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
+		if ((*it)->GetType() == type) return (*it);
+	}
+	return nullptr;
 }

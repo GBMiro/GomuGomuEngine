@@ -12,7 +12,6 @@
 #include "WindowAbout.h"
 #include "WindowGameObjectHierarchy.h"
 #include "WindowScene.h"
-#include "Model.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
@@ -137,5 +136,9 @@ void ModuleEditor::cleanProperties() const {
 }
 
 void ModuleEditor::fileDropped(const char* filename) const {
-	App->model->processFile(filename);
+	//App->model->processFile(filename);
+}
+
+GameObject* ModuleEditor::GetGameObjectSelected() const {
+	return hierarchy->GetGameObjectSelected();
 }

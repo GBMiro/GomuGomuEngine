@@ -1,7 +1,6 @@
 #include "WindowProperties.h"
 #include "WindowGameObjectHierarchy.h"
 #include "GameObject.h"
-#include "Model.h"
 #include "ModuleEditor.h"
 #include "Mesh.h"
 #include "imgui.h"
@@ -34,7 +33,7 @@ void WindowProperties::Draw() {
 	}
 	//All this goes to DrawOnEditor for each component
 	if (ImGui::CollapsingHeader("Geometry")) {
-		if (meshes.size() == 0) App->model->getMeshes(meshes);
+		//if (meshes.size() == 0) App->model->getMeshes(meshes);
 		if (meshes.size() > 0) {
 			ImGui::Text("Total meshes: %d", meshes.size());
 			ImGui::NewLine();
@@ -47,7 +46,7 @@ void WindowProperties::Draw() {
 		}
 	}
 	if (ImGui::CollapsingHeader("Textures")) {
-		if (textures.size() == 0) App->model->getTextures(textures);
+		//if (textures.size() == 0) App->model->getTextures(textures);
 		if (textures.size() > 0) {
 			ImGui::Text("Total textures: %d", textures.size());
 			ImGui::NewLine();
