@@ -23,7 +23,7 @@ public:
 	ComponentType GetType() const;
 
 public:
-	GameObject* parent = nullptr;
+	GameObject* owner;
 	ComponentType type;
 	bool active = false;
 };

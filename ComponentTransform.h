@@ -4,12 +4,10 @@
 #include "MathGeoLib/Math/Quat.h"
 #include "MathGeoLib/Math/float4x4.h"
 
-class aiNode;
-
 class ComponentTransform : public Component {
 
 public:
-	ComponentTransform(ComponentType type, const aiNode* node, GameObject* parent);
+	ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling);
 	~ComponentTransform();
 
 	void Enable();

@@ -2,14 +2,16 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
+#include "ModuleTextures.h"
 #include "GL/glew.h"
 #include "MathGeoLib/Math/float2.h"
 #include "Leaks.h"
 
-Mesh::Mesh() {
+Mesh::Mesh(const aiMesh* mesh) {
 
-	EBO = VAO = VBO = 0;
-	numIndices = numVertex = materialIndex = -1;
+	LoadVBO(mesh);
+	LoadEBO(mesh);
+	CreateVAO();
 }
 
 Mesh::~Mesh() {
@@ -80,12 +82,11 @@ void Mesh::CreateVAO() {
 	glBindVertexArray(0);
 }
 
-void Mesh::Draw(const std::vector<unsigned>& modelTextures) {
+void Mesh::Draw(const std::string& textureName, const float4x4& model) {
 
 	unsigned program = App->renderer->getProgram();
 	const float4x4& view = App->camera->getViewMatrix();
 	const float4x4& proj = App->camera->getProjectionMatrix();
-	float4x4 model = float4x4::identity;
 
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, (const float*) &model);
@@ -93,7 +94,7 @@ void Mesh::Draw(const std::vector<unsigned>& modelTextures) {
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*) &proj);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, modelTextures[materialIndex]);
+	glBindTexture(GL_TEXTURE_2D, App->textures->ExistsTexture(textureName.c_str()));
 	glUniform1i(glGetUniformLocation(program, "diffuse"), 0);
 
 	glBindVertexArray(VAO);

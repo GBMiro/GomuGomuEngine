@@ -6,8 +6,24 @@
 #include "MathGeoLib/Math/float4x4.h"
 #include "Leaks.h"
 
-GameObject::GameObject(const char* name) {
+GameObject::GameObject(GameObject* parent, const char* name) {
+	if (parent) {
+		this->parent = parent;
+		parent->childs.push_back(this);
+	}
 	this->name = name;
+	ComponentTransform* cTransform = new ComponentTransform(this, float3::zero, Quat::identity, float3::one);
+	components.push_back(cTransform);
+}
+
+GameObject::GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale) {
+	if (parent) {
+		this->parent = parent;
+		parent->childs.push_back(this);
+	}
+	this->name = name;
+	ComponentTransform* cTransform = new ComponentTransform(this, position, rotation, scale);
+	components.push_back(cTransform);
 }
 
 GameObject::~GameObject() {
@@ -37,16 +53,19 @@ void GameObject::CleanUp() {
 	}
 }
 
-ComponentTransform* GameObject::CreateTransformComponent(const aiNode* node) {
-	ComponentTransform* com = new ComponentTransform(TRANSFORM, node, this);
-	com->parent = this;
-	return com;
-}
-
-ComponentMeshRenderer* GameObject::CreateMeshRendererComponent(const aiMesh* mesh) {
-	ComponentMeshRenderer* com = new ComponentMeshRenderer(RENDERER, mesh, this);
-	com->parent = this;
-	return com;
+Component* GameObject::CreateComponent(ComponentType type) {
+	Component* ret = nullptr;
+	switch (type) {
+		case ComponentType::RENDERER:
+			ret = new ComponentMeshRenderer(this);
+			break;
+		case ComponentType::TRANSFORM:
+			//ret = new ComponentTransform();
+			break;
+		case ComponentType::CAMERA:
+			break;
+	}
+	return ret;
 }
 
 void GameObject::UpdateGameObjectsTransform(const float4x4& parentTransform) {

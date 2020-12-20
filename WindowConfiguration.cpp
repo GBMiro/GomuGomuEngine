@@ -93,7 +93,7 @@ void WindowConfiguration::Draw() {
 				if (ImGui::Selectable(filterMinModes[i], is_selected)) {
 					indexMin = i;
 					ImGui::SetItemDefaultFocus();
-					App->model->setMinFilter(indexMin);
+					//App->model->setMinFilter(indexMin);
 				}
 			}
 			ImGui::EndCombo();
@@ -104,7 +104,7 @@ void WindowConfiguration::Draw() {
 				if (ImGui::Selectable(filterMagModes[i], is_selected)) {
 					indexMax = i;
 					ImGui::SetItemDefaultFocus();
-					App->model->setMagFilter(indexMax);
+					//App->model->setMagFilter(indexMax);
 				}
 			}
 			ImGui::EndCombo();
@@ -115,7 +115,7 @@ void WindowConfiguration::Draw() {
 				if (ImGui::Selectable(wrapModes[i], is_selected)) {
 					indexWrap = i;
 					ImGui::SetItemDefaultFocus();
-					App->model->setWrapMode(indexWrap);
+					//App->model->setWrapMode(indexWrap);
 				}
 			}
 			ImGui::EndCombo();

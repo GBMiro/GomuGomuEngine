@@ -1,6 +1,6 @@
 #include "Component.h"
 
-Component::Component(ComponentType type, GameObject* parent) : type(type), parent(parent) {
+Component::Component(ComponentType type, GameObject* parent) : type(type), owner(parent) {
 }
 
 Component::~Component() {

@@ -1,15 +1,13 @@
 #include "ComponentTransform.h"
 #include "imgui.h"
-#include "assimp/scene.h"
-#include "MathGeoLib/Math/float4x4.h"
 #include "Leaks.h"
 
 
-ComponentTransform::ComponentTransform(ComponentType type, const aiNode* node, GameObject* parent) : Component(type, parent) {
+ComponentTransform::ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling) : Component(ComponentType::TRANSFORM, parent) {
 
-	position = float3(0.0);
-	rotation = Quat::identity;
-	scaling = float3(1.0);
+	this->position = position;
+	this->rotation = rotation;
+	this->scaling = scaling;
 
 	transform = float4x4::FromTRS(position, rotation, scaling);
 }

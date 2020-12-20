@@ -5,13 +5,14 @@
 #include "assimp/postprocess.h"
 #include "Application.h"
 #include "ModuleTextures.h"
+#include "Mesh.h"
 #include "ComponentMeshRenderer.h"
 #include "ComponentTransform.h"
 #include "Leaks.h"
 
 ModuleScene::ModuleScene() {
 
-	root = new GameObject("Fake root node");
+	root = new GameObject(nullptr, "Fake root node");
 }
 
 ModuleScene::~ModuleScene() {
@@ -74,8 +75,7 @@ void ModuleScene::AddObject(const char* path) {
 
 void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
 	const char* name = node->mName.C_Str();
-	GameObject* object = new GameObject(name);
-	object->parent = parent;
+	GameObject* object = new GameObject(parent, name, float3::zero, Quat::identity, float3::one);
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
 			CreateGameObject(path, scene, node->mChildren[i], object);
@@ -84,9 +84,10 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 	else {
 		if (node->mNumMeshes > 0) {
 			for (unsigned i = 0; i < node->mNumMeshes; ++i) {
-				ComponentMeshRenderer* meshRenderer = object->CreateMeshRendererComponent(scene->mMeshes[node->mMeshes[i]]);	
+				ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)object->CreateComponent(ComponentType::RENDERER);
+				meshRenderer->mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);//CreateMeshRendererComponent(scene->mMeshes[node->mMeshes[i]]);	
 				aiString textureFileName;
-				if (scene->mMaterials[meshRenderer->materialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
+				if (scene->mMaterials[meshRenderer->mesh->GetMaterialIndex()]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
 					std::string name(textureFileName.data);
 					int textureID = App->textures->ExistsTexture(name.c_str());
 					if (textureID < 0) App->textures->loadTexture(name.c_str(), path);
@@ -104,9 +105,6 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 			}
 		}
 	}
-	ComponentTransform* transform = object->CreateTransformComponent(node);
-	object->components.push_back(transform);
-	parent->childs.push_back(object);
 }
 
 void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {

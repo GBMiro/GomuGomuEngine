@@ -156,7 +156,6 @@
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleDebugDraw.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Window.cpp">
       <Filter>WindowUI</Filter>
@@ -193,6 +192,7 @@
     <ClCompile Include="WindowScene.cpp">
       <Filter>WindowUI</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -489,7 +489,6 @@
       <Filter>debug_draw</Filter>
     </ClInclude>
     <ClInclude Include="ModuleDebugDraw.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Leaks.h" />
     <ClInclude Include="Window.h">
@@ -527,6 +526,7 @@
     <ClInclude Include="WindowScene.h">
       <Filter>WindowUI</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

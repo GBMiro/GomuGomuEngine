@@ -4,24 +4,19 @@
 #include "MathGeoLib/Math/float4x4.h"
 #include "Component.h"
 
-class aiNode;
-class aiMesh;
 class Component;
-class ComponentTransform;
-class ComponentMeshRenderer;
 
 class GameObject {
 
 public:
-	GameObject(const char* name);
+	GameObject(GameObject* parent, const char* name);
+	GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale);
 	~GameObject();
 
 	void Update();
 
 	void CleanUp();
-
-	ComponentTransform* CreateTransformComponent(const aiNode* node);
-	ComponentMeshRenderer* CreateMeshRendererComponent(const aiMesh* mesh);
+	Component* CreateComponent(ComponentType type);
 
 	void UpdateGameObjectsTransform(const float4x4& parentTransform);
 	void ChangeParent(GameObject* parent);

@@ -64,10 +64,7 @@ void Model::LoadMeshes(const aiScene* scene)
 
 	for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
 		aiMesh* currentMesh = scene->mMeshes[i];
-		Mesh* mesh = new Mesh();
-		mesh->LoadVBO(currentMesh);
-		mesh->LoadEBO(currentMesh);
-		mesh->CreateVAO();
+		Mesh* mesh = new Mesh(currentMesh);
 		meshes.push_back(mesh);
 
 		if (i == 0) {
@@ -102,7 +99,7 @@ void Model::LoadMeshes(const aiScene* scene)
 
 void Model::Draw()  {
 	for (unsigned i = 0; i < meshes.size(); ++i) {
-		meshes[i]->Draw(materials);
+		//meshes[i]->Draw(materials);
 	}
 }
 
