@@ -110,9 +110,9 @@ bool ModuleRender::Init()
 
 	App->scene->AddObject("./Resources/Models/BakerHouse.fbx");
 	App->scene->AddObject("./Resources/Models/Fox.fbx");
-	App->scene->AddObject("./Resources/Models/Crow.fbx");
-	App->scene->AddObject("./Resources/Models/Sword.fbx");
-	App->scene->AddObject("./Resources/Models/AmongUs.fbx");
+	//App->scene->AddObject("./Resources/Models/Crow.fbx");
+	//App->scene->AddObject("./Resources/Models/Sword.fbx");
+	//App->scene->AddObject("./Resources/Models/AmongUs.fbx");
 
 	
 	glGenFramebuffers(1, &framebuffer);

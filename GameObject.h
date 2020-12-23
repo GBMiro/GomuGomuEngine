@@ -18,11 +18,8 @@ public:
 	void CleanUp();
 	Component* CreateComponent(ComponentType type);
 
-	void UpdateGameObjectsTransform(const float4x4& parentTransform);
 	void ChangeParent(GameObject* parent);
 	bool IsAChild(const GameObject* gameObject) const;
-
-	const float4x4& GetTransformationMatrix() const;
 
 	const char* GetName() const;
 
@@ -31,12 +28,13 @@ public:
 
 	Component* GetComponentByType(ComponentType type) const;
 
+	void OnTransformChanged();
+
 
 public:
 	std::string name;
 	std::vector<GameObject*> childs;
 	std::vector<Component*> components;
 	GameObject* parent = nullptr;
-	float4x4 globalTransform = float4x4::identity;
 };
 

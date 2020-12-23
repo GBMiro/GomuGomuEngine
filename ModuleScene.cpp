@@ -31,9 +31,6 @@ bool ModuleScene::Init() {
 }
 
 update_status ModuleScene::PreUpdate() {
-	for (std::vector<GameObject*>::iterator it = root->childs.begin(); it != root->childs.end(); ++it) {
-		(*it)->UpdateGameObjectsTransform(root->globalTransform);
-	}
 	return UPDATE_CONTINUE;
 }
 
@@ -85,7 +82,7 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 		if (node->mNumMeshes > 0) {
 			for (unsigned i = 0; i < node->mNumMeshes; ++i) {
 				ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)object->CreateComponent(ComponentType::RENDERER);
-				meshRenderer->mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);//CreateMeshRendererComponent(scene->mMeshes[node->mMeshes[i]]);	
+				meshRenderer->mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
 				aiString textureFileName;
 				if (scene->mMaterials[meshRenderer->mesh->GetMaterialIndex()]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
 					std::string name(textureFileName.data);

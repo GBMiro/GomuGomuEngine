@@ -1,4 +1,5 @@
 #include "ComponentMeshRenderer.h"
+#include "ComponentTransform.h"
 #include "assimp/scene.h"
 #include "GL/glew.h"
 #include "MathGeoLib/Math/float2.h"
@@ -28,7 +29,7 @@ void ComponentMeshRenderer::Disable() {
 }
 
 void ComponentMeshRenderer::Draw() {
-	mesh->Draw(textureName, owner->globalTransform);
+	mesh->Draw(textureName, ((ComponentTransform*)owner->GetComponentByType(TRANSFORM))->globalTransform);
 }
 
 

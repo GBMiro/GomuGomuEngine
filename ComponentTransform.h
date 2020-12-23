@@ -16,8 +16,16 @@ public:
 
 	void DrawOnEditor();
 
+	void UpdateLocalTransform();
+	void UpdateGlobaltransform();
+
+	void SetGlobalTransform();
+
+	void OnTransformChanged();
+
 public:
-	float4x4 transform;
+	float4x4 localTransform;
+	float4x4 globalTransform;
 
 	float3 position;
 	float3 scaling;

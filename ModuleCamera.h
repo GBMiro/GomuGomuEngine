@@ -54,7 +54,7 @@ public:
 
 private:
 	void updateCamera();
-	void rotateCamera(float3x3 &rotationMatrix);
+	void rotateCamera(const float3x3 &rotationMatrix);
 	void processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed);
 	void processMouseInput(float deltaTime);
 

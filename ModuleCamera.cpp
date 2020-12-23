@@ -140,7 +140,7 @@ void ModuleCamera::updateCamera()
 	processMouseInput(App->deltaTime);	
 }
 
-void ModuleCamera::rotateCamera(float3x3 &rotationMatrix)
+void ModuleCamera::rotateCamera(const float3x3 &rotationMatrix)
 {
 	vec oldFront = frustum.Front().Normalized();
 	frustum.SetFront(rotationMatrix * oldFront);

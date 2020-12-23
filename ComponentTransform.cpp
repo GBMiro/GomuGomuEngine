@@ -1,4 +1,5 @@
 #include "ComponentTransform.h"
+#include "GameObject.h"
 #include "imgui.h"
 #include "Leaks.h"
 
@@ -9,7 +10,8 @@ ComponentTransform::ComponentTransform(GameObject* parent, const float3& positio
 	this->rotation = rotation;
 	this->scaling = scaling;
 
-	transform = float4x4::FromTRS(position, rotation, scaling);
+	UpdateLocalTransform();
+	UpdateGlobaltransform();
 }
 
 ComponentTransform::~ComponentTransform() {
@@ -27,9 +29,48 @@ void ComponentTransform::Disable() {
 }
 
 void ComponentTransform::DrawOnEditor() {
-	if (ImGui::CollapsingHeader("Transformations")) {
-		if (ImGui::DragFloat3("Position", &position.x, 0.1f, -90.0f, 90.0f, "%.3f")) transform = float4x4::FromTRS(position, rotation, scaling);
-		if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f, -90.0f, 90.0f, "%.3f")) transform = float4x4::FromTRS(position, rotation, scaling);
-		if (ImGui::DragFloat3("Scale", &scaling.x, 0.1f, -90.0f, 90.0f, "%.3f")) transform = float4x4::FromTRS(position, rotation, scaling);
+	if (owner->parent) {
+		if (ImGui::CollapsingHeader("Transformations")) {
+			if (ImGui::DragFloat3("Position", &position.x, 0.1f, -90.0f, 90.0f, "%.3f")) {
+				UpdateLocalTransform();
+				owner->OnTransformChanged();
+			}
+			if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f, -90.0f, 90.0f, "%.3f")) UpdateLocalTransform();
+			if (ImGui::DragFloat3("Scale", &scaling.x, 0.1f, -90.0f, 90.0f, "%.3f")) {
+				UpdateLocalTransform();
+				owner->OnTransformChanged();
+			}
+		}
 	}
+}
+
+void ComponentTransform::UpdateLocalTransform() {
+	localTransform = float4x4::FromTRS(position, rotation, scaling);
+}
+
+void ComponentTransform::UpdateGlobaltransform() {
+	if (owner) {
+		if (owner->parent) {
+			ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(TRANSFORM);
+			if (cTransform) {
+				globalTransform = cTransform->globalTransform * localTransform;
+			}
+		}
+		else {
+			globalTransform = float4x4::identity;
+		}
+	}
+}
+
+void ComponentTransform::SetGlobalTransform() {
+	ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(TRANSFORM);
+	if (cTransform) {
+		localTransform = globalTransform * cTransform->globalTransform.Inverted();
+		localTransform.Decompose(position, rotation, scaling);
+		owner->OnTransformChanged();
+	}
+}
+
+void ComponentTransform::OnTransformChanged() {
+	UpdateGlobaltransform();
 }

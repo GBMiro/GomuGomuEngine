@@ -69,18 +69,14 @@ Component* GameObject::CreateComponent(ComponentType type) {
 	return ret;
 }
 
-void GameObject::UpdateGameObjectsTransform(const float4x4& parentTransform) {
-	globalTransform = parentTransform * GetTransformationMatrix();
-	for (std::vector<GameObject*>::iterator it = childs.begin(); it != childs.end(); ++it) {
-		(*it)->UpdateGameObjectsTransform(globalTransform);
-	}
-}
 
 void GameObject::ChangeParent(GameObject* newParent) {
 	if (newParent != parent) {
 		this->parent->childs.erase(std::remove(this->parent->childs.begin(), this->parent->childs.end(), this), this->parent->childs.end());
 		parent = newParent;
 		newParent->childs.push_back(this);
+		ComponentTransform* cTransform = (ComponentTransform*) GetComponentByType(TRANSFORM);
+		cTransform->SetGlobalTransform();
 		LOG("%s's new parent: %s", GetName(), newParent->GetName());
 	}
 	else LOG("Same parent");
@@ -98,18 +94,11 @@ bool GameObject::IsAChild(const GameObject* gameObject) const {
 	return found;
 }
 
-const float4x4& GameObject::GetTransformationMatrix() const {
-	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
-		if ((*it)->type == TRANSFORM) return ((ComponentTransform*)(*it))->transform;
-	}
-}
-
 const char* GameObject::GetName() const {
 	return name.c_str();
 }
 
 AABB GameObject::GetAABB() const {
-	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::RENDERER);
 	AABB globalAABB;
 	std::vector<AABB> aabb;
 	GetChildsAABB(aabb);
@@ -147,7 +136,7 @@ void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
 	}
 	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::RENDERER);
 	if (cRenderer) {
-		aabb.push_back(cRenderer->mesh->GetAABB());
+		aabb.push_back(cRenderer->mesh->GetAABB()); //Agafar la de cRenderer i no la de cRenderer->mesh
 	}
 }
 
@@ -156,4 +145,15 @@ Component* GameObject::GetComponentByType(ComponentType type) const {
 		if ((*it)->GetType() == type) return (*it);
 	}
 	return nullptr;
+}
+
+void GameObject::OnTransformChanged() {
+
+	for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
+		(*it)->OnTransformChanged();
+	}
+
+	for (std::vector<GameObject*>::iterator it = childs.begin(); it != childs.end(); ++it) {
+		(*it)->OnTransformChanged();
+	}
 }

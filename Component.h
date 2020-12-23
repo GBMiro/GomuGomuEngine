@@ -20,6 +20,8 @@ public:
 
 	virtual void DrawOnEditor() {};
 
+	virtual void OnTransformChanged() {};
+
 	ComponentType GetType() const;
 
 public:
