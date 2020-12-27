@@ -4,7 +4,7 @@
 #include "Leaks.h"
 
 
-ComponentTransform::ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling) : Component(ComponentType::TRANSFORM, parent) {
+ComponentTransform::ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling) : Component(ComponentType::CTTransform, parent) {
 
 	this->position = position;
 	this->rotation = rotation;
@@ -51,7 +51,7 @@ void ComponentTransform::UpdateLocalTransform() {
 void ComponentTransform::UpdateGlobaltransform() {
 	if (owner) {
 		if (owner->parent) {
-			ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(TRANSFORM);
+			ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(CTTransform);
 			if (cTransform) {
 				globalTransform = cTransform->globalTransform * localTransform;
 			}
@@ -63,7 +63,7 @@ void ComponentTransform::UpdateGlobaltransform() {
 }
 
 void ComponentTransform::SetGlobalTransform() {
-	ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(TRANSFORM);
+	ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(CTTransform);
 	if (cTransform) {
 		localTransform = globalTransform * cTransform->globalTransform.Inverted();
 		localTransform.Decompose(position, rotation, scaling);

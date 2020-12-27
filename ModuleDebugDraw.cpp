@@ -622,3 +622,11 @@ void ModuleDebugDraw::Draw(const float4x4& view, const float4x4& proj, unsigned 
 }
 
 
+
+void ModuleDebugDraw::DrawAABB(const AABB& aabb) {
+    float3 points[8] = { float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero };
+
+    aabb.GetCornerPoints(points);
+
+    dd::box(points, ddVec3(1.0f, 1.0f, 1.0f));
+}

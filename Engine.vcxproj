@@ -141,6 +141,7 @@
     <ClInclude Include="ComponentMeshRenderer.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="WindowAbout.h" />
     <ClInclude Include="Application.h" />
@@ -264,6 +265,7 @@
     <ClCompile Include="ComponentMeshRenderer.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="WindowAbout.cpp" />
     <ClCompile Include="Application.cpp" />

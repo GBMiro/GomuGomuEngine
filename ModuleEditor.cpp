@@ -31,8 +31,7 @@ ModuleEditor::~ModuleEditor() {
 	windows.clear();
 }
 
-bool ModuleEditor::Init()
-{
+bool ModuleEditor::Init() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -42,18 +41,16 @@ bool ModuleEditor::Init()
 	return true;
 }
 
-update_status ModuleEditor::PreUpdate()
-{
+update_status ModuleEditor::PreUpdate() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
-	
+
 
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleEditor::Update()
-{
+update_status ModuleEditor::Update() {
 	int windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->GetWorkPos());
@@ -67,6 +64,8 @@ update_status ModuleEditor::Update()
 		if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 		Draw();
 	}
+
+
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -74,13 +73,11 @@ update_status ModuleEditor::Update()
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleEditor::PostUpdate()
-{
+update_status ModuleEditor::PostUpdate() {
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleEditor::CleanUp()
-{
+bool ModuleEditor::CleanUp() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();

@@ -3,27 +3,30 @@
 
 #include "Module.h"
 
-#include "MathGeoLib/Math/float4x4.h"
+#include "MathGeoLib/MathGeoLib.h"
 
 class DDRenderInterfaceCoreGL;
 class Camera;
 
-class ModuleDebugDraw : public Module
-{
+class ModuleDebugDraw : public Module {
 
 public:
 
-    ModuleDebugDraw();
-    ~ModuleDebugDraw();
+	ModuleDebugDraw();
+	~ModuleDebugDraw();
 
 	bool            Init();
 	update_status   Update();
 	bool            CleanUp();
 
-    void            Draw(const float4x4& view, const float4x4& proj, unsigned width, unsigned height);
+	void            Draw(const float4x4& view, const float4x4& proj, unsigned width, unsigned height);
+
+
+	void DrawAABB(const AABB& aabb);
+
 private:
 
-    static DDRenderInterfaceCoreGL* implementation;
+	static DDRenderInterfaceCoreGL* implementation;
 };
 
 #endif /* _MODULE_DEBUGDRAW_H_ */

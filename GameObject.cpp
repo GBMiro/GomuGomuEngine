@@ -50,16 +50,22 @@ void GameObject::Update() {
 Component* GameObject::CreateComponent(ComponentType type) {
 	Component* ret = nullptr;
 	switch (type) {
-		case ComponentType::RENDERER:
-			ret = new ComponentMeshRenderer(this);
-			break;
-		case ComponentType::TRANSFORM:
-			//ret = new ComponentTransform();
-			break;
-		case ComponentType::CAMERA:
-			break;
+	case ComponentType::CTMeshRenderer:
+		ret = new ComponentMeshRenderer(this);
+		break;
+	case ComponentType::CTTransform:
+		//ret = new ComponentTransform();
+		break;
+	case ComponentType::CTCamera:
+		break;
 	}
+
+	if (ret != nullptr) {
+		components.push_back(ret);
+	}
+
 	return ret;
+
 }
 
 
@@ -68,11 +74,10 @@ void GameObject::ChangeParent(GameObject* newParent) {
 		this->parent->children.erase(std::remove(this->parent->children.begin(), this->parent->children.end(), this), this->parent->children.end());
 		parent = newParent;
 		newParent->children.push_back(this);
-		ComponentTransform* cTransform = (ComponentTransform*) GetComponentByType(TRANSFORM);
+		ComponentTransform* cTransform = (ComponentTransform*)GetComponentByType(CTTransform);
 		cTransform->SetGlobalTransform();
 		LOG("%s's new parent: %s", GetName(), newParent->GetName());
-	}
-	else LOG("Same parent");
+	} else LOG("Same parent");
 }
 
 bool GameObject::IsAChild(const GameObject* gameObject) const {
@@ -80,7 +85,7 @@ bool GameObject::IsAChild(const GameObject* gameObject) const {
 	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end() && !found; ++it) {
 		if ((*it) == gameObject) found = true;
 		else {
-			if((*it)->IsAChild(gameObject)) found = true;
+			if ((*it)->IsAChild(gameObject)) found = true;
 		}
 	}
 	if (gameObject == this) found = true; //This should be remove
@@ -91,8 +96,12 @@ const char* GameObject::GetName() const {
 	return name.c_str();
 }
 
-AABB GameObject::GetAABB() const {
-	AABB globalAABB;
+void GameObject::GenerateAABB() {
+
+	for (std::vector<GameObject*>::iterator it = children.begin(); it != children.end(); ++it) {
+		(*it)->GenerateAABB();
+	}
+
 	std::vector<AABB> aabb;
 	GetChildsAABB(aabb);
 
@@ -115,11 +124,13 @@ AABB GameObject::GetAABB() const {
 		}
 		globalAABB.minPoint = vec(xMin, yMin, zMin);
 		globalAABB.maxPoint = vec(xMax, yMax, zMax);
-	}
-	else {
+	} else {
 		globalAABB.minPoint = vec(0, 0, 0);
 		globalAABB.maxPoint = vec(0, 0, 0);
 	}
+}
+
+const AABB& GameObject::GetAABB() const {
 	return globalAABB;
 }
 
@@ -127,9 +138,11 @@ void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
 	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it) {
 		(*it)->GetChildsAABB(aabb);
 	}
-	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::RENDERER);
+	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::CTMeshRenderer);
 	if (cRenderer) {
-		aabb.push_back(cRenderer->mesh->GetAABB()); //Agafar la de cRenderer i no la de cRenderer->mesh
+		//aabb.push_back(cRenderer->mesh->GetAABB()); //Agafar la de cRenderer i no la de cRenderer->mesh
+		cRenderer->GenerateAABB();
+		aabb.push_back(cRenderer->localAxisAlignedBoundingBox);
 	}
 }
 
@@ -149,6 +162,9 @@ void GameObject::OnTransformChanged() {
 	for (std::vector<GameObject*>::iterator it = children.begin(); it != children.end(); ++it) {
 		(*it)->OnTransformChanged();
 	}
+
+	GenerateAABB();
+
 }
 
 void GameObject::RemoveFromParent() {
@@ -163,5 +179,11 @@ void GameObject::RemoveFromParent() {
 
 	if (parent != nullptr) {
 		parent->children.erase(myItAtParent);
+	}
+}
+
+void GameObject::DrawGizmos() {
+	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
+		(*it)->DrawGizmos();
 	}
 }

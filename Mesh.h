@@ -5,14 +5,15 @@
 #include <string.h>
 #include <vector>
 
-class Mesh
-{
+
+class Material;
+class Mesh {
 
 public:
 	Mesh(const aiMesh* mesh);
 	~Mesh();
 
-	void Draw(const std::string& textureName, const float4x4& model);
+	void Draw(const Material* material, const float4x4& model);
 	void LoadVBO(const aiMesh* mesh);
 	void LoadEBO(const aiMesh* mesh);
 	void CreateVAO();

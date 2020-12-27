@@ -6,6 +6,7 @@
 #include "GL/glew.h"
 #include "MathGeoLib/Math/float2.h"
 #include "Leaks.h"
+#include "Material.h"
 
 Mesh::Mesh(const aiMesh* mesh) {
 
@@ -84,23 +85,24 @@ void Mesh::CreateVAO() {
 }
 
 void Mesh::CreateAABB(const aiMesh* mesh) {
-	axisAlignedBB.maxPoint= vec(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
+	axisAlignedBB.maxPoint = vec(mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z);
 	axisAlignedBB.minPoint = vec(mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z);
 }
 
-void Mesh::Draw(const std::string& textureName, const float4x4& model) {
+void Mesh::Draw(const Material* mat, const float4x4& model) {
 
 	unsigned program = App->renderer->getProgram();
 	const float4x4& view = App->camera->getViewMatrix();
 	const float4x4& proj = App->camera->getProjectionMatrix();
 
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, (const float*) &model);
-	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, (const float*) &view);
-	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*) &proj);
+	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, (const float*)&model);
+	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, (const float*)&view);
+	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*)&proj);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, App->textures->ExistsTexture(textureName.c_str()));
+	glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
+
 	glUniform1i(glGetUniformLocation(program, "diffuse"), 0);
 
 	glBindVertexArray(VAO);

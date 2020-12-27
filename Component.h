@@ -1,9 +1,9 @@
 #pragma once
 
 enum ComponentType {
-	TRANSFORM,
-	RENDERER,
-	CAMERA
+	CTTransform,
+	CTMeshRenderer,
+	CTCamera
 };
 
 class GameObject;
@@ -21,7 +21,7 @@ public:
 	virtual void DrawOnEditor() {};
 
 	virtual void OnTransformChanged() {};
-
+	virtual void DrawGizmos() {};
 	ComponentType GetType() const;
 
 public:

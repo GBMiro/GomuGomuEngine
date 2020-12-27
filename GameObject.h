@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "MathGeoLib/Math/float4x4.h"
+#include "MathGeoLib/MathGeoLib.h"
 #include "Component.h"
 
 class Component;
@@ -10,7 +10,7 @@ class GameObject {
 
 public:
 	//boolean for ctransform
-	GameObject(GameObject* parent, const char* name); 
+	GameObject(GameObject* parent, const char* name);
 	GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale);
 	~GameObject();
 
@@ -23,16 +23,19 @@ public:
 
 	const char* GetName() const;
 
-	AABB GetAABB() const;
+	void GenerateAABB();
+
+	const AABB& GetAABB() const;
 	void GetChildsAABB(std::vector<AABB>& aabb) const;
 
 	Component* GetComponentByType(ComponentType type) const;
 
 	void OnTransformChanged();
 	void RemoveFromParent();
-
+	void DrawGizmos();
 
 public:
+	AABB globalAABB;
 	std::string name;
 	std::vector<GameObject*> children;
 	std::vector<Component*> components;

@@ -20,12 +20,10 @@ ModuleRender::ModuleRender() {
 }
 
 // Destructor
-ModuleRender::~ModuleRender()
-{
+ModuleRender::~ModuleRender() {
 }
 
-void __stdcall OurOpenGLErrorFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-{
+void __stdcall OurOpenGLErrorFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
 	const char* tmp_source = "", * tmp_type = "", * tmp_severity = "";
 	switch (source) {
 	case GL_DEBUG_SOURCE_API: tmp_source = "API"; break;
@@ -56,8 +54,7 @@ void __stdcall OurOpenGLErrorFunction(GLenum source, GLenum type, GLuint id, GLe
 }
 
 // Called before render is available
-bool ModuleRender::Init()
-{
+bool ModuleRender::Init() {
 	LOG("Creating Renderer context");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -86,16 +83,16 @@ bool ModuleRender::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
-/*
-	//OpenGL Debugg
-#ifdef _DEBUG
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	/*
+		//OpenGL Debugg
+	#ifdef _DEBUG
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-	glDebugMessageCallback(OurOpenGLErrorFunction, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
-#endif // _DEBUG
-*/
+		glDebugMessageCallback(OurOpenGLErrorFunction, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
+	#endif // _DEBUG
+	*/
 
 	char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
 	char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
@@ -104,10 +101,10 @@ bool ModuleRender::Init()
 	unsigned frgId = App->program->compileShader(GL_FRAGMENT_SHADER, frg_shader);
 
 	programId = App->program->createProgram(vtxId, frgId);
-	
+
 	RELEASE(vtx_shader);
 	RELEASE(frg_shader);
-	
+
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	// create a color attachment texture
@@ -118,11 +115,11 @@ bool ModuleRender::Init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
 	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
-	
+
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, App->window->width, App->window->height); 
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, App->window->width, App->window->height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		LOG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
@@ -132,8 +129,7 @@ bool ModuleRender::Init()
 	return true;
 }
 
-update_status ModuleRender::PreUpdate()
-{
+update_status ModuleRender::PreUpdate() {
 	GLsizei w, h = 0;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	glViewport(0, 0, w, h);
@@ -148,8 +144,7 @@ update_status ModuleRender::PreUpdate()
 }
 
 // Called every draw update
-update_status ModuleRender::Update()
-{
+update_status ModuleRender::Update() {
 
 	//OpenGLExercise
 	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
@@ -160,6 +155,7 @@ update_status ModuleRender::Update()
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	App->debugDraw->Draw(view, proj, w, h);
 
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 
@@ -167,16 +163,14 @@ update_status ModuleRender::Update()
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleRender::PostUpdate()
-{
+update_status ModuleRender::PostUpdate() {
 	BROFILER_CATEGORY("Post Update Render", Profiler::Color::Orchid)
-	SDL_GL_SwapWindow(App->window->window);
+		SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }
 
 // Called before quitting
-bool ModuleRender::CleanUp()
-{
+bool ModuleRender::CleanUp() {
 	LOG("Destroying renderer");
 	//Destroy window
 	SDL_GL_DeleteContext(context);
@@ -193,12 +187,12 @@ void ModuleRender::WindowResized(unsigned width, unsigned height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-	
+
 
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, App->window->width, App->window->height); 
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
-	
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, App->window->width, App->window->height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		LOG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -212,8 +206,7 @@ unsigned ModuleRender::getProgram() const {
 	return programId;
 }
 
-void ModuleRender::getGridColor(float* color) const
-{
+void ModuleRender::getGridColor(float* color) const {
 	color[0] = gridColor.x;
 	color[1] = gridColor.y;
 	color[2] = gridColor.z;

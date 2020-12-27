@@ -10,30 +10,26 @@ constexpr GLint magFilters[] = { GL_LINEAR, GL_NEAREST };
 constexpr GLint wrapsModes[] = { GL_CLAMP_TO_BORDER, GL_CLAMP, GL_REPEAT, GL_MIRRORED_REPEAT };
 
 
-ModuleTextures::ModuleTextures()
-{
+ModuleTextures::ModuleTextures() {
 }
 
-ModuleTextures::~ModuleTextures()
-{
+ModuleTextures::~ModuleTextures() {
 
 }
 
-bool ModuleTextures::Init()
-{
+bool ModuleTextures::Init() {
 	ilInit();
-	ilEnable(IL_ORIGIN_SET); 
+	ilEnable(IL_ORIGIN_SET);
 	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 
 	return true;
 }
 
-bool ModuleTextures::CleanUp()
-{
+bool ModuleTextures::CleanUp() {
 	return true;
 }
 
-unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPath) {
+unsigned int ModuleTextures::LoadTexture(const char* path, const char* objectPath, float2 texSize) {
 
 	ILuint imageId;
 	GLuint texture;
@@ -47,21 +43,18 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 		success = ilLoadImage(fullPath.c_str());
 		if (success) {
 			LOG("Texture loaded from %s", fullPath.c_str());
-		}
-		else {
+		} else {
 			std::string myPath("./Resources/Textures/");
 			myPath = myPath + std::string(path);
 			success = ilLoadImage(myPath.c_str());
 			if (success) {
 				LOG("Texture loaded from %s", myPath.c_str());
-			}
-			else {
+			} else {
 				LOG("Texture not found. Be sure to not load a texture with an accent in the path. Loading default texture...")
-				success = ilLoadImage("./Resources/Textures/black.jpg");
+					success = ilLoadImage("./Resources/Textures/black.jpg");
 			}
 		}
-	}
-	else {
+	} else {
 		LOG("Texture loaded from %s", path);
 	}
 	if (success) {
@@ -74,7 +67,7 @@ unsigned int ModuleTextures::loadTexture(const char* path, const char* objectPat
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		
+
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 		glGenerateMipmap(GL_TEXTURE_2D);
 		text.insert(std::pair<std::string, int>(path, texture));

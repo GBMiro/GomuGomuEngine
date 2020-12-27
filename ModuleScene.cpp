@@ -10,7 +10,7 @@
 #include "ComponentMeshRenderer.h"
 #include "ComponentTransform.h"
 #include "Leaks.h"
-
+#include "Material.h"
 ModuleScene::ModuleScene() {
 
 	root = new GameObject(nullptr, "Fake root node");
@@ -38,6 +38,11 @@ bool ModuleScene::Start() {
 	AddObject("./Resources/Models/Crow.fbx");
 	//App->scene->AddObject("./Resources/Models/Sword.fbx");
 	//App->scene->AddObject("./Resources/Models/AmongUs.fbx");
+
+	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
+		root->GenerateAABB();
+	}
+
 	return true;
 }
 
@@ -47,6 +52,13 @@ update_status ModuleScene::PreUpdate() {
 
 update_status ModuleScene::Update() {
 	UpdateGameObjects(root);
+
+	GameObject* selectedObj = App->editor->GetGameObjectSelected();
+
+	if (selectedObj) {
+		selectedObj->DrawGizmos();
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -96,28 +108,22 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
 			CreateGameObject(path, scene, node->mChildren[i], object);
 		}
-	}
-	else {
+	} else {
 		if (node->mNumMeshes > 0) {
 			for (unsigned i = 0; i < node->mNumMeshes; ++i) {
-				ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)object->CreateComponent(ComponentType::RENDERER);
-				meshRenderer->mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
-				aiString textureFileName;
-				if (scene->mMaterials[meshRenderer->mesh->GetMaterialIndex()]->GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == AI_SUCCESS) {
-					std::string name(textureFileName.data);
-					int textureID = App->textures->ExistsTexture(name.c_str());
-					if (textureID < 0) App->textures->loadTexture(name.c_str(), path);
-					else LOG("Texture %s already loaded", name.c_str());
-					meshRenderer->SetTextureName(name);
+				ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)object->CreateComponent(ComponentType::CTMeshRenderer);
+
+				if (meshRenderer) {
+
+					meshRenderer->mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
+					meshRenderer->GenerateAABB();
+					Material* newMat = new Material(scene->mMaterials[scene->mMeshes[i]->mMaterialIndex], path);
+
+					if (newMat) {
+						meshRenderer->SetMaterial(newMat);
+					}
+
 				}
-				else {
-					LOG("No diffuse texture found in the fbx. Loading my own texture...");
-					int textureID = App->textures->ExistsTexture("black.jpg");
-					if (textureID < 0) App->textures->loadTexture("black.jpg", path);
-					else LOG("Texture black.jpg already loaded");
-					meshRenderer->SetTextureName("black.jpg");
-				}
-				object->components.push_back(meshRenderer);
 			}
 		}
 	}
