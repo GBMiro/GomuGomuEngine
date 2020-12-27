@@ -99,7 +99,7 @@ update_status ModuleInput::PreUpdate()
 		case SDL_DROPFILE:
 			App->editor->fileDropped(event.drop.file);
 			App->editor->cleanProperties();
-			App->camera->setCameraPosition();
+			App->camera->FocusOnSelected();
 			break;
 
 		case SDL_WINDOWEVENT:

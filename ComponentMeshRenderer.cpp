@@ -22,7 +22,7 @@ ComponentMeshRenderer::~ComponentMeshRenderer() {
 
 void ComponentMeshRenderer::GenerateAABB() {
 	localOrientedBoundingBox = mesh->GetAABB().ToOBB();
-	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentByType(ComponentType::CTTransform);
+	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
 	//localOrientedBoundingBox.Transform(transform->GetWorldMatrix());
 	localAxisAlignedBoundingBox = localOrientedBoundingBox.MinimalEnclosingAABB();
 }
@@ -40,7 +40,7 @@ void ComponentMeshRenderer::Disable() {
 }
 
 void ComponentMeshRenderer::Draw() {
-	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentByType(CTTransform))->globalTransform);
+	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalTransform);
 }
 
 void ComponentMeshRenderer::SetMaterial(Material* mat) {

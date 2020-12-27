@@ -70,14 +70,18 @@ Component* GameObject::CreateComponent(ComponentType type) {
 
 
 void GameObject::ChangeParent(GameObject* newParent) {
-	if (newParent != parent) {
-		this->parent->children.erase(std::remove(this->parent->children.begin(), this->parent->children.end(), this), this->parent->children.end());
-		parent = newParent;
-		newParent->children.push_back(this);
-		ComponentTransform* cTransform = (ComponentTransform*)GetComponentByType(CTTransform);
-		cTransform->SetGlobalTransform();
-		LOG("%s's new parent: %s", GetName(), newParent->GetName());
-	} else LOG("Same parent");
+	if (newParent != nullptr) {
+		if (newParent != parent) {
+			RemoveFromParent();//this->parent->children.erase(std::remove(this->parent->children.begin(), this->parent->children.end(), this), this->parent->children.end());
+			parent = newParent;
+			newParent->children.push_back(this);
+			ComponentTransform* cTransform = (ComponentTransform*)GetComponentOfType(CTTransform);
+			//TODO: fix transform after changing parent
+			cTransform->SetGlobalTransform();
+			LOG("%s's new parent: %s", GetName(), newParent->GetName());
+		}
+		else LOG("Same parent");
+	}
 }
 
 bool GameObject::IsAChild(const GameObject* gameObject) const {
@@ -138,7 +142,7 @@ void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
 	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it) {
 		(*it)->GetChildsAABB(aabb);
 	}
-	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::CTMeshRenderer);
+	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentOfType(ComponentType::CTMeshRenderer);
 	if (cRenderer) {
 		//aabb.push_back(cRenderer->mesh->GetAABB()); //Agafar la de cRenderer i no la de cRenderer->mesh
 		cRenderer->GenerateAABB();
@@ -146,11 +150,36 @@ void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
 	}
 }
 
-Component* GameObject::GetComponentByType(ComponentType type) const {
+Component* GameObject::GetComponentOfType(ComponentType type) const {
 	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
 		if ((*it)->GetType() == type) return (*it);
 	}
 	return nullptr;
+}
+
+void GameObject::GetComponentsInChildrenOfType(ComponentType type, std::vector<Component*>& components) const {
+
+	Component* mySelf = GetComponentOfType(type);
+	if (mySelf != nullptr) {
+		components.push_back(mySelf);
+	}
+	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+		(*it)->GetComponentsInChildrenOfType(type, components);
+	}
+}
+
+Component* GameObject::GetComponentInChildrenOfType(ComponentType type) {
+	Component* retComp = nullptr;
+
+	if (components.size() > 0)
+		retComp = GetComponentOfType(type);
+
+	if (retComp == nullptr && children.size() > 0) {
+		for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end() && retComp == nullptr; ++it) {
+			retComp = GetComponentInChildrenOfType(type);
+		}
+	}
+	return retComp;
 }
 
 void GameObject::OnTransformChanged() {

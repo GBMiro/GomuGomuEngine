@@ -28,13 +28,16 @@ public:
 	const AABB& GetAABB() const;
 	void GetChildsAABB(std::vector<AABB>& aabb) const;
 
-	Component* GetComponentByType(ComponentType type) const;
+	Component* GetComponentOfType(ComponentType type) const;
+	Component* GetComponentInChildrenOfType(ComponentType type);
+	void GetComponentsInChildrenOfType(ComponentType type, std::vector<Component*>& components) const;
 
 	void OnTransformChanged();
 	void RemoveFromParent();
 	void DrawGizmos();
 
 public:
+	bool active; //TODO
 	AABB globalAABB;
 	std::string name;
 	std::vector<GameObject*> children;

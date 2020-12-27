@@ -29,7 +29,7 @@ bool ModuleCamera::Init() {
 	frustum.SetFront(float3(float3::unitZ));
 	frustum.SetUp(float3(float3::unitY));
 
-	setCameraPosition();
+	FocusOnSelected();
 
 	return true;
 }
@@ -72,7 +72,7 @@ void ModuleCamera::setPlanes(float zNear, float zFar) {
 	farPlane = zFar;
 }
 
-void ModuleCamera::setCameraPosition() {
+void ModuleCamera::FocusOnSelected() {
 	GameObject* selection = App->editor->GetGameObjectSelected();
 	float distance = 0;
 	vec center = vec(0, 0, 0);
@@ -152,7 +152,7 @@ void ModuleCamera::rotateCamera(const float3x3 &rotationMatrix)
 void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed) 
 {
 	float movementSpeed = speed * deltaTime;
-	if (App->input->GetKey(SDL_SCANCODE_F)) setCameraPosition();
+	if (App->input->GetKey(SDL_SCANCODE_F)) FocusOnSelected();
 	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
 		if (App->input->GetKey(SDL_SCANCODE_W)) frustum.SetPos(frustum.Pos() + frustum.Front() * movementSpeed);
 		if (App->input->GetKey(SDL_SCANCODE_S)) frustum.SetPos(frustum.Pos() - frustum.Front() * movementSpeed);

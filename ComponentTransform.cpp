@@ -51,7 +51,7 @@ void ComponentTransform::UpdateLocalTransform() {
 void ComponentTransform::UpdateGlobaltransform() {
 	if (owner) {
 		if (owner->parent) {
-			ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(CTTransform);
+			ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentOfType(CTTransform);
 			if (cTransform) {
 				globalTransform = cTransform->globalTransform * localTransform;
 			}
@@ -63,7 +63,7 @@ void ComponentTransform::UpdateGlobaltransform() {
 }
 
 void ComponentTransform::SetGlobalTransform() {
-	ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentByType(CTTransform);
+	ComponentTransform* cTransform = (ComponentTransform*)owner->parent->GetComponentOfType(CTTransform);
 	if (cTransform) {
 		localTransform = globalTransform * cTransform->globalTransform.Inverted();
 		localTransform.Decompose(position, rotation, scaling);

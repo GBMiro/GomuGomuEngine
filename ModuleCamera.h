@@ -36,7 +36,7 @@ public:
 
 	void setPlanes(float zNear, float zFar);
 
-	void setCameraPosition();
+	void FocusOnSelected();
 
 	void orbitCamera(float xOfsset, float yOffset);
 

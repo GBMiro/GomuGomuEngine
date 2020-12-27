@@ -3,6 +3,7 @@
 #include "ModuleScene.h"
 #include "Application.h"
 #include "GameObject.h"
+#include "ModuleCamera.h"
 #include <vector>
 
 WindowGameObjectHierarchy::WindowGameObjectHierarchy(std::string name, int windowID) : Window(name, windowID) {
@@ -17,7 +18,26 @@ void WindowGameObjectHierarchy::Draw() {
 		ImGui::End();
 		return;
 	}
+	ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+	if (ImGui::BeginPopupContextWindow()) {
+		if (ImGui::Selectable("Create GameObject")) {
+			App->scene->CreateGameObject("GameObject", gameObjectSelected != nullptr ? gameObjectSelected : App->scene->GetRoot());
+		}
+		ImGui::EndPopup();
+	}
+	if (gameObjectSelected != nullptr) {
+		if (ImGui::BeginPopupContextWindow()) {
+			if (ImGui::Selectable("Destroy")) {
+				App->scene->DestroyGameObject(gameObjectSelected);
+				gameObjectSelected = nullptr;
+			}
+			ImGui::EndPopup();
+		}
+	}
 	DrawGameObjectHierarchy(App->scene->GetRoot());
+	//End Scrolling Region
+	ImGui::EndChild();
 	ImGui::End();
 
 	if (gameObjectDrop) gameObjectSelected->ChangeParent(gameObjectDrop);
@@ -25,8 +45,11 @@ void WindowGameObjectHierarchy::Draw() {
 }
 
 void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
+	//TODO: Do not draw root node
 	ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick ;
-	if (gameObject->children.size() == 0) nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	if (gameObject->children.size() == 0) {
+		nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	}
 
 	if (gameObjectSelected == gameObject) {
 		nodeFlags |= ImGuiTreeNodeFlags_Selected;
@@ -34,7 +57,10 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) 
 
 	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags); //Here I'll use UUID instead of Name
 
-	if (ImGui::IsItemClicked())	gameObjectSelected = gameObject;
+	if (ImGui::IsItemClicked(ImGuiMouseButton(0)) || ImGui::IsItemClicked(ImGuiMouseButton(1)))	gameObjectSelected = gameObject;
+	if (ImGui::IsMouseDoubleClicked(0)) {
+		App->camera->FocusOnSelected();
+	}
 	if (ImGui::BeginDragDropSource()) {
 		gameObjectSelected = gameObject;
 		ImGui::SetDragDropPayload("Source", &gameObject, sizeof(GameObject*));
