@@ -36,6 +36,7 @@ public:
 	void SetGameWindowStatus(bool state) { gameWindowSelectedOrHovered = state; }
 	bool GetGameWindowStatus() const { return gameWindowSelectedOrHovered; }
 	GameObject* GetGameObjectSelected() const;
+	void SetGameObjectSelected(GameObject* gameObject);
 
 public:
 	WindowMonitor* monitor = nullptr;

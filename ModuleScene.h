@@ -15,6 +15,7 @@ public:
 	~ModuleScene();
 
 	bool Init();
+	bool Start() override;
 
 	update_status PreUpdate();
 	update_status Update();
@@ -22,6 +23,8 @@ public:
 
 	bool CleanUp();
 
+	GameObject* CreateGameObject(const char* name, GameObject* parent = nullptr);
+	void DestroyGameObject(GameObject* go);
 	void AddObject(const char* path);
 
 	void CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);

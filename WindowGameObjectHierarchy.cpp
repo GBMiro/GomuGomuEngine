@@ -26,7 +26,7 @@ void WindowGameObjectHierarchy::Draw() {
 
 void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
 	ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick ;
-	if (gameObject->childs.size() == 0) nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	if (gameObject->children.size() == 0) nodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
 	if (gameObjectSelected == gameObject) {
 		nodeFlags |= ImGuiTreeNodeFlags_Selected;
@@ -53,7 +53,7 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) 
 
 	if (node_open) {
 
-		for (std::vector<GameObject*>::const_iterator it = gameObject->childs.begin(); it != gameObject->childs.end(); ++it) {
+		for (std::vector<GameObject*>::const_iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 			DrawGameObjectHierarchy(*it);
 		}
 		ImGui::TreePop();

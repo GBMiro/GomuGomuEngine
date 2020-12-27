@@ -9,13 +9,13 @@ class Component;
 class GameObject {
 
 public:
-	GameObject(GameObject* parent, const char* name);
+	//boolean for ctransform
+	GameObject(GameObject* parent, const char* name); 
 	GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale);
 	~GameObject();
 
 	void Update();
 
-	void CleanUp();
 	Component* CreateComponent(ComponentType type);
 
 	void ChangeParent(GameObject* parent);
@@ -29,11 +29,12 @@ public:
 	Component* GetComponentByType(ComponentType type) const;
 
 	void OnTransformChanged();
+	void RemoveFromParent();
 
 
 public:
 	std::string name;
-	std::vector<GameObject*> childs;
+	std::vector<GameObject*> children;
 	std::vector<Component*> components;
 	GameObject* parent = nullptr;
 };

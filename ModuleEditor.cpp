@@ -142,3 +142,7 @@ void ModuleEditor::fileDropped(const char* filename) const {
 GameObject* ModuleEditor::GetGameObjectSelected() const {
 	return hierarchy->GetGameObjectSelected();
 }
+
+void ModuleEditor::SetGameObjectSelected(GameObject* gameObject) {
+	hierarchy->SetGameObjectSelected(gameObject);
+}

@@ -10,7 +10,7 @@
 GameObject::GameObject(GameObject* parent, const char* name) {
 	if (parent) {
 		this->parent = parent;
-		parent->childs.push_back(this);
+		parent->children.push_back(this);
 	}
 	this->name = name;
 	ComponentTransform* cTransform = new ComponentTransform(this, float3::zero, Quat::identity, float3::one);
@@ -20,7 +20,7 @@ GameObject::GameObject(GameObject* parent, const char* name) {
 GameObject::GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale) {
 	if (parent) {
 		this->parent = parent;
-		parent->childs.push_back(this);
+		parent->children.push_back(this);
 	}
 	this->name = name;
 	ComponentTransform* cTransform = new ComponentTransform(this, position, rotation, scale);
@@ -29,7 +29,7 @@ GameObject::GameObject(GameObject* parent, const char* name, const float3& posit
 
 GameObject::~GameObject() {
 
-	for (std::vector<GameObject*>::iterator it = childs.begin(); it != childs.end(); ++it) {
+	for (std::vector<GameObject*>::iterator it = children.begin(); it != children.end(); ++it) {
 		RELEASE(*it);
 	}
 
@@ -37,20 +37,13 @@ GameObject::~GameObject() {
 		RELEASE(*it);
 	}
 
-	childs.clear();
+	children.clear();
 	components.clear();
 }
 
 void GameObject::Update() {
 	for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
 		(*it)->Update();
-	}
-}
-
-void GameObject::CleanUp() {
-
-	for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
-		//(*it)->CleanUp();
 	}
 }
 
@@ -72,9 +65,9 @@ Component* GameObject::CreateComponent(ComponentType type) {
 
 void GameObject::ChangeParent(GameObject* newParent) {
 	if (newParent != parent) {
-		this->parent->childs.erase(std::remove(this->parent->childs.begin(), this->parent->childs.end(), this), this->parent->childs.end());
+		this->parent->children.erase(std::remove(this->parent->children.begin(), this->parent->children.end(), this), this->parent->children.end());
 		parent = newParent;
-		newParent->childs.push_back(this);
+		newParent->children.push_back(this);
 		ComponentTransform* cTransform = (ComponentTransform*) GetComponentByType(TRANSFORM);
 		cTransform->SetGlobalTransform();
 		LOG("%s's new parent: %s", GetName(), newParent->GetName());
@@ -84,13 +77,13 @@ void GameObject::ChangeParent(GameObject* newParent) {
 
 bool GameObject::IsAChild(const GameObject* gameObject) const {
 	bool found = false;
-	for (std::vector<GameObject*>::const_iterator it = childs.begin(); it != childs.end() && !found; ++it) {
+	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end() && !found; ++it) {
 		if ((*it) == gameObject) found = true;
 		else {
 			if((*it)->IsAChild(gameObject)) found = true;
 		}
 	}
-	if (gameObject == this) found = true;
+	if (gameObject == this) found = true; //This should be remove
 	return found;
 }
 
@@ -131,7 +124,7 @@ AABB GameObject::GetAABB() const {
 }
 
 void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
-	for (std::vector<GameObject*>::const_iterator it = childs.begin(); it != childs.end(); ++it) {
+	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it) {
 		(*it)->GetChildsAABB(aabb);
 	}
 	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentByType(ComponentType::RENDERER);
@@ -153,7 +146,22 @@ void GameObject::OnTransformChanged() {
 		(*it)->OnTransformChanged();
 	}
 
-	for (std::vector<GameObject*>::iterator it = childs.begin(); it != childs.end(); ++it) {
+	for (std::vector<GameObject*>::iterator it = children.begin(); it != children.end(); ++it) {
 		(*it)->OnTransformChanged();
+	}
+}
+
+void GameObject::RemoveFromParent() {
+	std::vector<GameObject*>::iterator myItAtParent;
+	bool found = false;
+	for (std::vector<GameObject*>::iterator it = parent->children.begin(); it != parent->children.end() && !found; ++it) {
+		if (*it == this) {
+			myItAtParent = it;
+			found = true;
+		}
+	}
+
+	if (parent != nullptr) {
+		parent->children.erase(myItAtParent);
 	}
 }
