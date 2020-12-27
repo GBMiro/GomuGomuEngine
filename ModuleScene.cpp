@@ -127,6 +127,7 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 			}
 		}
 	}
+	object->GenerateAABB();
 }
 
 void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {

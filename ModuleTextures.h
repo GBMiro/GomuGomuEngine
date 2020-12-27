@@ -22,9 +22,9 @@ public:
 	void setMagFilter(unsigned index, unsigned textureID) const;
 	void setWrapMode(unsigned index, unsigned textureID) const;
 
-	int ExistsTexture(const char* path) const;
+	bool ExistsTexture(const char* path, unsigned int& retID) const;
 
 private:
-	std::map<std::string, int> text;
+	std::map<std::string, int> textureMap;
 };
 

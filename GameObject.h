@@ -26,7 +26,6 @@ public:
 	void GenerateAABB();
 
 	const AABB& GetAABB() const;
-	void GetChildsAABB(std::vector<AABB>& aabb) const;
 
 	Component* GetComponentOfType(ComponentType type) const;
 	Component* GetComponentInChildrenOfType(ComponentType type);

@@ -20,6 +20,7 @@ public:
 	void Draw();
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
+	void OnTransformChanged()override;
 	//void SetTextureName(std::string name) { textureName = name; }
 
 public:

@@ -16,19 +16,34 @@ public:
 
 	void DrawOnEditor();
 
-	void UpdateLocalTransform();
-	void UpdateGlobaltransform();
+	void UpdateLocalMatrix();
+	void UpdateGlobalMatrix();
 
-	void SetGlobalTransform();
+	void OnNewParent(GameObject* oldParent, GameObject* newParent)override;
+	void Reset();
+	float3 CalculateGlobalPosition()const;
+	Quat CalculateGlobalRotation()const;
+	float3 CalculateGlobalScale()const;
 
-	void OnTransformChanged();
+
+
 
 public:
-	float4x4 localTransform;
-	float4x4 globalTransform;
+	bool enabled;
+	float4x4 localMatrix;
+	float4x4 globalMatrix;
 
-	float3 position;
-	float3 scaling;
-	Quat rotation;
+	float3 localPosition;
+	float3 localScale;
+	Quat localRotation;
+
+
+
+private:
+	float3 oldLocalPosition;
+	float3 oldLocalScale;
+	Quat   oldLocalRotation;
+	float3 oldRotDummy;
+
 };
 

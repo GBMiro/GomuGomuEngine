@@ -19,7 +19,7 @@ public:
 	virtual void Disable() = 0;
 
 	virtual void DrawOnEditor() {};
-
+	virtual void OnNewParent(GameObject* oldParent, GameObject* newParent) {};
 	virtual void OnTransformChanged() {};
 	virtual void DrawGizmos() {};
 	ComponentType GetType() const;

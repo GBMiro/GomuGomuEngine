@@ -11,7 +11,6 @@
 #include "ModuleDebugDraw.h"
 
 ComponentMeshRenderer::ComponentMeshRenderer(GameObject* parent) : Component(ComponentType::CTMeshRenderer, parent) {
-
 }
 
 ComponentMeshRenderer::~ComponentMeshRenderer() {
@@ -23,7 +22,7 @@ ComponentMeshRenderer::~ComponentMeshRenderer() {
 void ComponentMeshRenderer::GenerateAABB() {
 	localOrientedBoundingBox = mesh->GetAABB().ToOBB();
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
-	//localOrientedBoundingBox.Transform(transform->GetWorldMatrix());
+	localOrientedBoundingBox.Transform(transform->globalMatrix);
 	localAxisAlignedBoundingBox = localOrientedBoundingBox.MinimalEnclosingAABB();
 }
 
@@ -40,7 +39,7 @@ void ComponentMeshRenderer::Disable() {
 }
 
 void ComponentMeshRenderer::Draw() {
-	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalTransform);
+	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix);
 }
 
 void ComponentMeshRenderer::SetMaterial(Material* mat) {
@@ -50,6 +49,10 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 void ComponentMeshRenderer::DrawOnEditor() {
 
 
+}
+
+void ComponentMeshRenderer::OnTransformChanged() {
+	GenerateAABB();
 }
 
 void ComponentMeshRenderer::DrawGizmos() {

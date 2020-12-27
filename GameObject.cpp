@@ -6,7 +6,8 @@
 #include "Globals.h"
 #include "MathGeoLib/Math/float4x4.h"
 #include "Leaks.h"
-
+#include "Application.h"
+#include "ModuleDebugDraw.h"
 GameObject::GameObject(GameObject* parent, const char* name) {
 	if (parent) {
 		this->parent = parent;
@@ -72,15 +73,25 @@ Component* GameObject::CreateComponent(ComponentType type) {
 void GameObject::ChangeParent(GameObject* newParent) {
 	if (newParent != nullptr) {
 		if (newParent != parent) {
-			RemoveFromParent();//this->parent->children.erase(std::remove(this->parent->children.begin(), this->parent->children.end(), this), this->parent->children.end());
+
+			GameObject* oldParent = parent;
+
+			RemoveFromParent();
+
+			//We substitute the old parent pointer with the new one's
+
 			parent = newParent;
 			newParent->children.push_back(this);
-			ComponentTransform* cTransform = (ComponentTransform*)GetComponentOfType(CTTransform);
-			//TODO: fix transform after changing parent
-			cTransform->SetGlobalTransform();
+
+
+			for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
+				(*it)->OnNewParent(oldParent, newParent);
+			}
+
+
+
 			LOG("%s's new parent: %s", GetName(), newParent->GetName());
-		}
-		else LOG("Same parent");
+		} else LOG("Same parent");
 	}
 }
 
@@ -101,54 +112,46 @@ const char* GameObject::GetName() const {
 }
 
 void GameObject::GenerateAABB() {
+	float3 absoluteMax = math::vec(-10000, -10000, -10000);
+	float3 absoluteMin = float3(100000, 100000, 10000);
 
-	for (std::vector<GameObject*>::iterator it = children.begin(); it != children.end(); ++it) {
-		(*it)->GenerateAABB();
-	}
+	std::vector<Component*>meshRenderers;
 
-	std::vector<AABB> aabb;
-	GetChildsAABB(aabb);
+	GetComponentsInChildrenOfType(ComponentType::CTMeshRenderer, meshRenderers);
 
-	float xMax, xMin, yMax, yMin, zMax, zMin;
-	xMax = xMin = yMax = yMin = zMax = zMin = 0;
-	if (aabb.size() > 0) {
-		xMax = aabb[0].MaxX();
-		xMin = aabb[0].MinX();
-		yMax = aabb[0].MaxY();
-		yMin = aabb[0].MinY();
-		zMax = aabb[0].MaxZ();
-		zMin = aabb[0].MinZ();
-		for (unsigned int i = 1; i < aabb.size(); ++i) {
-			if (xMax < aabb[i].MaxX()) xMax = aabb[i].MaxX();
-			if (xMin > aabb[i].MinX()) xMin = aabb[i].MinX();
-			if (yMax < aabb[i].MaxY()) yMax = aabb[i].MaxY();
-			if (yMin > aabb[i].MinY()) yMin = aabb[i].MinY();
-			if (zMax < aabb[i].MaxZ()) zMax = aabb[i].MaxZ();
-			if (zMin > aabb[i].MinZ()) zMin = aabb[i].MinZ();
+	for (std::vector<Component*>::const_iterator it = meshRenderers.begin(); it != meshRenderers.end(); ++it) {
+		AABB meshAABB = ((ComponentMeshRenderer*)(*it))->localAxisAlignedBoundingBox;
+
+		if (meshAABB.minPoint.x < absoluteMin.x) {
+			absoluteMin.x = meshAABB.minPoint.x;
 		}
-		globalAABB.minPoint = vec(xMin, yMin, zMin);
-		globalAABB.maxPoint = vec(xMax, yMax, zMax);
-	} else {
-		globalAABB.minPoint = vec(0, 0, 0);
-		globalAABB.maxPoint = vec(0, 0, 0);
+		if (meshAABB.minPoint.y < absoluteMin.y) {
+			absoluteMin.y = meshAABB.minPoint.y;
+		}
+		if (meshAABB.minPoint.z < absoluteMin.z) {
+			absoluteMin.z = meshAABB.minPoint.z;
+		}
+
+		if (meshAABB.maxPoint.x > absoluteMax.x) {
+			absoluteMax.x = meshAABB.maxPoint.x;
+		}
+		if (meshAABB.maxPoint.y > absoluteMax.y) {
+			absoluteMax.y = meshAABB.maxPoint.y;
+		}
+		if (meshAABB.maxPoint.z > absoluteMax.z) {
+			absoluteMax.z = meshAABB.maxPoint.z;
+		}
 	}
+
+	globalAABB.minPoint = absoluteMin;
+	globalAABB.maxPoint = absoluteMax;
+
 }
 
 const AABB& GameObject::GetAABB() const {
 	return globalAABB;
 }
 
-void GameObject::GetChildsAABB(std::vector<AABB>& aabb) const {
-	for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it) {
-		(*it)->GetChildsAABB(aabb);
-	}
-	ComponentMeshRenderer* cRenderer = (ComponentMeshRenderer*)GetComponentOfType(ComponentType::CTMeshRenderer);
-	if (cRenderer) {
-		//aabb.push_back(cRenderer->mesh->GetAABB()); //Agafar la de cRenderer i no la de cRenderer->mesh
-		cRenderer->GenerateAABB();
-		aabb.push_back(cRenderer->localAxisAlignedBoundingBox);
-	}
-}
 
 Component* GameObject::GetComponentOfType(ComponentType type) const {
 	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
@@ -212,6 +215,8 @@ void GameObject::RemoveFromParent() {
 }
 
 void GameObject::DrawGizmos() {
+
+	App->debugDraw->DrawAABB(globalAABB);
 	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
 		(*it)->DrawGizmos();
 	}

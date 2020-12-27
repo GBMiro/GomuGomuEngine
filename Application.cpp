@@ -14,8 +14,7 @@
 
 using namespace std;
 
-Application::Application()
-{
+Application::Application() {
 	// Order matters: they will Init/start/update in this order
 	modules.push_back(window = new ModuleWindow());
 	modules.push_back(textures = new ModuleTextures());
@@ -30,19 +29,16 @@ Application::Application()
 	deltaTime = lastFrame = 0.0f;
 }
 
-Application::~Application()
-{
-	for(list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it)
-    {
-        delete *it;
-    }
+Application::~Application() {
+	for (list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it) {
+		delete* it;
+	}
 }
 
-bool Application::Init()
-{
+bool Application::Init() {
 	bool ret = true;
 
-	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret; ++it)
+	for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret; ++it)
 		ret = (*it)->Init();
 
 	return ret;
@@ -57,36 +53,34 @@ bool Application::Start() {
 	return ret;
 }
 
-update_status Application::Update()
-{
+update_status Application::Update() {
 	update_status ret = UPDATE_CONTINUE;
 
-	float currentFrame = SDL_GetTicks(); 
-	deltaTime = (currentFrame - lastFrame) / (float) 1000.0f;
+	float currentFrame = SDL_GetTicks();
+	deltaTime = (currentFrame - lastFrame) / (float)1000.0f;
 	lastFrame = currentFrame;
 
 	BROFILER_CATEGORY("PreUpdate", Profiler::Color::Orchid)
-	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
-		ret = (*it)->PreUpdate();
+		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
+			ret = (*it)->PreUpdate();
 
 	BROFILER_CATEGORY("Update", Profiler::Color::Orchid)
-	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
-		ret = (*it)->Update();
+		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
+			ret = (*it)->Update();
 
 	BROFILER_CATEGORY("PostUpdate", Profiler::Color::Orchid)
-	for(list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
-		ret = (*it)->PostUpdate();
+		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
+			ret = (*it)->PostUpdate();
 
 	editor->registerFPS(deltaTime);
 
 	return ret;
 }
 
-bool Application::CleanUp()
-{
+bool Application::CleanUp() {
 	bool ret = true;
 
-	for(list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it)
+	for (list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it)
 		ret = (*it)->CleanUp();
 
 	return ret;

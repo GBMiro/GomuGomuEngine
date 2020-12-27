@@ -46,7 +46,7 @@ void WindowGameObjectHierarchy::Draw() {
 
 void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
 	//TODO: Do not draw root node
-	ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick ;
+	ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 	if (gameObject->children.size() == 0) {
 		nodeFlags |= ImGuiTreeNodeFlags_Leaf;
 	}

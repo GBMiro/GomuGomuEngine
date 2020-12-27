@@ -31,8 +31,17 @@ bool ModuleTextures::CleanUp() {
 
 unsigned int ModuleTextures::LoadTexture(const char* path, const char* objectPath, float2 texSize) {
 
-	ILuint imageId;
+
+
 	GLuint texture;
+
+	if (ExistsTexture(path, texture)) {
+		LOG("Loading %s from previously loaded texture", path);
+		return texture;
+	}
+
+	ILuint imageId;
+
 	ilGenImages(1, &imageId);
 	ilBindImage(imageId);
 	ILboolean success = ilLoadImage(path);
@@ -70,7 +79,7 @@ unsigned int ModuleTextures::LoadTexture(const char* path, const char* objectPat
 
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 		glGenerateMipmap(GL_TEXTURE_2D);
-		text.insert(std::pair<std::string, int>(path, texture));
+		textureMap.insert(std::pair<std::string, int>(path, texture));
 	}
 
 	ilDeleteImages(1, &imageId);
@@ -96,9 +105,10 @@ void ModuleTextures::setWrapMode(unsigned index, unsigned textureID) const {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-int ModuleTextures::ExistsTexture(const char* path) const {
-	auto search = text.find(path);
+bool ModuleTextures::ExistsTexture(const char* path, unsigned int& retID) const {
 	int textureID = -1;
-	if (search != text.end()) textureID = search->second;
-	return textureID;
+	auto search = textureMap.find(path);
+	if (search != textureMap.end()) textureID = search->second;
+	retID = textureID;
+	return textureID != -1;
 }
