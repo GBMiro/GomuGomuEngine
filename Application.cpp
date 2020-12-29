@@ -4,13 +4,13 @@
 #include "ModuleRender.h"
 #include "ModuleInput.h"
 #include "ModuleCamera.h"
-#include "ModuleProgram.h"
 #include "ModuleEditor.h"
 #include "ModuleDebugDraw.h"
 #include "ModuleTextures.h"
 #include "ModuleScene.h"
 #include "Brofiler/include/Brofiler.h"
 #include "Leaks.h"
+#include "Timer.h"
 
 using namespace std;
 
@@ -21,12 +21,11 @@ Application::Application() {
 	modules.push_back(scene = new ModuleScene());
 	modules.push_back(renderer = new ModuleRender());
 	modules.push_back(debugDraw = new ModuleDebugDraw());
-	modules.push_back(program = new ModuleProgram());
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(editor = new ModuleEditor());
 	modules.push_back(camera = new ModuleCamera());
-
-	deltaTime = lastFrame = 0.0f;
+	capTimer = new Timer();
+	SetFrameCap(60);
 }
 
 Application::~Application() {
@@ -56,9 +55,7 @@ bool Application::Start() {
 update_status Application::Update() {
 	update_status ret = UPDATE_CONTINUE;
 
-	float currentFrame = SDL_GetTicks();
-	deltaTime = (currentFrame - lastFrame) / (float)1000.0f;
-	lastFrame = currentFrame;
+	capTimer->Start();
 
 	BROFILER_CATEGORY("PreUpdate", Profiler::Color::Orchid)
 		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
@@ -72,9 +69,33 @@ update_status Application::Update() {
 		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 			ret = (*it)->PostUpdate();
 
-	editor->registerFPS(deltaTime);
+
+	if (millisPerFrame > (Uint32)0) {
+		Uint32 frameMillis = capTimer->Read();
+
+		if (frameMillis < millisPerFrame) {
+			SDL_Delay(millisPerFrame - frameMillis);
+		}
+	}
+
+	lastDeltaTime = capTimer->Read() / 1000;
+	editor->registerFPS(lastDeltaTime);
 
 	return ret;
+}
+
+float Application::GetDeltaTime() {
+	return lastDeltaTime;
+}
+
+void Application::SetFrameCap(int newFrameCap) {
+	frameCap = newFrameCap;
+
+	millisPerFrame = frameCap > 0 ? 1000 / newFrameCap : 0;
+}
+
+const int& Application::GetFrameCap() const {
+	return frameCap;
 }
 
 bool Application::CleanUp() {
@@ -82,6 +103,8 @@ bool Application::CleanUp() {
 
 	for (list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it)
 		ret = (*it)->CleanUp();
+
+	delete capTimer;
 
 	return ret;
 }

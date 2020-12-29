@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleWindow.h"
-#include "ModuleProgram.h"
+#include "ShadingProgram.h"
 #include "ModuleCamera.h"
 #include "ModuleTextures.h"
 #include "ModuleDebugDraw.h"
@@ -94,16 +94,20 @@ bool ModuleRender::Init() {
 	#endif // _DEBUG
 	*/
 
-	char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
-	char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
+	//char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
+	//char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
 
-	unsigned vtxId = App->program->compileShader(GL_VERTEX_SHADER, vtx_shader);
-	unsigned frgId = App->program->compileShader(GL_FRAGMENT_SHADER, frg_shader);
+	//unsigned vtxId = App->program->compileShader(GL_VERTEX_SHADER, vtx_shader);
+	//unsigned frgId = App->program->compileShader(GL_FRAGMENT_SHADER, frg_shader);
 
-	programId = App->program->createProgram(vtxId, frgId);
+	//defaultProgram = App->program->createProgram(vtxId, frgId);
 
-	RELEASE(vtx_shader);
-	RELEASE(frg_shader);
+	defaultProgram = new ShadingProgram("./Shaders/default_vertex.glsl", "./Shaders/default_fragment.glsl");
+	unLitProgram = new ShadingProgram("./Shaders/unlit.vs", "./Shaders/unlit.fs");
+	litProgram = new ShadingProgram("./Shaders/litVertex.glsl", "./Shaders/litFragment.glsl");
+
+	//RELEASE(vtx_shader);
+	//RELEASE(frg_shader);
 
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -173,6 +177,10 @@ update_status ModuleRender::PostUpdate() {
 bool ModuleRender::CleanUp() {
 	LOG("Destroying renderer");
 	//Destroy window
+
+	RELEASE(defaultProgram);
+	RELEASE(litProgram);
+	RELEASE(unLitProgram);
 	SDL_GL_DeleteContext(context);
 	return true;
 }
@@ -202,8 +210,8 @@ void* ModuleRender::getContext() const {
 	return context;
 }
 
-unsigned ModuleRender::getProgram() const {
-	return programId;
+const unsigned& ModuleRender::getDefaultProgram() const {
+	return defaultProgram->GetID();
 }
 
 void ModuleRender::getGridColor(float* color) const {

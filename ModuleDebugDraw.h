@@ -22,8 +22,10 @@ public:
 	void            Draw(const float4x4& view, const float4x4& proj, unsigned width, unsigned height);
 
 
+	void DrawGrid(float gridMinSquares, float gridMaxSquares, float gridPos, float gridStep, float3 color);
+	void DrawAxisTriad(float4x4 axisTransform = float4x4::identity, float axisWidth = 0.3f, float axisLength = 3.0f);
+	void DrawFrustum(const Frustum& frustum);
 	void DrawAABB(const AABB& aabb);
-
 private:
 
 	static DDRenderInterfaceCoreGL* implementation;

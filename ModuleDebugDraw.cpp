@@ -622,6 +622,18 @@ void ModuleDebugDraw::Draw(const float4x4& view, const float4x4& proj, unsigned 
 }
 
 
+void ModuleDebugDraw::DrawGrid(float gridMinSquares, float gridMaxSquares, float gridPos, float gridStep, float3 color) {
+    dd::xzSquareGrid(gridMinSquares, gridMaxSquares, gridPos, gridStep, color);
+}
+
+void ModuleDebugDraw::DrawAxisTriad(float4x4 axisTransform, float axisWidth, float axisLength) {
+    dd::axisTriad(axisTransform, axisWidth, axisLength);
+}
+
+void ModuleDebugDraw::DrawFrustum(const Frustum& frustum) {
+    dd::frustum(frustum.ViewProjMatrix().Inverted(), float3(1.0f, 1.0f, 1.0f));
+}
+
 
 void ModuleDebugDraw::DrawAABB(const AABB& aabb) {
     float3 points[8] = { float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero ,float3::zero };

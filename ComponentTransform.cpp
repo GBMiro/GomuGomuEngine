@@ -2,7 +2,8 @@
 #include "GameObject.h"
 #include "imgui.h"
 #include "Leaks.h"
-
+#include "Application.h"
+#include "ModuleDebugDraw.h"
 
 ComponentTransform::ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling) : Component(ComponentType::CTTransform, parent) {
 
@@ -83,6 +84,9 @@ void ComponentTransform::UpdateGlobalMatrix() {
 	}
 }
 
+void ComponentTransform::DrawGizmos() {
+	App->debugDraw->DrawAxisTriad(globalMatrix);
+}
 
 
 Quat ComponentTransform::CalculateGlobalRotation()const {
@@ -149,4 +153,13 @@ void ComponentTransform::OnNewParent(GameObject* oldParent, GameObject* newParen
 		localRotation = newGlobalRot * prevGlobalRot * localRotation;
 
 	}
+}
+
+
+void ComponentTransform::SetPosition(float3 newGlobalPos) {
+	float3 globalPos = CalculateGlobalPosition();
+	float3 globalMovement = newGlobalPos - globalPos;
+
+	localPosition += globalMovement;
+
 }

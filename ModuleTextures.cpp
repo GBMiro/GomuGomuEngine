@@ -29,7 +29,7 @@ bool ModuleTextures::CleanUp() {
 	return true;
 }
 
-unsigned int ModuleTextures::LoadTexture(const char* path, const char* objectPath, float2 texSize) {
+unsigned int ModuleTextures::LoadTexture(const char* path, const char* objectPath, float2 diffuseTexSize) {
 
 
 

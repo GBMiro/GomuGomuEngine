@@ -5,7 +5,7 @@
 #include <string.h>
 #include <vector>
 
-
+class ComponentPointLight;
 class Material;
 class Mesh {
 
@@ -13,7 +13,7 @@ public:
 	Mesh(const aiMesh* mesh);
 	~Mesh();
 
-	void Draw(const Material* material, const float4x4& model);
+	void Draw(const Material* material, const float4x4& model, const ComponentPointLight* pointLight);
 	void LoadVBO(const aiMesh* mesh);
 	void LoadEBO(const aiMesh* mesh);
 	void CreateVAO();

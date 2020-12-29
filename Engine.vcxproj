@@ -138,11 +138,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentMeshRenderer.h" />
+    <ClInclude Include="ComponentPointLight.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModuleScene.h" />
+    <ClInclude Include="PreciseTimer.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="WindowAbout.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="WindowConfiguration.h" />
@@ -249,7 +253,7 @@
     <ClInclude Include="ModuleDebugDraw.h" />
     <ClInclude Include="ModuleEditor.h" />
     <ClInclude Include="ModuleInput.h" />
-    <ClInclude Include="ModuleProgram.h" />
+    <ClInclude Include="ShadingProgram.h" />
     <ClInclude Include="ModuleRender.h" />
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="ModuleWindow.h" />
@@ -262,11 +266,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentMeshRenderer.cpp" />
+    <ClCompile Include="ComponentPointLight.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
+    <ClCompile Include="PreciseTimer.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowAbout.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="WindowConfiguration.cpp" />
@@ -326,7 +334,7 @@
     <ClCompile Include="ModuleDebugDraw.cpp" />
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
-    <ClCompile Include="ModuleProgram.cpp" />
+    <ClCompile Include="ShadingProgram.cpp" />
     <ClCompile Include="ModuleRender.cpp" />
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />

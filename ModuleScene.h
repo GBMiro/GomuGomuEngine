@@ -3,10 +3,13 @@
 #include "Globals.h"
 #include <string>
 #include <vector>
+#include <float.h>
+#include "MathGeoLib/Math/float3.h"
 
 class GameObject;
 class aiNode;
 class aiScene;
+class ComponentPointLight;
 
 class ModuleScene : public Module {
 
@@ -33,7 +36,8 @@ public:
 
 public:
 	std::vector<unsigned> materials;
-
+	ComponentPointLight* pointLight;
+	float3 ambientLight;
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 

@@ -1,5 +1,6 @@
 #include "ComponentMeshRenderer.h"
 #include "ComponentTransform.h"
+#include <imgui.h>>
 #include "assimp/scene.h"
 #include "GL/glew.h"
 #include "MathGeoLib/Math/float2.h"
@@ -9,6 +10,8 @@
 #include "Leaks.h"
 #include "Material.h"
 #include "ModuleDebugDraw.h"
+#include "ComponentPointLight.h"
+#include "ModuleScene.h"
 
 ComponentMeshRenderer::ComponentMeshRenderer(GameObject* parent) : Component(ComponentType::CTMeshRenderer, parent) {
 }
@@ -39,7 +42,7 @@ void ComponentMeshRenderer::Disable() {
 }
 
 void ComponentMeshRenderer::Draw() {
-	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix);
+	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->pointLight);
 }
 
 void ComponentMeshRenderer::SetMaterial(Material* mat) {
@@ -47,8 +50,18 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 }
 
 void ComponentMeshRenderer::DrawOnEditor() {
+	//float3(1.0, 0.71, 0.29);
+	if (ImGui::CollapsingHeader("Material Values")) {
+		float shininessDummy = material->GetShininess();
+		if (ImGui::DragFloat("Shininess", &shininessDummy)) {
+			material->SetShininess(shininessDummy);
+		}
 
-
+		float3 specularDummy = material->GetSpecularColor();
+		if (ImGui::InputFloat3("Specular Color", specularDummy.ptr())) {
+			material->SetSpecularColor(specularDummy);
+		}
+	}
 }
 
 void ComponentMeshRenderer::OnTransformChanged() {

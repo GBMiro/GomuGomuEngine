@@ -9,15 +9,14 @@ class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
 class ModuleCamera;
-class ModuleProgram;
 class ModuleEditor;
 class ModuleDebugDraw;
 class ModuleTextures;
 class ModuleScene;
 class Model;
+class Timer;
 
-class Application
-{
+class Application {
 public:
 
 	Application();
@@ -33,18 +32,21 @@ public:
 	ModuleWindow* window = nullptr;
 	ModuleInput* input = nullptr;
 	ModuleCamera* camera = nullptr;
-	ModuleProgram* program = nullptr;
 	ModuleEditor* editor = nullptr;
 	ModuleDebugDraw* debugDraw = nullptr;
 	ModuleTextures* textures = nullptr;
 	ModuleScene* scene = nullptr;
 
-	float deltaTime;
+	float GetDeltaTime();
+	void SetFrameCap(int frameCap);
+	const int& GetFrameCap()const;
+
 
 private:
-
-	float lastFrame;
+	unsigned int frameCap, millisPerFrame;
+	float lastDeltaTime;
 	std::list<Module*> modules;
+	Timer* capTimer;
 
 };
 

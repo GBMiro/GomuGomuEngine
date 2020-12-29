@@ -16,7 +16,7 @@ public:
 
 	bool CleanUp();
 
-	unsigned int LoadTexture(const char* path, const char* objectPath, float2 texSize);
+	unsigned int LoadTexture(const char* path, const char* objectPath, float2 diffuseTexSize);
 
 	void setMinFilter(unsigned index, unsigned textureID) const;
 	void setMagFilter(unsigned index, unsigned textureID) const;

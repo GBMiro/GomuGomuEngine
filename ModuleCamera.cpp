@@ -11,13 +11,11 @@
 #include "GameObject.h"
 #include "Leaks.h"
 
-ModuleCamera::ModuleCamera() : posX(0.0f), posY(1.0f), posZ(-10.0f)
-{
+ModuleCamera::ModuleCamera() : posX(0.0f), posY(1.0f), posZ(-10.0f) {
 
 }
 
-ModuleCamera::~ModuleCamera()
-{
+ModuleCamera::~ModuleCamera() {
 }
 
 bool ModuleCamera::Init() {
@@ -34,30 +32,25 @@ bool ModuleCamera::Init() {
 	return true;
 }
 
-update_status ModuleCamera::PreUpdate()
-{
+update_status ModuleCamera::PreUpdate() {
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleCamera::Update()
-{
+update_status ModuleCamera::Update() {
 	updateCamera();
 
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleCamera::PostUpdate()
-{
+update_status ModuleCamera::PostUpdate() {
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleCamera::CleanUp()
-{
+bool ModuleCamera::CleanUp() {
 	return true;
 }
 
-void ModuleCamera::SetFOV(float fov)
-{
+void ModuleCamera::SetFOV(float fov) {
 	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, frustum.AspectRatio());
 	this->fov = fov;
 }
@@ -112,13 +105,11 @@ void ModuleCamera::LookAt(const float3& point) {
 	pitch = 0.0f;
 }
 
-float4x4 ModuleCamera::getProjectionMatrix() const
-{
+float4x4 ModuleCamera::getProjectionMatrix() const {
 	return frustum.ProjectionMatrix();
 }
 
-float4x4 ModuleCamera::getViewMatrix() const
-{
+float4x4 ModuleCamera::getViewMatrix() const {
 	return float4x4(frustum.ViewMatrix());
 }
 
@@ -127,21 +118,19 @@ void ModuleCamera::getPlanes(float* zNear, float* zFar) const {
 	*zFar = frustum.FarPlaneDistance();
 }
 
-void ModuleCamera::updateCamera()
-{
-	
+void ModuleCamera::updateCamera() {
+
 	float speed = cameraSpeed;
 	float cameraRotationSpeed = angleSpeed;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT)) {
 		speed *= 2;
 		cameraRotationSpeed *= 2;
 	}
-	processKeyboardInput(App->deltaTime, speed, cameraRotationSpeed);
-	processMouseInput(App->deltaTime);	
+	processKeyboardInput(App->GetDeltaTime(), speed, cameraRotationSpeed);
+	processMouseInput(App->GetDeltaTime());
 }
 
-void ModuleCamera::rotateCamera(const float3x3 &rotationMatrix)
-{
+void ModuleCamera::rotateCamera(const float3x3& rotationMatrix) {
 	vec oldFront = frustum.Front().Normalized();
 	frustum.SetFront(rotationMatrix * oldFront);
 
@@ -149,8 +138,7 @@ void ModuleCamera::rotateCamera(const float3x3 &rotationMatrix)
 	frustum.SetUp(rotationMatrix * oldUp);
 }
 
-void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed) 
-{
+void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed) {
 	float movementSpeed = speed * deltaTime;
 	if (App->input->GetKey(SDL_SCANCODE_F)) FocusOnSelected();
 	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
@@ -184,7 +172,7 @@ void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float came
 		if (pitch > 89.0f) pitch = 89.0f;
 		pitch += cameraRotationSpeed * deltaTime;
 		float3x3 rotationMatrix = frustum.ViewMatrix().RotatePart();
-		rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), DEGTORAD  * (pitch - oldPitch));
+		rotationMatrix = rotationMatrix.RotateAxisAngle(frustum.WorldRight(), DEGTORAD * (pitch - oldPitch));
 
 		rotateCamera(rotationMatrix);
 	}
@@ -200,8 +188,7 @@ void ModuleCamera::processKeyboardInput(float deltaTime, float speed, float came
 	}
 }
 
-void ModuleCamera::processMouseInput(float deltaTime)
-{
+void ModuleCamera::processMouseInput(float deltaTime) {
 	// Guide: https://learnopengl.com/Getting-started/Camera
 
 	iPoint motion = App->input->GetMouseMotion();

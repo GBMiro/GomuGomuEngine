@@ -8,8 +8,9 @@ struct SDL_Texture;
 struct SDL_Renderer;
 struct SDL_Rect;
 
-class ModuleRender : public Module
-{
+class ShadingProgram;
+
+class ModuleRender : public Module {
 public:
 	ModuleRender();
 	~ModuleRender();
@@ -20,9 +21,9 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 	void WindowResized(unsigned width, unsigned height);
-	
+
 	void* getContext() const;
-	unsigned getProgram() const;
+	const unsigned& getDefaultProgram() const;
 	void getGridColor(float* color) const;
 	void getBackgroundColor(float* color) const;
 	unsigned int getFrameTexture() const { return textureColorbuffer; }
@@ -32,10 +33,14 @@ public:
 
 private:
 	void* context;
-	unsigned programId;
+	ShadingProgram* defaultProgram;
 	float3 gridColor;
 	float3 backgroundColor;
 	unsigned int framebuffer;
 	unsigned int textureColorbuffer;
 	unsigned int rbo;
+public:
+	ShadingProgram* litProgram;
+	ShadingProgram* unLitProgram;
+	float3 defaultColor;
 };

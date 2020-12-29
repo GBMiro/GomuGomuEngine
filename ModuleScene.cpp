@@ -11,8 +11,10 @@
 #include "ComponentTransform.h"
 #include "Leaks.h"
 #include "Material.h"
-ModuleScene::ModuleScene() {
+#include "ComponentPointLight.h"
 
+ModuleScene::ModuleScene() {
+	ambientLight = float3(0.1f, 0.1f, 0.1f);
 	root = new GameObject(nullptr, "Fake root node");
 }
 
@@ -42,6 +44,9 @@ bool ModuleScene::Start() {
 	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
 		root->GenerateAABB();
 	}
+
+	GameObject* lightObj = CreateGameObject("PointLight", root);
+	pointLight = (ComponentPointLight*)lightObj->CreateComponent(ComponentType::CTLight);
 
 	return true;
 }

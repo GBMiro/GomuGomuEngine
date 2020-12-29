@@ -10,11 +10,11 @@ public:
 	ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling);
 	~ComponentTransform();
 
-	void Enable();
-	void Update();
-	void Disable();
+	void Enable() override;
+	void Update() override;
+	void Disable() override;
 
-	void DrawOnEditor();
+	void DrawOnEditor() override;
 
 	void UpdateLocalMatrix();
 	void UpdateGlobalMatrix();
@@ -24,7 +24,8 @@ public:
 	float3 CalculateGlobalPosition()const;
 	Quat CalculateGlobalRotation()const;
 	float3 CalculateGlobalScale()const;
-
+	void SetPosition(float3 newGlobalPos);
+	void DrawGizmos()override;
 
 
 

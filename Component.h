@@ -3,7 +3,8 @@
 enum ComponentType {
 	CTTransform,
 	CTMeshRenderer,
-	CTCamera
+	CTCamera,
+	CTLight
 };
 
 class GameObject;

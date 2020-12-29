@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "ComponentMeshRenderer.h"
 #include "ComponentTransform.h"
+#include "ComponentPointLight.h"
 #include "assimp/scene.h"
 #include "Mesh.h"
 #include "Globals.h"
@@ -8,6 +9,7 @@
 #include "Leaks.h"
 #include "Application.h"
 #include "ModuleDebugDraw.h"
+
 GameObject::GameObject(GameObject* parent, const char* name) {
 	if (parent) {
 		this->parent = parent;
@@ -59,7 +61,12 @@ Component* GameObject::CreateComponent(ComponentType type) {
 		break;
 	case ComponentType::CTCamera:
 		break;
+	case ComponentType::CTLight:
+		ret = new ComponentPointLight(this);
+
+		break;
 	}
+
 
 	if (ret != nullptr) {
 		components.push_back(ret);

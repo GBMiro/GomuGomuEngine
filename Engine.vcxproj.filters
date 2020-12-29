@@ -134,7 +134,6 @@
       <Filter>MathGeoLib</Filter>
     </ClCompile>
     <ClCompile Include="ModuleCamera.cpp" />
-    <ClCompile Include="ModuleProgram.cpp" />
     <ClCompile Include="imgui-docking\imgui_draw.cpp">
       <Filter>IMGUI</Filter>
     </ClCompile>
@@ -193,6 +192,15 @@
       <Filter>WindowUI</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="ShadingProgram.cpp" />
+    <ClCompile Include="ComponentLight.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPointLight.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PreciseTimer.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -430,7 +438,6 @@
       <Filter>MathGeoLib</Filter>
     </ClInclude>
     <ClInclude Include="ModuleCamera.h" />
-    <ClInclude Include="ModuleProgram.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="imgui-docking\imgui_internal.h">
       <Filter>IMGUI</Filter>
@@ -527,6 +534,15 @@
       <Filter>WindowUI</Filter>
     </ClInclude>
     <ClInclude Include="Material.h" />
+    <ClInclude Include="ShadingProgram.h" />
+    <ClInclude Include="ComponentLight.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPointLight.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PreciseTimer.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">
