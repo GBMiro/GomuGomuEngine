@@ -11,7 +11,10 @@
 #include "ComponentTransform.h"
 #include "Leaks.h"
 #include "Material.h"
+#include "ImporterMesh.h"
 #include "ComponentPointLight.h"
+#include "ModuleFileSystem.h"
+#include "Timer.h"
 
 ModuleScene::ModuleScene() {
 	ambientLight = float3(0.1f, 0.1f, 0.1f);
@@ -33,13 +36,20 @@ bool ModuleScene::Init() {
 }
 
 bool ModuleScene::Start() {
+	Timer* t = new Timer();
+	t->Start();
 	AddObject("./Resources/Models/BakerHouse.fbx");
+	LOG("Loading from fbx: %.f ms", t->Read()); // Even if we have the mesh file created, this takes 34 ms because it's loading the texture from the fbx. When using custom format loading time will be shorter
+	t->Start();
+	AddObject("./Resources/Models/BakerHouse.fbx");
+	LOG("Loading from custom format files: %.f ms", t->Read()); // This takes 5 ms (correct time) when loading the second baker house
 	AddObject("./Resources/Models/Fox.fbx");
 	GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
 	DestroyGameObject(dummy);
 	AddObject("./Resources/Models/Crow.fbx");
 	//App->scene->AddObject("./Resources/Models/Sword.fbx");
 	//App->scene->AddObject("./Resources/Models/AmongUs.fbx");
+	RELEASE(t);
 
 	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
 		root->GenerateAABB();
@@ -119,8 +129,33 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 				ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)object->CreateComponent(ComponentType::CTMeshRenderer);
 
 				if (meshRenderer) {
-
-					meshRenderer->mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
+					meshRenderer->mesh = new Mesh();
+					std::string filename;
+					App->FS->GetFileName(path, filename);
+					std::hash<std::string> str_hash;
+					meshRenderer->mesh->SetFileID(str_hash(filename + std::string(name)));
+					ImporterMesh a;
+					if (!App->FS->Exists((std::string("Assets/Library/Meshes/") + std::string(std::to_string(meshRenderer->mesh->GetFileID()))).c_str())) {
+						a.Import(scene->mMeshes[node->mMeshes[i]], meshRenderer->mesh);
+						char* buffer;
+						unsigned size = a.Save(meshRenderer->mesh, &buffer);
+						unsigned written = App->FS->Save((std::string("Assets/Library/Meshes/") + std::string(std::to_string(meshRenderer->mesh->GetFileID()))).c_str(), buffer, size);
+						if (written != size) {
+							LOG("Error writing the mesh file");
+						}
+						else {
+							LOG("Mesh saved in Library/Meshes");
+						}
+						RELEASE(buffer);
+					}
+					else {
+						char* buffer;
+						unsigned bytesRead = App->FS->Load((std::string("Assets/Library/Meshes/") + std::string(std::to_string(meshRenderer->mesh->GetFileID()))).c_str(), &buffer);
+						a.Load(buffer, meshRenderer->mesh);
+						RELEASE(buffer);
+						LOG("Mesh file loaded from Library/Meshes folder");
+					}
+					meshRenderer->mesh->Load();
 					meshRenderer->GenerateAABB();
 					Material* newMat = new Material(scene->mMaterials[scene->mMeshes[i]->mMaterialIndex], path);
 

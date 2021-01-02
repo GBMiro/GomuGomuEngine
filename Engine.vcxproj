@@ -143,6 +143,7 @@
     <ClInclude Include="ComponentPointLight.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ImporterMesh.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleScene.h" />
@@ -272,6 +273,7 @@
     <ClCompile Include="ComponentPointLight.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ImporterMesh.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
     <ClCompile Include="ModuleScene.cpp" />

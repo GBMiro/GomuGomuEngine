@@ -10,14 +10,13 @@ class Material;
 class Mesh {
 
 public:
-	Mesh(const aiMesh* mesh);
+	Mesh();
 	~Mesh();
 
+	void Load();
+
 	void Draw(const Material* material, const float4x4& model, const ComponentPointLight* pointLight);
-	void LoadVBO(const aiMesh* mesh);
-	void LoadEBO(const aiMesh* mesh);
-	void CreateVAO();
-	void CreateAABB(const aiMesh* mesh);
+	void CreateAABB();
 
 	int getNumVertex() const { return numVertex; }
 
@@ -29,13 +28,24 @@ public:
 
 	const AABB& GetAABB() const { return axisAlignedBB; }
 
+	void SetFileID(size_t file) { fileID = file; }
+	size_t GetFileID() const { return fileID; }
+
+public:
+	int materialIndex;
+	int numVertex;
+	int numIndices;
+
+	float* vertices = nullptr;
+	float* textureCoords = nullptr;
+	float* normals = nullptr;
+	unsigned* indices = nullptr;
+
 private:
 	AABB axisAlignedBB;
 	unsigned int VBO;
 	unsigned int EBO;
 	unsigned int VAO;
-	int materialIndex;
-	int numVertex;
-	int numIndices;
+	size_t fileID;
 };
 

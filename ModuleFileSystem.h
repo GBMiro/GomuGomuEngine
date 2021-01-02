@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "Module.h"
 
 class ModuleFileSystem : public Module {
@@ -21,5 +22,6 @@ public:
 	bool MakeDirectory(const char* directory);
 	bool IsDirectory(const char* file) const;
 
+	void GetFileName(const char* path, std::string& name) const;
 };
 

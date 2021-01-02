@@ -77,3 +77,10 @@ bool ModuleFileSystem::MakeDirectory(const char* directory) {
 bool ModuleFileSystem::IsDirectory(const char* file) const {
 	return GetFileAttributes(file) == FILE_ATTRIBUTE_DIRECTORY;
 }
+
+void ModuleFileSystem::GetFileName(const char* path, std::string& name) const {
+	std::string file(path);
+	int namePosition = file.find_last_of("\\/") + 1;
+	std::string filename = file.substr(namePosition);
+	name = std::string(filename);
+}
