@@ -9,7 +9,7 @@ Material::~Material() {
 
 Material::Material(aiMaterial* mat, std::string modelPath, float aShininess) :shininess(aShininess), diffuseTexture(nullptr), specularTexture(nullptr), specularColor(float3(1.0f, 0.71f, 0.29f)) {
 
-
+	name = mat->GetName().C_Str();
 	const char* matName = mat->GetName().C_Str();
 
 	aiString file = aiString(modelPath);

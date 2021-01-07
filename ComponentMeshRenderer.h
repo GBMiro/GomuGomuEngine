@@ -13,15 +13,16 @@ public:
 	~ComponentMeshRenderer();
 
 	void GenerateAABB();
-	void Enable()override;
-	void Update()override;
-	void Disable()override;
+	void Enable() override;
+	void Update() override;
+	void Disable() override;
 
 	void Draw();
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
-	void OnTransformChanged()override;
+	void OnTransformChanged() override;
 	//void SetTextureName(std::string name) { textureName = name; }
+	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 
 public:
 	Mesh* mesh = nullptr;

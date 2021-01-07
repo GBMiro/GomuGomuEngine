@@ -74,7 +74,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>./Brofiler/include;./Assimp/include;./DevIL/include;./imgui-docking;./glew-2.1.0/include;./SDL/include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./rapidjson-1.1.0/include;./Brofiler/include;./Assimp/include;./DevIL/include;./imgui-docking;./glew-2.1.0/include;./SDL/include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -143,7 +143,9 @@
     <ClInclude Include="ComponentPointLight.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ImporterMaterial.h" />
     <ClInclude Include="ImporterMesh.h" />
+    <ClInclude Include="ImporterTextures.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleScene.h" />
@@ -273,7 +275,9 @@
     <ClCompile Include="ComponentPointLight.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ImporterMaterial.cpp" />
     <ClCompile Include="ImporterMesh.cpp" />
+    <ClCompile Include="ImporterTextures.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
     <ClCompile Include="ModuleScene.cpp" />

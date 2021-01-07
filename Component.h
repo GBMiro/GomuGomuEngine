@@ -1,4 +1,6 @@
 #pragma once
+#include <stdint.h>
+#include "rapidjson/document.h"
 
 enum ComponentType {
 	CTTransform,
@@ -25,9 +27,16 @@ public:
 	virtual void DrawGizmos() {};
 	ComponentType GetType() const;
 
+	uint32_t GetUUID() { return UUID; }
+
+	virtual void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {}
+
 public:
 	GameObject* owner;
 	ComponentType type;
 	bool active = false;
+
+private:
+	uint32_t UUID;
 };
 

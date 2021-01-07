@@ -18,6 +18,7 @@ bool ModuleFileSystem::Init() {
 	if (!IsDirectory("Assets/Library")) MakeDirectory("Assets/Library");
 	if (!IsDirectory("Assets/Library/Meshes")) MakeDirectory("Assets/Library/Meshes");
 	if (!IsDirectory("Assets/Library/Materials")) MakeDirectory("Assets/Library/Materials");
+	if (!IsDirectory("Assets/Library/Models")) MakeDirectory("Assets/Library/Models");
 	return true;
 
 }

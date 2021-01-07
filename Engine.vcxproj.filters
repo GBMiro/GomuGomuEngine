@@ -205,6 +205,12 @@
     <ClCompile Include="ImporterMesh.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="ImporterMaterial.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImporterTextures.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -549,6 +555,12 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ImporterMesh.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterMaterial.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterTextures.h">
       <Filter>Importers</Filter>
     </ClInclude>
   </ItemGroup>
