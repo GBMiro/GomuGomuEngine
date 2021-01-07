@@ -48,7 +48,7 @@ void ComponentTransform::UpdateGlobalValues() {
 void ComponentTransform::UpdateLocalValues() {
 	UpdateLocalMatrix();
 	UpdateGlobalValues();
-	LOG("LocalPosition %f,%f,%f , GlobalPosition %f,%f,%f", localPosition.x, localPosition.y, localPosition.z, globalPosition.x, globalPosition.y, globalPosition.z);
+	//LOG("LocalPosition %f,%f,%f , GlobalPosition %f,%f,%f", localPosition.x, localPosition.y, localPosition.z, globalPosition.x, globalPosition.y, globalPosition.z);
 }
 
 void ComponentTransform::Disable() {

@@ -26,6 +26,7 @@ public:
 	ComponentLight(GameObject* go, LightType type = LightType::DIRECTIONAL, float3 aColor = float3::zero, float anInt = 1.0f, int aDebugLineAmount = 20);
 	~ComponentLight();
 	void DrawOnEditor()override;
+	virtual void SendValuesToShadingProgram(const unsigned& programID)const;
 };
 
 #endif

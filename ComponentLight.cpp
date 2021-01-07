@@ -21,3 +21,7 @@ void ComponentLight::DrawOnEditor() {
 	ImGui::InputFloat("Intensity", &lightIntensity);
 	ImGui::InputFloat3("Color", lightColor.ptr());
 }
+
+void ComponentLight::SendValuesToShadingProgram(const unsigned& programID)const {
+	//Implemented on children, abstract method, could be deleted?
+}

@@ -40,6 +40,7 @@ public:
 	ComponentPointLight* pointLight;
 	ComponentDirectionalLight* dirLight;
 	float3 ambientLight;
+	float ambientIntensity;
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 

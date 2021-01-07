@@ -14,6 +14,8 @@ public:
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void OnNewParent(GameObject* prevParent, GameObject* newParent)override;
+	void SendValuesToShadingProgram(const unsigned& programID) const override;
+
 	//void OnTransformUpdated()override;
 private:
 	void GenerateDebugLines()override;

@@ -17,7 +17,8 @@ void main() {
 	
 	ViewPos = viewPos;
 	
-	Normal = normal;
+    Normal = mat3(transpose(inverse(model))) * normal;  
+
 	TexCoords = texCoords;
 	gl_Position = proj*view*model*vec4(pos, 1.0);
 }

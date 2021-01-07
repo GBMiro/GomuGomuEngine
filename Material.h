@@ -28,8 +28,8 @@ private:
 	float3 specularColor;
 
 public:
-	Material(aiMaterial* mat, std::string modelPath, float aShininess = 300.0f);
-	Material(std::string diffusePath, std::string specularPath, float aShininess = 300.0f);
+	Material(aiMaterial* mat, std::string modelPath, float aShininess = -2.0f);
+	Material(std::string diffusePath, std::string specularPath, float aShininess = -2.0f);
 	~Material();
 
 	bool  GetTextureID(unsigned int& texID, TextureType type = TextureType::DIFFUSE)const;

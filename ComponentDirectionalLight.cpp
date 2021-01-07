@@ -4,6 +4,8 @@
 #include "ModuleDebugDraw.h"
 #include "GameObject.h"
 #include "imgui.h"
+#include <GL/glew.h>
+
 ComponentDirectionalLight::ComponentDirectionalLight(GameObject* go, float3 direction, int debugLineCount) :ComponentLight(go, LightType::DIRECTIONAL, float3::one, 1.0f, debugLineCount), direction(direction) {
 	GenerateDebugLines();
 }
@@ -59,6 +61,15 @@ void ComponentDirectionalLight::GenerateDebugLines() {
 		//debugLines.push_back(float3::RandomDir(lcg));
 	}
 }
+
+void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& program) const {
+	glUniform3fv(glGetUniformLocation(program, "dirLight.color"), 1, (const float*)lightColor.ptr());
+	glUniform3fv(glGetUniformLocation(program, "dirLight.direction"), 1, (const float*)direction.ptr());
+
+	glUniform1f(glGetUniformLocation(program, "dirLight.intensity"), lightIntensity);
+}
+
+
 //
 //void ComponentDirectionalLight::OnTransformModified() {
 //	//Maybe calculate debug rays

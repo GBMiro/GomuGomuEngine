@@ -17,6 +17,7 @@
 
 ModuleScene::ModuleScene() {
 	ambientLight = float3(0.1f, 0.1f, 0.1f);
+	ambientIntensity = 0.1f;
 	root = new GameObject(nullptr, "Fake root node");
 }
 

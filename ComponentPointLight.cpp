@@ -68,3 +68,11 @@ void ComponentPointLight::GenerateDebugLines() {
 		debugLines.push_back(float3::RandomDir(lcg));
 	}
 }
+
+ void ComponentPointLight::SendValuesToShadingProgram(const unsigned& program) const {
+	ComponentTransform* pointTransform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
+	glUniform3fv(glGetUniformLocation(program, "pointLight.position"), 1, (const float*)&pointTransform->globalPosition);
+	glUniform3fv(glGetUniformLocation(program, "pointLight.color"), 1, (const float*)lightColor.ptr());
+	glUniform3f(glGetUniformLocation(program, "pointLight.attenuation"), constantAtt, linearAtt, quadraticAtt);
+	glUniform1f(glGetUniformLocation(program, "pointLight.intensity"), lightIntensity);
+}

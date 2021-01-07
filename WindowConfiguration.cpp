@@ -97,7 +97,8 @@ void WindowConfiguration::Draw() {
 
 	}
 	if (ImGui::CollapsingHeader("Scene Settings")) {
-		ImGui::DragFloat3("Ambient light", App->scene->ambientLight.ptr());
+		ImGui::DragFloat3("Ambient light Color", App->scene->ambientLight.ptr());
+		ImGui::DragFloat("Ambient light intensity ", &App->scene->ambientIntensity);
 
 	}
 	if (ImGui::CollapsingHeader("Textures")) {
