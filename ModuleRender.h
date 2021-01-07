@@ -39,8 +39,21 @@ private:
 	unsigned int framebuffer;
 	unsigned int textureColorbuffer;
 	unsigned int rbo;
+
+	bool useToneMapping;
+	bool useGammaCorrection;
+	float3 defaultColor;
+
 public:
 	ShadingProgram* litProgram;
 	ShadingProgram* unLitProgram;
-	float3 defaultColor;
+public:
+	const float3& GetDefaultColor();
+	const bool& GetUseToneMapping();
+	const bool& GetUseGammaCorrection();
+
+	void DefaultColor(float3 newColor);
+	void SetUseToneMapping(bool should);
+	void SetUseGammaCorrection(bool should);
+
 };

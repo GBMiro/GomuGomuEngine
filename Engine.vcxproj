@@ -138,9 +138,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentDirectionalLight.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentMeshRenderer.h" />
     <ClInclude Include="ComponentPointLight.h" />
+    <ClInclude Include="ComponentSpotLight.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Material.h" />
@@ -266,9 +268,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentDirectionalLight.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentMeshRenderer.cpp" />
     <ClCompile Include="ComponentPointLight.cpp" />
+    <ClCompile Include="ComponentSpotLight.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Material.cpp" />

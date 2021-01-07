@@ -4,6 +4,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
+#include "ModuleScene.h"
 #include "ModuleInput.h"
 #include "MathGeoLib/Math/float3.h"
 #include "Point.h"
@@ -17,8 +18,7 @@ constexpr char* wrapModes[] = { "Clamp to borde", "Clamp", "Repeat", "Mirrored r
 WindowConfiguration::WindowConfiguration(std::string name, int windowID) : Window(name, windowID) {
 }
 
-WindowConfiguration::~WindowConfiguration()
-{
+WindowConfiguration::~WindowConfiguration() {
 }
 
 void WindowConfiguration::Draw() {
@@ -81,6 +81,24 @@ void WindowConfiguration::Draw() {
 		if (currentColor != backgroundColor) {
 			App->renderer->setBackgroundColor(backgroundColor);
 		}
+
+		bool dummyToneMapping = App->renderer->GetUseToneMapping();
+
+		if (ImGui::Checkbox("ToneMapping", &dummyToneMapping)) {
+			App->renderer->SetUseToneMapping(dummyToneMapping);
+		}
+
+		bool dummyGammaCorrection = App->renderer->GetUseGammaCorrection();
+
+		if (ImGui::Checkbox("Gamme Correction", &dummyGammaCorrection)) {
+			App->renderer->SetUseGammaCorrection(dummyGammaCorrection);
+		}
+
+
+	}
+	if (ImGui::CollapsingHeader("Scene Settings")) {
+		ImGui::DragFloat3("Ambient light", App->scene->ambientLight.ptr());
+
 	}
 	if (ImGui::CollapsingHeader("Textures")) {
 		static int indexMin = 0;

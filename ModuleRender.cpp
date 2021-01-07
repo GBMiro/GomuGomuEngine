@@ -234,4 +234,28 @@ void ModuleRender::setBackgroundColor(const float* color) {
 	backgroundColor = float3(color[0], color[1], color[2]);
 }
 
+const float3& ModuleRender::GetDefaultColor() {
+	return defaultColor;
+}
+
+const bool& ModuleRender::GetUseToneMapping() {
+	return useToneMapping;
+}
+
+const bool& ModuleRender::GetUseGammaCorrection() {
+	return useGammaCorrection;
+}
+
+void ModuleRender::DefaultColor(float3 newColor) {
+	defaultColor = newColor;
+}
+
+void ModuleRender::SetUseToneMapping(bool should) {
+	useToneMapping = should;
+}
+
+void ModuleRender::SetUseGammaCorrection(bool should) {
+	useGammaCorrection = should;
+}
+
 

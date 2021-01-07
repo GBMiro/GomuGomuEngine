@@ -10,6 +10,7 @@ class GameObject;
 class aiNode;
 class aiScene;
 class ComponentPointLight;
+class ComponentDirectionalLight;
 
 class ModuleScene : public Module {
 
@@ -28,15 +29,16 @@ public:
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent = nullptr);
 	void DestroyGameObject(GameObject* go);
-	void AddObject(const char* path);
+	GameObject* AddObject(const char* path);
 
-	void CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
+	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
 
 public:
 	std::vector<unsigned> materials;
 	ComponentPointLight* pointLight;
+	ComponentDirectionalLight* dirLight;
 	float3 ambientLight;
 private:
 	void UpdateGameObjects(GameObject* gameObject);

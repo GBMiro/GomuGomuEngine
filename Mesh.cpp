@@ -115,10 +115,10 @@ void Mesh::CreateAABB(const aiMesh* mesh) {
 
 void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPointLight* pointLight) {
 
-	unsigned program = App->renderer->getDefaultProgram();
+	//unsigned program = App->renderer->getDefaultProgram();
 	//unsigned program = App->renderer->unLitProgram->GetID();
-	
-	//unsigned program = App->renderer->litProgram->GetID();
+
+	unsigned program = App->renderer->litProgram->GetID();
 
 	const float4x4& view = App->camera->getViewMatrix();
 	const float4x4& proj = App->camera->getProjectionMatrix();
@@ -129,7 +129,7 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPoint
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*)&proj);
 
 	ComponentTransform* pointTransofrm = (ComponentTransform*)pointLight->owner->GetComponentOfType(ComponentType::CTTransform);
-	glUniform3fv(glGetUniformLocation(program, "pointLight.position"), 1, (const float*)&pointTransofrm->CalculateGlobalPosition());
+	glUniform3fv(glGetUniformLocation(program, "pointLight.position"), 1, (const float*)&pointTransofrm->globalPosition);
 	glUniform3fv(glGetUniformLocation(program, "pointLight.color"), 1, (const float*)pointLight->lightColor.ptr());
 	//glUniform3fv(glGetUniformLocation(program, "pointLight.attenuation"), 1, (const float*)&pointLight->constantAtt, (const float*)&pointLight->linearAtt, (const float*)&pointLight->quadraticAtt);
 	glUniform3f(glGetUniformLocation(program, "pointLight.attenuation"), pointLight->constantAtt, pointLight->linearAtt, pointLight->quadraticAtt);
@@ -147,7 +147,8 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPoint
 		glBindTexture(GL_TEXTURE_2D, texID);
 
 	glUniform1i(glGetUniformLocation(program, "material.diffuseTex"), 0);
-
+	glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, App->camera->getCameraPosition().ptr());
+	glUniform1f(glGetUniformLocation(program, "PI"), 3.14159f);
 
 	bool hasSpecular = mat->GetTextureID(texID, TextureType::SPECULAR);
 
@@ -164,8 +165,8 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPoint
 
 	glUniform3fv(glGetUniformLocation(program, "ambientColor"), 1, App->scene->ambientLight.ptr());
 
-
-
+	glUniform1i(glGetUniformLocation(program, "useToneMapping"), App->renderer->GetUseToneMapping());
+	glUniform1i(glGetUniformLocation(program, "useGammaCorrection"), App->renderer->GetUseGammaCorrection());
 
 
 	glBindVertexArray(VAO);

@@ -201,6 +201,12 @@
     </ClCompile>
     <ClCompile Include="PreciseTimer.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="ComponentDirectionalLight.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSpotLight.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -543,6 +549,12 @@
     </ClInclude>
     <ClInclude Include="PreciseTimer.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="ComponentDirectionalLight.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSpotLight.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

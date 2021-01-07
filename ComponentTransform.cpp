@@ -11,8 +11,7 @@ ComponentTransform::ComponentTransform(GameObject* parent, const float3& positio
 	this->localRotation = rotation;
 	this->localScale = scaling;
 
-	UpdateLocalMatrix();
-	UpdateGlobalMatrix();
+	UpdateLocalValues();
 }
 
 ComponentTransform::~ComponentTransform() {
@@ -30,10 +29,26 @@ void ComponentTransform::Update() {
 		localScale.x != oldLocalScale.x || localScale.y != oldLocalScale.y || localScale.z != oldLocalScale.z ||
 		localRotation.x != oldLocalRotation.x || localRotation.z != oldLocalRotation.z || localRotation.y != oldLocalRotation.y || localRotation.w != oldLocalRotation.w
 		) {
-		UpdateLocalMatrix();
-		UpdateGlobalMatrix();
+		UpdateLocalValues();
 		owner->OnTransformChanged();
 	}
+}
+
+void ComponentTransform::UpdateGlobalValues() {
+	globalPosition = CalculateGlobalPosition();
+	globalRotation = CalculateGlobalRotation();
+	globalScale = CalculateGlobalScale();
+
+	globalForward = globalRotation * float3::unitZ;
+	globalUp = globalRotation * float3::unitY;
+	globalRight = globalRotation * float3::unitX;
+
+	UpdateGlobalMatrix();
+}
+void ComponentTransform::UpdateLocalValues() {
+	UpdateLocalMatrix();
+	UpdateGlobalValues();
+	LOG("LocalPosition %f,%f,%f , GlobalPosition %f,%f,%f", localPosition.x, localPosition.y, localPosition.z, globalPosition.x, globalPosition.y, globalPosition.z);
 }
 
 void ComponentTransform::Disable() {
@@ -79,13 +94,16 @@ void ComponentTransform::UpdateGlobalMatrix() {
 		}
 
 		for (std::vector<GameObject*>::iterator it = owner->children.begin(); it != owner->children.end(); ++it) {
-			((ComponentTransform*)(*it)->GetComponentOfType(ComponentType::CTTransform))->UpdateGlobalMatrix();
+			((ComponentTransform*)(*it)->GetComponentOfType(ComponentType::CTTransform))->UpdateGlobalValues();
 		}
 	}
 }
 
 void ComponentTransform::DrawGizmos() {
 	App->debugDraw->DrawAxisTriad(globalMatrix);
+	App->debugDraw->DrawLine(globalPosition, globalPosition + globalForward * 4.0f, float3(0.0f, 0, 1.0f));
+	App->debugDraw->DrawLine(globalPosition, globalPosition + globalUp * 4.0f, float3(0, 1.0f, 0));
+	App->debugDraw->DrawLine(globalPosition, globalPosition + globalRight * 4.0f, float3(1.0f, 0, 0.0f));
 }
 
 

@@ -12,6 +12,8 @@
 #include "Leaks.h"
 #include "Material.h"
 #include "ComponentPointLight.h"
+#include "ComponentDirectionalLight.h"
+#include "ComponentSpotLight.h"
 
 ModuleScene::ModuleScene() {
 	ambientLight = float3(0.1f, 0.1f, 0.1f);
@@ -34,19 +36,49 @@ bool ModuleScene::Init() {
 
 bool ModuleScene::Start() {
 	AddObject("./Resources/Models/BakerHouse.fbx");
-	AddObject("./Resources/Models/Fox.fbx");
-	GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
-	DestroyGameObject(dummy);
-	AddObject("./Resources/Models/Crow.fbx");
+	//AddObject("./Resources/Models/Fox.fbx");
+	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
+	//DestroyGameObject(dummy);
+	//GameObject* crow = AddObject("./Resources/Models/Crow.fbx");
 	//App->scene->AddObject("./Resources/Models/Sword.fbx");
 	//App->scene->AddObject("./Resources/Models/AmongUs.fbx");
+	//GameObject* robot = App->scene->AddObject("./Resources/Models/Robot.fbx");
 
-	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
-		root->GenerateAABB();
-	}
+	//ComponentTransform* transform = (ComponentTransform*)robot->GetComponentOfType(ComponentType::CTTransform);
+	//
+	//if (transform) {
+	//	transform->localScale = float3(0.01f, 0.01f, 0.01f);
+	//}
+	//
+	//ComponentMeshRenderer* renderer = (ComponentMeshRenderer*)robot->GetComponentInChildrenOfType(ComponentType::CTMeshRenderer);
+	//if (renderer) {
+	//	Material* robotMaterial = new Material("./Resources/Models/RobotDiffuse.png", "./Resources/Models/RobotSpecular.png");
+	//	renderer->SetMaterial(robotMaterial);
+	//}
+	//
+	//
+	//for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
+	//	root->GenerateAABB();
+	//}
 
-	GameObject* lightObj = CreateGameObject("PointLight", root);
-	pointLight = (ComponentPointLight*)lightObj->CreateComponent(ComponentType::CTLight);
+	//ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)crow->GetComponentInChildrenOfType(ComponentType::CTMeshRenderer);
+	//if(meshRenderer)
+	//meshRenderer->material->SetSpecularColor(float3(0.04f, 0.04f, 0.04f));
+
+	GameObject* pointLightObj = CreateGameObject("PointLight", root);
+	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
+	ComponentTransform* robotTransform = (ComponentTransform*)pointLightObj->GetComponentOfType(ComponentType::CTTransform);
+	robotTransform->SetPosition(float3(3, 5, 3));
+
+
+	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
+	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);
+
+	GameObject* spotLightObj = CreateGameObject("SpotLight", root);
+	ComponentSpotLight* spotLight = (ComponentSpotLight*)spotLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::SPOT);
+
+
+
 
 	return true;
 }
@@ -85,6 +117,8 @@ bool ModuleScene::CleanUp() {
 
 GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent) {
 	GameObject* ret = new GameObject(parent, name);
+	ret->GenerateAABB();
+
 	return ret;
 }
 
@@ -97,16 +131,16 @@ void ModuleScene::DestroyGameObject(GameObject* go) {
 	RELEASE(go);
 }
 
-void ModuleScene::AddObject(const char* path) {
+GameObject* ModuleScene::AddObject(const char* path) {
 	LOG("Loading object...");
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 	if (scene) {
-		CreateGameObject(path, scene, scene->mRootNode, root);
+		return CreateGameObject(path, scene, scene->mRootNode, root);
 	}
-
+	return nullptr;
 }
 
-void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
+GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
 	const char* name = node->mName.C_Str();
 	GameObject* object = new GameObject(parent, name, float3::zero, Quat::identity, float3::one);
 	if (node->mNumChildren > 0) {
@@ -124,7 +158,7 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 					meshRenderer->GenerateAABB();
 					Material* newMat = new Material(scene->mMaterials[scene->mMeshes[i]->mMaterialIndex], path);
 
-					if (newMat) {
+					if (newMat != nullptr) {
 						meshRenderer->SetMaterial(newMat);
 					}
 
@@ -133,6 +167,7 @@ void ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const
 		}
 	}
 	object->GenerateAABB();
+	return object;
 }
 
 void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {

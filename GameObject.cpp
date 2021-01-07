@@ -2,6 +2,8 @@
 #include "ComponentMeshRenderer.h"
 #include "ComponentTransform.h"
 #include "ComponentPointLight.h"
+#include "ComponentDirectionalLight.h"
+#include "ComponentSpotLight.h"
 #include "assimp/scene.h"
 #include "Mesh.h"
 #include "Globals.h"
@@ -50,7 +52,7 @@ void GameObject::Update() {
 	}
 }
 
-Component* GameObject::CreateComponent(ComponentType type) {
+Component* GameObject::CreateComponent(ComponentType type, int additionalParam) {
 	Component* ret = nullptr;
 	switch (type) {
 	case ComponentType::CTMeshRenderer:
@@ -62,7 +64,20 @@ Component* GameObject::CreateComponent(ComponentType type) {
 	case ComponentType::CTCamera:
 		break;
 	case ComponentType::CTLight:
-		ret = new ComponentPointLight(this);
+
+		switch ((ComponentLight::LightType)additionalParam) {
+		case ComponentLight::LightType::DIRECTIONAL:
+			ret = new ComponentDirectionalLight(this, -float3::unitY);
+			break;
+		case ComponentLight::LightType::POINT:
+			ret = new ComponentPointLight(this);
+			break;
+		case ComponentLight::LightType::SPOT:
+			//TO DO 
+			ret = new ComponentSpotLight(this);
+			break;
+		}
+
 
 		break;
 	}
@@ -95,8 +110,6 @@ void GameObject::ChangeParent(GameObject* newParent) {
 				(*it)->OnNewParent(oldParent, newParent);
 			}
 
-
-
 			LOG("%s's new parent: %s", GetName(), newParent->GetName());
 		} else LOG("Same parent");
 	}
@@ -125,34 +138,38 @@ void GameObject::GenerateAABB() {
 	std::vector<Component*>meshRenderers;
 
 	GetComponentsInChildrenOfType(ComponentType::CTMeshRenderer, meshRenderers);
+	if (meshRenderers.size() > 0) {
+		for (std::vector<Component*>::const_iterator it = meshRenderers.begin(); it != meshRenderers.end(); ++it) {
+			AABB meshAABB = ((ComponentMeshRenderer*)(*it))->localAxisAlignedBoundingBox;
 
-	for (std::vector<Component*>::const_iterator it = meshRenderers.begin(); it != meshRenderers.end(); ++it) {
-		AABB meshAABB = ((ComponentMeshRenderer*)(*it))->localAxisAlignedBoundingBox;
+			if (meshAABB.minPoint.x < absoluteMin.x) {
+				absoluteMin.x = meshAABB.minPoint.x;
+			}
+			if (meshAABB.minPoint.y < absoluteMin.y) {
+				absoluteMin.y = meshAABB.minPoint.y;
+			}
+			if (meshAABB.minPoint.z < absoluteMin.z) {
+				absoluteMin.z = meshAABB.minPoint.z;
+			}
 
-		if (meshAABB.minPoint.x < absoluteMin.x) {
-			absoluteMin.x = meshAABB.minPoint.x;
-		}
-		if (meshAABB.minPoint.y < absoluteMin.y) {
-			absoluteMin.y = meshAABB.minPoint.y;
-		}
-		if (meshAABB.minPoint.z < absoluteMin.z) {
-			absoluteMin.z = meshAABB.minPoint.z;
+			if (meshAABB.maxPoint.x > absoluteMax.x) {
+				absoluteMax.x = meshAABB.maxPoint.x;
+			}
+			if (meshAABB.maxPoint.y > absoluteMax.y) {
+				absoluteMax.y = meshAABB.maxPoint.y;
+			}
+			if (meshAABB.maxPoint.z > absoluteMax.z) {
+				absoluteMax.z = meshAABB.maxPoint.z;
+			}
 		}
 
-		if (meshAABB.maxPoint.x > absoluteMax.x) {
-			absoluteMax.x = meshAABB.maxPoint.x;
-		}
-		if (meshAABB.maxPoint.y > absoluteMax.y) {
-			absoluteMax.y = meshAABB.maxPoint.y;
-		}
-		if (meshAABB.maxPoint.z > absoluteMax.z) {
-			absoluteMax.z = meshAABB.maxPoint.z;
-		}
+		globalAABB.minPoint = absoluteMin;
+		globalAABB.maxPoint = absoluteMax;
+	} else {
+
+		globalAABB.minPoint = float3::zero;
+		globalAABB.maxPoint = float3::zero;
 	}
-
-	globalAABB.minPoint = absoluteMin;
-	globalAABB.maxPoint = absoluteMax;
-
 }
 
 const AABB& GameObject::GetAABB() const {
@@ -186,7 +203,7 @@ Component* GameObject::GetComponentInChildrenOfType(ComponentType type) {
 
 	if (retComp == nullptr && children.size() > 0) {
 		for (std::vector<GameObject*>::const_iterator it = children.begin(); it != children.end() && retComp == nullptr; ++it) {
-			retComp = GetComponentInChildrenOfType(type);
+			retComp = (*it)->GetComponentInChildrenOfType(type);
 		}
 	}
 	return retComp;
