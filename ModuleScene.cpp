@@ -12,6 +12,7 @@
 #include "Material.h"
 #include "ImporterMesh.h"
 #include "ImporterMaterial.h"
+#include "ImporterScene.h"
 #include "ComponentPointLight.h"
 #include "ModuleFileSystem.h"
 #include "Timer.h"
@@ -44,25 +45,21 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	AddObject("./Resources/Models/BakerHouse.fbx");
-	LOG("Loading from fbx: %.f ms", t->Read()); // Even if we have the mesh file created, this takes 34 ms because it's loading the texture from the fbx. When using custom format loading time will be shorter
+	ImporterScene::LoadScene("Scene.fbx");
+	LOG("Scene loaded from json: %.f ms", t->Read());
+	//AddObject("./Resources/Models/BakerHouse.fbx");
 	t->Start();
-	AddObject("./Resources/Models/BakerHouse.fbx");
-	LOG("Loading from custom format files: %.f ms", t->Read()); // This takes 5 ms (correct time) when loading the second baker house
-	//AddObject("./Resources/Models/Fox.fbx");
 	GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
 	DestroyGameObject(dummy);
-	//AddObject("./Resources/Models/Crow.fbx");
-	//App->scene->AddObject("./Resources/Models/Sword.fbx");
-	//App->scene->AddObject("./Resources/Models/AmongUs.fbx");
 	RELEASE(t);
 
 	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
 		root->GenerateAABB();
 	}
 
-	GameObject* lightObj = CreateGameObject("PointLight", root);
-	pointLight = (ComponentPointLight*)lightObj->CreateComponent(ComponentType::CTLight);
+	// Commented for now so it's not saved in scene.fbx
+	//GameObject* lightObj = CreateGameObject("PointLight", root);
+	//pointLight = (ComponentPointLight*)lightObj->CreateComponent(ComponentType::CTLight);
 	return true;
 }
 
@@ -94,6 +91,7 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 }
 
 bool ModuleScene::CleanUp() {
+	ImporterScene::SaveScene();
 	RELEASE(root);
 	return true;
 }
@@ -230,7 +228,7 @@ void ModuleScene::LoadModel(const std::string& name) {
 	char* buffer;
 	unsigned read = App->FS->Load((std::string("Assets/Library/Models/") + name).c_str(), &buffer);
 	rapidjson::Document model;
-	model.Parse<rapidjson::kParseStopWhenDoneFlag>(buffer).GetParseError(); //Whit this flag works- Null terminated missing?
+	model.Parse<rapidjson::kParseStopWhenDoneFlag>(buffer).GetParseError(); //With this flag works- Null terminated missing?
 	LOG("Model parsed");
 	assert(model.IsObject());
 	const rapidjson::Value& objects = model["Game Objects"];
@@ -240,8 +238,6 @@ void ModuleScene::LoadModel(const std::string& name) {
 		uint32_t uuid = object["UUID"].GetUint();
 		uint32_t parentUUID = object["Parent UUID"].GetUint();
 		std::string name = object["Name"].GetString();
-
-		//Guardar en un pair el id del node + id generat en la escena
 
 		const rapidjson::Value& components = object["Components"];
 		const rapidjson::Value& component = components[0]; // It's always transform

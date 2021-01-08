@@ -28,9 +28,9 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 
 unsigned ImporterMaterial::Save(const Material* ourMaterial, char** buffer) {
 
-	unsigned diffuseLength = ourMaterial->diffuseTexture ? ourMaterial->diffuseTexture->name.length() : 0;
-	unsigned specularLength = ourMaterial->specularTexture ? ourMaterial->specularTexture->name.length() : 0;
-	unsigned nameLength = ourMaterial->name.length();
+	unsigned diffuseLength = ourMaterial->diffuseTexture ? ourMaterial->diffuseTexture->name.length() + 1 : 0;
+	unsigned specularLength = ourMaterial->specularTexture ? ourMaterial->specularTexture->name.length() + 1 : 0;
+	unsigned nameLength = ourMaterial->name.length() + 1;
 
 	unsigned header[5] = {
 		3,
@@ -118,11 +118,8 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		ourMaterial->diffuseTexture = new Material::Texture();
 		char* name = new char[header[2]];
 		memcpy(name, cursor, bytes);
-		std::string aux = name;
-		aux.erase(std::remove(aux.begin(), aux.end(), 'ý'), aux.end()); // Strange characters at the end. Figure out how to solve in order to get the proper texture name
-		aux.erase(std::remove(aux.begin(), aux.end(), 'Ý'), aux.end());
-		ourMaterial->diffuseTexture->name = aux;
-		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(aux.c_str(), aux.c_str(), ourMaterial->diffuseTexture->texSize);
+		ourMaterial->diffuseTexture->name = name;
+		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(name, name, ourMaterial->diffuseTexture->texSize);
 		cursor += bytes;
 		RELEASE_ARRAY(name);
 		//LOG("Diffuse texture's name: %s", ourMaterial->diffuseTexture->name.c_str());

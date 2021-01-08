@@ -211,6 +211,9 @@
     <ClCompile Include="ImporterTextures.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="ImporterScene.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -561,6 +564,9 @@
       <Filter>Importers</Filter>
     </ClInclude>
     <ClInclude Include="ImporterTextures.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterScene.h">
       <Filter>Importers</Filter>
     </ClInclude>
   </ItemGroup>

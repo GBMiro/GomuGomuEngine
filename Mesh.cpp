@@ -110,6 +110,7 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPoint
 	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, (const float*)&view);
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*)&proj);
 
+	/* Commented because right now I'm not using this. Should be uncommented
 	ComponentTransform* pointTransofrm = (ComponentTransform*)pointLight->owner->GetComponentOfType(ComponentType::CTTransform);
 	glUniform3fv(glGetUniformLocation(program, "pointLight.position"), 1, (const float*)&pointTransofrm->CalculateGlobalPosition());
 	glUniform3fv(glGetUniformLocation(program, "pointLight.color"), 1, (const float*)pointLight->lightColor.ptr());
@@ -117,7 +118,7 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPoint
 	glUniform3f(glGetUniformLocation(program, "pointLight.attenuation"), pointLight->constantAtt, pointLight->linearAtt, pointLight->quadraticAtt);
 	glUniform1f(glGetUniformLocation(program, "pointLight.intensity"), pointLight->lightIntensity);
 	//App->renderer->defaultColor = float3(1.0f, 0.0f, 0.0f);
-
+	*/
 	//glUniform3fv(glGetUniformLocation(program, "defaultColor"), 1, (const float*)&App->renderer->defaultColor);
 
 

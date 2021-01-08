@@ -145,6 +145,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ImporterMaterial.h" />
     <ClInclude Include="ImporterMesh.h" />
+    <ClInclude Include="ImporterScene.h" />
     <ClInclude Include="ImporterTextures.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -277,6 +278,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ImporterMaterial.cpp" />
     <ClCompile Include="ImporterMesh.cpp" />
+    <ClCompile Include="ImporterScene.cpp" />
     <ClCompile Include="ImporterTextures.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
