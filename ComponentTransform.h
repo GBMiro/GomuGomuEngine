@@ -25,6 +25,11 @@ public:
 	void SetPosition(float3 newGlobalPos);
 	void DrawGizmos()override;
 
+	void SetLocalPosition(float3 newPos);
+	void SetLocalRotation(Quat newRot);
+	void SetLocalScale(float3 newScale);
+
+
 private:
 	void UpdateLocalValues();
 	void UpdateGlobalValues();
@@ -41,20 +46,21 @@ public:
 	float3 localScale;
 	Quat localRotation;
 
-	float3 globalPosition;
-	float3 globalScale;
-	Quat globalRotation;
+	float3 Position();
+	float3 Scale();
+	Quat Rotation();
 
-	float3 globalForward;
-	float3 globalUp;
-	float3 globalRight;
+	float3 Forward();
+	float3 Up();
+	float3 Right();
+	float3 Left();
 
+	float3 LocalForward();
+	float3 LocalUp();
+	float3 LocalRight();
+	float3 LocalLeft();
 
 private:
-	float3 oldLocalPosition;
-	float3 oldLocalScale;
-	Quat   oldLocalRotation;
-	float3 oldRotDummy;
 
 };
 

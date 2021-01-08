@@ -11,10 +11,14 @@ ComponentTransform::ComponentTransform(GameObject* parent, const float3& positio
 	this->localRotation = rotation;
 	this->localScale = scaling;
 
+	globalMatrix = float4x4::identity;
+	localMatrix = float4x4::identity;
+
 	UpdateLocalValues();
 }
 
 ComponentTransform::~ComponentTransform() {
+
 }
 
 void ComponentTransform::Enable() {
@@ -24,31 +28,75 @@ void ComponentTransform::Enable() {
 void ComponentTransform::Update() {
 	if (!enabled) return;
 
-	if (
-		localPosition.x != oldLocalPosition.x || localPosition.y != oldLocalPosition.y || localPosition.z != oldLocalPosition.z ||
-		localScale.x != oldLocalScale.x || localScale.y != oldLocalScale.y || localScale.z != oldLocalScale.z ||
-		localRotation.x != oldLocalRotation.x || localRotation.z != oldLocalRotation.z || localRotation.y != oldLocalRotation.y || localRotation.w != oldLocalRotation.w
-		) {
-		UpdateLocalValues();
-		owner->OnTransformChanged();
-	}
+}
+
+
+void ComponentTransform::SetLocalPosition(float3 newPos) {
+	localPosition = newPos;
+	UpdateLocalValues();
+	owner->OnTransformChanged();
+}
+
+void ComponentTransform::SetLocalRotation(Quat newRot) {
+	localRotation = newRot;
+	UpdateLocalValues();
+	owner->OnTransformChanged();
+}
+
+void ComponentTransform::SetLocalScale(float3 newScale) {
+	localScale = newScale;
+	UpdateLocalValues();
+	owner->OnTransformChanged();
 }
 
 void ComponentTransform::UpdateGlobalValues() {
-	globalPosition = CalculateGlobalPosition();
-	globalRotation = CalculateGlobalRotation();
-	globalScale = CalculateGlobalScale();
-
-	globalForward = globalRotation * float3::unitZ;
-	globalUp = globalRotation * float3::unitY;
-	globalRight = globalRotation * float3::unitX;
-
 	UpdateGlobalMatrix();
 }
+
+float3 ComponentTransform::Position() {
+	return globalMatrix.TranslatePart();
+}
+
+float3 ComponentTransform::Scale() {
+	return globalMatrix.GetScale();
+}
+
+Quat ComponentTransform::Rotation() {
+
+	//TO DO Scale must be controlled after being modified OR THIS MAY RETURN ERRORS
+
+
+	float3x3 rotation = globalMatrix.RotatePart();
+
+	rotation.Orthonormalize(0, 1, 2);
+
+	return rotation.ToQuat();
+}
+
+float3 ComponentTransform::Forward() {
+	return globalMatrix.WorldZ().Normalized();
+}
+
+float3 ComponentTransform::Up() {
+	return globalMatrix.WorldY().Normalized();
+}
+
+float3 ComponentTransform::Right() {
+	return  globalMatrix.WorldX().Normalized();
+}
+
+float3 ComponentTransform::Left() {
+	return -Right();
+}
+
+float3 ComponentTransform::LocalForward() { return localMatrix.WorldZ().Normalized(); }
+float3 ComponentTransform::LocalUp() { return localMatrix.WorldY().Normalized(); }
+float3 ComponentTransform::LocalRight() { return localMatrix.WorldX().Normalized(); }
+float3 ComponentTransform::LocalLeft() { return -LocalRight(); }
+
 void ComponentTransform::UpdateLocalValues() {
 	UpdateLocalMatrix();
 	UpdateGlobalValues();
-	//LOG("LocalPosition %f,%f,%f , GlobalPosition %f,%f,%f", localPosition.x, localPosition.y, localPosition.z, globalPosition.x, globalPosition.y, globalPosition.z);
 }
 
 void ComponentTransform::Disable() {
@@ -58,29 +106,31 @@ void ComponentTransform::Disable() {
 void ComponentTransform::DrawOnEditor() {
 	if (owner->parent) {
 		if (ImGui::CollapsingHeader("Transformations")) {
-			if (ImGui::DragFloat3("Position", &localPosition.x, 0.1f, -90.0f, 90.0f, "%.3f"));
+
+			float3 localPositionDummy = localPosition;
+			if (ImGui::DragFloat3("Position", &localPositionDummy.x, 0.1f, -90.0f, 90.0f, "%.3f")) {
+				SetLocalPosition(localPositionDummy);
+			}
 
 			float3 rotDummy = localRotation.ToEulerXYZ();
 			rotDummy = RadToDeg(rotDummy);
 
-			ImGui::DragFloat3("Rotation", rotDummy.ptr());
-
-			if (oldRotDummy.x != rotDummy.x || oldRotDummy.y != rotDummy.y || oldRotDummy.z != rotDummy.z) {
-
-				localRotation = Quat::FromEulerXYZ(DegToRad(rotDummy.x), DegToRad(rotDummy.y), DegToRad(rotDummy.z));
-				oldRotDummy = rotDummy;
+			if (ImGui::DragFloat3("Rotation", rotDummy.ptr())) {
+				Quat localRotationDummy = Quat::FromEulerXYZ(DegToRad(rotDummy.x), DegToRad(rotDummy.y), DegToRad(rotDummy.z));
+				SetLocalRotation(localRotationDummy);
 			}
 
-			if (ImGui::DragFloat3("Scale", &localScale.x, 0.1f, -90.0f, 90.0f, "%.3f"));
+			float3 scaleDummy = localScale;
+			if (ImGui::DragFloat3("Scale", &scaleDummy.x, 0.1f, -90.0f, 90.0f, "%.3f")) {
+				SetLocalScale(scaleDummy);
+			}
+
 		}
 	}
 }
 
 void ComponentTransform::UpdateLocalMatrix() {
 	localMatrix = float4x4::FromTRS(localPosition, localRotation, localScale);
-	oldLocalPosition = localPosition;
-	oldLocalScale = localScale;
-	oldLocalRotation = localRotation;
 }
 
 void ComponentTransform::UpdateGlobalMatrix() {
@@ -101,9 +151,9 @@ void ComponentTransform::UpdateGlobalMatrix() {
 
 void ComponentTransform::DrawGizmos() {
 	App->debugDraw->DrawAxisTriad(globalMatrix);
-	App->debugDraw->DrawLine(globalPosition, globalPosition + globalForward * 4.0f, float3(0.0f, 0, 1.0f));
-	App->debugDraw->DrawLine(globalPosition, globalPosition + globalUp * 4.0f, float3(0, 1.0f, 0));
-	App->debugDraw->DrawLine(globalPosition, globalPosition + globalRight * 4.0f, float3(1.0f, 0, 0.0f));
+	App->debugDraw->DrawLine(Position(), Position() + Forward() * 4.0f, float3(0.0f, 0, 1.0f));
+	App->debugDraw->DrawLine(Position(), Position() + Up() * 4.0f, float3(0, 1.0f, 0));
+	App->debugDraw->DrawLine(Position(), Position() + Right() * 4.0f, float3(1.0f, 0, 0.0f));
 }
 
 
@@ -147,29 +197,16 @@ void ComponentTransform::Reset() {
 }
 
 void ComponentTransform::OnNewParent(GameObject* oldParent, GameObject* newParent) {
-	if (oldParent == nullptr)return;
-	ComponentTransform* prevParentTransform = (ComponentTransform*)oldParent->GetComponentOfType(ComponentType::CTTransform);
+	//if (oldParent == nullptr)return;
+
+	if (newParent == nullptr)return;
+
 	ComponentTransform* newParentTransform = (ComponentTransform*)newParent->GetComponentOfType(ComponentType::CTTransform);
-	if (prevParentTransform != nullptr) {
-
-		//To keep the local values untouched, we add the previous parent's global position to the localPosition and remove the current's global position from the localPosition
-		float3 prevGlobalPos = prevParentTransform->CalculateGlobalPosition() + localPosition;
-		float3 globalPos = CalculateGlobalPosition() - localPosition;
-		localPosition = prevGlobalPos - globalPos;
-
-		//Same for scale
-		float3 prevGlobalScale = prevParentTransform->CalculateGlobalScale().Mul(localScale);
-		float3 globalScale = CalculateGlobalScale().Div(localScale);
-		localScale = prevGlobalScale.Div(globalScale);
-
-		//Same for rotation
-		Quat prevGlobalRot = prevParentTransform->CalculateGlobalRotation();
-		Quat newGlobalRot = newParentTransform->CalculateGlobalRotation();
-
-		//We inverse so that it is subtracted and not added (multiplication order may need to be switched)
-		newGlobalRot.Inverse();
-		localRotation = newGlobalRot * prevGlobalRot * localRotation;
-
+	if (newParentTransform) {
+		float4x4 newParentGlobal = newParentTransform->globalMatrix;
+		newParentGlobal.Inverse();
+		localMatrix = newParentGlobal * globalMatrix;
+		localMatrix.Decompose(localPosition, localRotation, localScale);
 	}
 }
 

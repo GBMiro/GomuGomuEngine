@@ -13,15 +13,16 @@ void ComponentSpotLight::GenerateDebugLines() {
 	debugLines.clear();
 
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
-	float3 position = transform->globalPosition;
+	float3 position = transform->Position();
 
 	debugLines.reserve(debugLineAmount);
+	float3 forward = transform->Forward();
 
 	for (int i = 0; i < debugLineAmount / 2; i++) {
-		float4 rotationAxis = float4(transform->globalForward.x, transform->globalForward.y, transform->globalForward.z, 1.0f);
+		float4 rotationAxis = float4(forward.x, forward.y, forward.z, 1.0f);
 		Quat rotation = Quat(rotationAxis, DegToRad((360 / debugLineAmount)) * i * 2);
 
-		float3 myVector = rotation * transform->globalUp;
+		float3 myVector = rotation * transform->Up();
 
 
 		float4 aux = rotationAxis;
@@ -39,10 +40,10 @@ void ComponentSpotLight::GenerateDebugLines() {
 
 
 	for (int i = 0; i < debugLineAmount / 2; i++) {
-		float4 rotationAxis = float4(transform->globalForward.x, transform->globalForward.y, transform->globalForward.z, 1.0f);
+		float4 rotationAxis = float4(forward.x, forward.y, forward.z, 1.0f);
 		Quat rotation = Quat(rotationAxis, DegToRad((360 / debugLineAmount)) * i * 2);
 
-		float3 myVector = rotation * transform->globalUp;
+		float3 myVector = rotation * transform->Up();
 
 		float4 aux = rotationAxis;
 
@@ -110,7 +111,7 @@ void ComponentSpotLight::DrawOnEditor() {
 void ComponentSpotLight::DrawGizmos() {
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
 	for (int i = 0; i < debugLines.size(); ++i) {
-		float3 position = transform->globalPosition;
+		float3 position = transform->Position();
 		App->debugDraw->DrawLine(position, position + debugLines[i], float3::one);
 	}
 }

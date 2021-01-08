@@ -38,8 +38,8 @@ void ComponentDirectionalLight::DrawOnEditor() {
 void ComponentDirectionalLight::DrawGizmos() {
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
 	for (int i = 0; i < debugLines.size(); ++i) {
-		float3 position = transform->globalPosition;
-		App->debugDraw->DrawLine(position + debugLines[i], position + debugLines[i] + (transform->globalRotation * direction), float3::one);
+		float3 position = transform->Position();
+		App->debugDraw->DrawLine(position + debugLines[i], position + debugLines[i] + (transform->Rotation() * direction), float3::one);
 	}
 }
 
@@ -56,7 +56,7 @@ void ComponentDirectionalLight::GenerateDebugLines() {
 	math::LCG lcg;
 	for (int i = 0; i < debugLineAmount; i++) {
 
-		debugLines.push_back(float3::RandomSphere(lcg, transform->globalPosition, 1.0f));
+		debugLines.push_back(float3::RandomSphere(lcg, transform->Position(), 1.0f));
 
 		//debugLines.push_back(float3::RandomDir(lcg));
 	}
