@@ -1,8 +1,11 @@
 #include "ImporterMaterial.h"
+#include "ImporterTextures.h"
 #include "Assimp/scene.h"
 #include "Material.h"
 #include "ModuleTextures.h"
 #include "Application.h"
+#include "ModuleFileSystem.h"
+#include <string>
 #include "Leaks.h"
 
 void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // if const material I can't get name
@@ -11,9 +14,23 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 	if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
 		material->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		ourMaterial->diffuseTexture = new Material::Texture();
+		/*
+		if (!App->FS->Exists((std::string("Assets/Library/Textures/")+ file.C_Str()).c_str())) {
+			char* buffer;
+			unsigned read = App->FS->Load(file.C_Str(), &buffer);
+			ImporterTextures::Import(buffer, read);
+			char* ddsTexture;
+			unsigned size = ImporterTextures::Save(&ddsTexture);
+			unsigned written = App->FS->Save((std::string("Assets/Library/Textures/")+ file.C_Str()).c_str(), ddsTexture, size);
+		}
+		char* bufferTexture;
+		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/") + file.C_Str()).c_str(), &bufferTexture);
+		ImporterTextures::Load(ourMaterial->diffuseTexture, bufferTexture, read);
+		*/
 		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(file.C_Str(), file.C_Str(), ourMaterial->diffuseTexture->texSize);
 		ourMaterial->diffuseTexture->path = file.C_Str();
 		ourMaterial->diffuseTexture->name = file.C_Str();
+		//RELEASE(bufferTexture);
 		// Call import texture and then save
 	}
 
@@ -119,9 +136,13 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		char* name = new char[header[2]];
 		memcpy(name, cursor, bytes);
 		ourMaterial->diffuseTexture->name = name;
+		//char* bufferTexture;
+		//unsigned read = App->FS->Load((std::string("Assets/Library/Textures/") + name).c_str(), &bufferTexture);
+		//ImporterTextures::Load(ourMaterial->diffuseTexture, bufferTexture, read);
 		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(name, name, ourMaterial->diffuseTexture->texSize);
 		cursor += bytes;
 		RELEASE_ARRAY(name);
+		//RELEASE(bufferTexture);
 		//LOG("Diffuse texture's name: %s", ourMaterial->diffuseTexture->name.c_str());
 
 		// Call texture importer to load texture named name

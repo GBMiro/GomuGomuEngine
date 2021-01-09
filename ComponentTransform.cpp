@@ -103,6 +103,7 @@ void ComponentTransform::WriteToJSON(rapidjson::Value& component, rapidjson::Doc
 	rotation.PushBack(this->localRotation.x, alloc);
 	rotation.PushBack(this->localRotation.y, alloc);
 	rotation.PushBack(this->localRotation.z, alloc);
+	rotation.PushBack(this->localRotation.w, alloc);
 	component.AddMember("Rotation", rotation, alloc);
 
 	rapidjson::Value scale(rapidjson::kArrayType);

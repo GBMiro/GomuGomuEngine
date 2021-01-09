@@ -35,9 +35,6 @@ public:
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
 
-	void SaveModel(GameObject* model, const char* path);
-	void LoadModel(const std::string& name);
-
 public:
 	std::vector<unsigned> materials; // I think it's not being used
 	ComponentPointLight* pointLight = nullptr;
