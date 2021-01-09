@@ -1,6 +1,8 @@
 #include "ImporterTextures.h"
 #include "DevIL/include/IL/ilu.h"
 #include "GL/glew.h"
+#include "Application.h"
+#include "ModuleTextures.h"
 #include "Material.h"
 
 void ImporterTextures::Import(const char* buffer, unsigned size) {
@@ -23,21 +25,28 @@ unsigned ImporterTextures::Save(char** buffer) {
 
 void ImporterTextures::Load(Material::Texture* text, const char* buffer, unsigned size) {
 	ILuint imageId;
-
-	ilGenImages(1, &imageId);
-	ilBindImage(imageId);
-	ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
-
 	GLuint texture;
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
-	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	ilDeleteImages(1, &imageId);
+	if (App->textures->ExistsTexture(text->name.c_str(), texture)) {
+		text->id = texture;
+		LOG("Texture already loaded");
+	}
+	else {
+		ilGenImages(1, &imageId);
+		ilBindImage(imageId);
+		ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
 
-	text->id = texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		ilDeleteImages(1, &imageId);
+
+		App->textures->InsertTexturePath(text->name, texture);
+		text->id = texture;
+		LOG("New texture generated");
+	}
 }
