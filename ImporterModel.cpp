@@ -110,6 +110,7 @@ void ImporterModel::Load(const std::string& name) {
 				ImporterMaterial im;
 				bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
 				im.Load(bufferMaterial, meshRenderer->material);
+				meshRenderer->GenerateAABB();
 				RELEASE(bufferMaterial);
 				break;
 			}

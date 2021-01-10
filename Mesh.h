@@ -32,6 +32,7 @@ public:
 
 	void SetFileID(size_t file) { fileID = file; }
 	size_t GetFileID() const { return fileID; }
+	std::vector<Triangle> GetTriangles(float4x4 modelMat)const;
 
 public:
 	int materialIndex;

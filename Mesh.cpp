@@ -157,3 +157,31 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 }
+
+std::vector<Triangle> Mesh::GetTriangles(float4x4 modelMat)const {
+	std::vector<Triangle> tris;
+	tris.reserve(numIndices / (3 * 3));
+
+	for (int i = 0; i < numIndices; i += 3 * 3) {
+		float3 triVertices[3];
+		float4 triVertices4[3];
+
+		triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);
+		triVertices[1] = float3(vertices[i + 3], vertices[i + 4], vertices[i + 5]);
+		triVertices[2] = float3(vertices[i + 6], vertices[i + 7], vertices[i + 8]);
+
+		for (int j = 0; j < 3; j++) {
+			triVertices4[j] = modelMat * float4(triVertices[j].x, triVertices[j].y, triVertices[j].z, 1);
+			triVertices[j].x = triVertices4[j].x;
+			triVertices[j].y = triVertices4[j].y;
+			triVertices[j].z = triVertices4[j].z;
+		}
+
+		Triangle newTri = Triangle(triVertices[0], triVertices[1], triVertices[2]);
+		tris.push_back(newTri);
+	}
+
+
+
+	return tris;
+}

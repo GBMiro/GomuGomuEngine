@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "Window.h"
 #include <vector>
+#include "imgui.h"
 
 class WindowMonitor;
 class WindowConfiguration;
@@ -13,8 +14,7 @@ class WindowGameObjectHierarchy;
 class WindowScene;
 class GameObject;
 
-class ModuleEditor : public Module
-{
+class ModuleEditor : public Module {
 public:
 	ModuleEditor();
 	~ModuleEditor();
@@ -29,8 +29,8 @@ public:
 
 	bool CleanUp();
 
-	void registerFPS(float deltaTime) const; 
-	void registerLog(const char* log) const; 
+	void registerFPS(float deltaTime) const;
+	void registerLog(const char* log) const;
 	void cleanProperties() const;
 	void fileDropped(const char* filename) const;
 	void SetGameWindowStatus(bool state) { gameWindowSelectedOrHovered = state; }
@@ -52,5 +52,6 @@ private:
 	void Draw();
 	std::vector<Window*> windows;
 	bool gameWindowSelectedOrHovered = false;
+	void OnClicked(ImVec2 mousePosInScene);
 };
 

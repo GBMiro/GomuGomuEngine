@@ -27,6 +27,7 @@ void ComponentMeshRenderer::GenerateAABB() {
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
 	localOrientedBoundingBox.Transform(transform->globalMatrix);
 	localAxisAlignedBoundingBox = localOrientedBoundingBox.MinimalEnclosingAABB();
+	owner->GenerateAABB();
 }
 
 void ComponentMeshRenderer::Enable() {

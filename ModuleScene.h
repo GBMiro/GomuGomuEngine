@@ -35,7 +35,8 @@ public:
 	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
-
+	void CheckRayIntersectionWithGameObject(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected);
+	bool CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o);
 public:
 	ComponentPointLight* pointLight = nullptr;
 	float3 ambientLight = { 0,0,0 };

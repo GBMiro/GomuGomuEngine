@@ -1,5 +1,4 @@
 #include "ModuleEditor.h"
-#include "imgui.h"
 #include "backends/imgui_impl_sdl.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "Application.h"
@@ -13,6 +12,13 @@
 #include "WindowGameObjectHierarchy.h"
 #include "WindowScene.h"
 #include "ModuleScene.h"
+#include "ModuleDebugDraw.h"
+#include "ModuleInput.h"
+#include "ModuleCamera.h"
+#include "GameObject.h"
+#include <iostream>
+#include <algorithm>
+
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
@@ -42,14 +48,23 @@ bool ModuleEditor::Init() {
 	return true;
 }
 
+
+
 update_status ModuleEditor::PreUpdate() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 
+	if (App->input->GetMouseButtonDown(1) == KeyState::KEY_DOWN) {
+		if (App->input->GetKey(SDL_SCANCODE_LALT) != KeyState::KEY_REPEAT) {
+			OnClicked(game->GetMousePosInWindow());
+		}
+	}
+
 
 	return UPDATE_CONTINUE;
 }
+
 
 update_status ModuleEditor::Update() {
 	int windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -65,7 +80,6 @@ update_status ModuleEditor::Update() {
 		if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 		Draw();
 	}
-
 
 	ImGui::End();
 	ImGui::Render();
@@ -143,4 +157,48 @@ GameObject* ModuleEditor::GetGameObjectSelected() const {
 
 void ModuleEditor::SetGameObjectSelected(GameObject* gameObject) {
 	hierarchy->SetGameObjectSelected(gameObject);
+}
+
+
+void ModuleEditor::OnClicked(ImVec2 mousePosInWindow) {
+	Frustum f = App->camera->GetFrustum();
+	GameObject* selected = nullptr;
+
+	ImVec2 windowSize = game->GetSize();
+
+	float mouseNormX = (float)mousePosInWindow.x / windowSize.x;
+	float mouseNormY = (float)mousePosInWindow.y / windowSize.y;
+
+	//Normalizing mouse position in range of -1 / 1 // -1, -1 being at the bottom left corner
+	mouseNormX = Lerp(-1, 1, mouseNormX);
+	mouseNormY = Lerp(-1, 1, mouseNormY);
+
+	//-MouseNormY because IMGUI inverts Y
+	LineSegment picking = f.UnProjectLineSegment(mouseNormX, -mouseNormY);
+
+
+	std::vector<GameObject*>possibleObjs;
+	App->scene->CheckRayIntersectionWithGameObject(picking, possibleObjs, App->scene->GetRoot(), GetGameObjectSelected());
+
+	if (possibleObjs.size() > 0) {
+
+		std::sort(possibleObjs.begin(), possibleObjs.end(), [](GameObject* l, GameObject* r) {
+			float3 frustumPosition = App->camera->GetFrustum().Pos();
+			float lDist = (frustumPosition - l->GetAABB().CenterPoint()).Length();
+			float rDist = (frustumPosition - r->GetAABB().CenterPoint()).Length();
+
+			return lDist > rDist;
+			});
+		std::reverse(possibleObjs.begin(), possibleObjs.end());
+		for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
+			if (App->scene->CheckRayIntersectionWithMeshRenderer(picking, *it)) {
+				selected = *it;
+				SetGameObjectSelected(selected);
+			}
+		}
+	}
+
+	if (!selected) {
+		SetGameObjectSelected(nullptr);
+	}
 }

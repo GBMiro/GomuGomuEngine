@@ -173,6 +173,11 @@ void GameObject::GenerateAABB() {
 		globalAABB.minPoint = float3::zero;
 		globalAABB.maxPoint = float3::zero;
 	}
+
+	if (parent != nullptr) {
+		parent->GenerateAABB();
+	}
+
 }
 
 const AABB& GameObject::GetAABB() const {

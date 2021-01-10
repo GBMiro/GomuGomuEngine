@@ -13,8 +13,7 @@
 #define MaxZFar 200.0f
 #define MaxFOV 90.0f
 
-class ModuleCamera : public Module
-{
+class ModuleCamera : public Module {
 public:
 	ModuleCamera();
 
@@ -51,10 +50,10 @@ public:
 	float3 getCameraPosition() const { return frustum.Pos(); }
 	float getAspectRatio() const { return frustum.AspectRatio(); }
 	float getFOV() const { return fov; }
-
+	const Frustum& GetFrustum() { return frustum; }
 private:
 	void updateCamera();
-	void rotateCamera(const float3x3 &rotationMatrix);
+	void rotateCamera(const float3x3& rotationMatrix);
 	void processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed);
 	void processMouseInput(float deltaTime);
 

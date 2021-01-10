@@ -50,8 +50,8 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	ImporterScene::LoadScene("Scene.fbx");
-	LOG("Scene loaded from json: %.f ms", t->Read());
+	//ImporterScene::LoadScene("Scene.fbx");
+	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/Crow.fbx");
@@ -148,6 +148,9 @@ GameObject* ModuleScene::AddObject(const char* path) {
 			ImporterModel::Save(created, path);
 		}
 	}
+	if (created) {
+		created->GenerateAABB();
+	}
 	RELEASE(t);
 	return created;
 }
@@ -213,4 +216,44 @@ void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {
 	for (std::vector<GameObject*>::const_iterator it = root->children.begin(); it != root->children.end(); ++it) {
 		gameObjects.push_back(*it);
 	}
+}
+
+
+bool ModuleScene::CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o) {
+	ComponentMeshRenderer* mesh = (ComponentMeshRenderer*)o->GetComponentOfType(ComponentType::CTMeshRenderer);
+	if (!mesh)return false;
+	ComponentTransform* transform = (ComponentTransform*)o->GetComponentOfType(ComponentType::CTTransform);
+
+	float4x4 model = transform->globalMatrix;
+
+	std::vector<Triangle> tris = mesh->mesh->GetTriangles(model);
+
+	bool intersection = false;
+
+	for (std::vector<Triangle>::iterator it = tris.begin(); it != tris.end() && !intersection; ++it) {
+		float dist;
+		float3 point;
+		if (picking.Intersects(*it, &dist, &point)) {
+			intersection = true;
+		}
+	}
+
+	return intersection;
+}
+
+
+void ModuleScene::CheckRayIntersectionWithGameObject(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected) {
+	if (o != currentSelected) {
+		AABB aabb = o->GetAABB();
+		Ray realRay = ray.ToRay();
+
+		if (realRay.Intersects(aabb)) {
+			possibleAABBs.push_back(o);
+		}
+	}
+
+	for (std::vector<GameObject*>::iterator it = o->children.begin(); it != o->children.end(); ++it) {
+		CheckRayIntersectionWithGameObject(ray, possibleAABBs, *it, currentSelected);
+	}
+
 }

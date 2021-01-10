@@ -74,6 +74,7 @@ void ImporterScene::LoadScene(const char* scene) {
 				meshRenderer->mesh->SetFileID(meshFile);
 				imp.Load(bufferMesh, meshRenderer->mesh);
 				meshRenderer->mesh->Load();
+				meshRenderer->GenerateAABB();
 				RELEASE(bufferMesh);
 
 				std::string material = component["Material File"].GetString();
