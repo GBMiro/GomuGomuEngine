@@ -9,6 +9,7 @@
 #include "ModuleTextures.h"
 #include "ModuleScene.h"
 #include "Brofiler/include/Brofiler.h"
+#include "ModuleFileSystem.h"
 #include "Leaks.h"
 #include "Timer.h"
 
@@ -24,6 +25,7 @@ Application::Application() {
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(editor = new ModuleEditor());
 	modules.push_back(camera = new ModuleCamera());
+	modules.push_back(FS = new ModuleFileSystem());
 	capTimer = new Timer();
 	SetFrameCap(60);
 }

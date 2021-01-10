@@ -112,3 +112,7 @@ bool ModuleTextures::ExistsTexture(const char* path, unsigned int& retID) const 
 	retID = textureID;
 	return textureID != -1;
 }
+
+void ModuleTextures::InsertTexturePath(const std::string& path, int textureID) {
+	textureMap.insert(std::pair<std::string, int>(path, textureID));
+}

@@ -27,6 +27,8 @@ public:
 	void SetPosition(float3 newGlobalPos);
 	void DrawGizmos()override;
 
+	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
+
 
 
 public:

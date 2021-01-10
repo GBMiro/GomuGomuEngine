@@ -8,6 +8,7 @@
 #include "MathGeoLib/Math/float4x4.h"
 #include "Leaks.h"
 #include "Application.h"
+#include "MathGeoLib/Algorithm/Random/LCG.h"
 #include "ModuleDebugDraw.h"
 
 GameObject::GameObject(GameObject* parent, const char* name) {
@@ -16,6 +17,7 @@ GameObject::GameObject(GameObject* parent, const char* name) {
 		parent->children.push_back(this);
 	}
 	this->name = name;
+	UUID = LCG().Int();
 	ComponentTransform* cTransform = new ComponentTransform(this, float3::zero, Quat::identity, float3::one);
 	components.push_back(cTransform);
 }
@@ -25,6 +27,7 @@ GameObject::GameObject(GameObject* parent, const char* name, const float3& posit
 		this->parent = parent;
 		parent->children.push_back(this);
 	}
+	UUID = LCG().Int();
 	this->name = name;
 	ComponentTransform* cTransform = new ComponentTransform(this, position, rotation, scale);
 	components.push_back(cTransform);
@@ -226,5 +229,29 @@ void GameObject::DrawGizmos() {
 	App->debugDraw->DrawAABB(globalAABB);
 	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
 		(*it)->DrawGizmos();
+	}
+}
+
+void GameObject::GetAllChilds(std::vector<GameObject*>& children) const {
+	for (std::vector<GameObject*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it) {
+		children.push_back(*it);
+		(*it)->GetAllChilds(children);
+	}
+}
+
+void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc) {
+	gameObject.AddMember("UUID", GetUUID(), alloc);
+	gameObject.AddMember("Parent UUID", parent->GetUUID(), alloc);
+	gameObject.AddMember("Name", (rapidjson::Value)rapidjson::StringRef(name.c_str()), alloc);
+	if (components.size() > 0) {
+		rapidjson::Value gameObjectComponents(rapidjson::kArrayType);
+		{
+			for (std::vector<Component*>::const_iterator c = components.begin(); c != components.end(); ++c) {
+				rapidjson::Value component(rapidjson::kObjectType);
+				(*c)->WriteToJSON(component, alloc);
+				gameObjectComponents.PushBack(component, alloc);
+			}
+		}
+		gameObject.AddMember("Components", gameObjectComponents, alloc);
 	}
 }

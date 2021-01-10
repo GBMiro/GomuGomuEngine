@@ -23,6 +23,7 @@ public:
 	void setWrapMode(unsigned index, unsigned textureID) const;
 
 	bool ExistsTexture(const char* path, unsigned int& retID) const;
+	void InsertTexturePath(const std::string& path, int textureID);
 
 private:
 	std::map<std::string, int> textureMap;

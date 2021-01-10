@@ -18,16 +18,20 @@ public:
 		std::string path;
 	};
 
-private:
-	//Information variables
-	Texture* diffuseTexture;
-	Texture* specularTexture;
 
+	//Information variables
+	Texture* diffuseTexture = nullptr;
+	Texture* specularTexture = nullptr;
+
+	std::string name = "";
+
+private:
 	//Shader variables
-	float shininess;
-	float3 specularColor;
+	float shininess = 1;
+	float3 specularColor = float3{ 1,1,1 };
 
 public:
+	Material() {};
 	Material(aiMaterial* mat, std::string modelPath, float aShininess = 300.0f);
 	~Material();
 	bool  GetTextureID(unsigned int& texID, TextureType type = TextureType::DIFFUSE)const;

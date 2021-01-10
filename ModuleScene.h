@@ -5,6 +5,7 @@
 #include <vector>
 #include <float.h>
 #include "MathGeoLib/Math/float3.h"
+#include "MathGeoLib/Algorithm/Random/LCG.h"
 
 class GameObject;
 class aiNode;
@@ -30,14 +31,14 @@ public:
 	void DestroyGameObject(GameObject* go);
 	void AddObject(const char* path);
 
-	void CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
+	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
 
 public:
-	std::vector<unsigned> materials;
-	ComponentPointLight* pointLight;
-	float3 ambientLight;
+	std::vector<unsigned> materials; // I think it's not being used
+	ComponentPointLight* pointLight = nullptr;
+	float3 ambientLight = { 0,0,0 };
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 

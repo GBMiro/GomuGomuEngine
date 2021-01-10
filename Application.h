@@ -13,6 +13,7 @@ class ModuleEditor;
 class ModuleDebugDraw;
 class ModuleTextures;
 class ModuleScene;
+class ModuleFileSystem;
 class Model;
 class Timer;
 
@@ -36,6 +37,7 @@ public:
 	ModuleDebugDraw* debugDraw = nullptr;
 	ModuleTextures* textures = nullptr;
 	ModuleScene* scene = nullptr;
+	ModuleFileSystem* FS = nullptr;
 
 	float GetDeltaTime();
 	void SetFrameCap(int frameCap);

@@ -68,6 +68,14 @@ void ComponentMeshRenderer::OnTransformChanged() {
 	GenerateAABB();
 }
 
+void ComponentMeshRenderer::WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+	component.AddMember("Component Type", GetType(), alloc);
+	component.AddMember("UUID", GetUUID(), alloc);
+	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+	component.AddMember("Mesh File", mesh->GetFileID(), alloc);
+	component.AddMember("Material File", (rapidjson::Value)rapidjson::StringRef(material->name.c_str()), alloc);
+}
+
 void ComponentMeshRenderer::DrawGizmos() {
 	if (App->debugDraw) {
 		App->debugDraw->DrawAABB(localAxisAlignedBoundingBox);

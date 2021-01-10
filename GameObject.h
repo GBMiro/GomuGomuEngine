@@ -35,6 +35,11 @@ public:
 	void RemoveFromParent();
 	void DrawGizmos();
 
+	uint32_t GetUUID() { return UUID; }
+
+	void GetAllChilds(std::vector<GameObject*>& children) const;
+	void WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc);
+
 public:
 	bool active; //TODO
 	AABB globalAABB;
@@ -42,5 +47,8 @@ public:
 	std::vector<GameObject*> children;
 	std::vector<Component*> components;
 	GameObject* parent = nullptr;
+
+private:
+	uint32_t UUID;
 };
 

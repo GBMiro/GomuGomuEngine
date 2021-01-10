@@ -12,6 +12,7 @@
 #include "WindowAbout.h"
 #include "WindowGameObjectHierarchy.h"
 #include "WindowScene.h"
+#include "ModuleScene.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
@@ -133,7 +134,7 @@ void ModuleEditor::cleanProperties() const {
 }
 
 void ModuleEditor::fileDropped(const char* filename) const {
-	//App->model->processFile(filename);
+	App->scene->AddObject(filename); // This will change to get file extension and then decide where to send it
 }
 
 GameObject* ModuleEditor::GetGameObjectSelected() const {

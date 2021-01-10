@@ -88,6 +88,31 @@ void ComponentTransform::DrawGizmos() {
 	App->debugDraw->DrawAxisTriad(globalMatrix);
 }
 
+void ComponentTransform::WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+	component.AddMember("Component Type", GetType(), alloc);
+	component.AddMember("UUID", GetUUID(), alloc);
+	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+
+	rapidjson::Value position(rapidjson::kArrayType);
+	position.PushBack(this->localPosition.x, alloc);
+	position.PushBack(this->localPosition.y, alloc);
+	position.PushBack(this->localPosition.z, alloc);
+	component.AddMember("Position", position, alloc);
+
+	rapidjson::Value rotation(rapidjson::kArrayType);
+	rotation.PushBack(this->localRotation.x, alloc);
+	rotation.PushBack(this->localRotation.y, alloc);
+	rotation.PushBack(this->localRotation.z, alloc);
+	rotation.PushBack(this->localRotation.w, alloc);
+	component.AddMember("Rotation", rotation, alloc);
+
+	rapidjson::Value scale(rapidjson::kArrayType);
+	scale.PushBack(this->localScale.x, alloc);
+	scale.PushBack(this->localScale.y, alloc);
+	scale.PushBack(this->localScale.z, alloc);
+	component.AddMember("Scale", scale, alloc);
+}
+
 
 Quat ComponentTransform::CalculateGlobalRotation()const {
 	if (owner->parent != nullptr) {
