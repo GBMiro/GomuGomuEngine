@@ -16,7 +16,7 @@ public:
 
 	void Update();
 
-	Component* CreateComponent(ComponentType type);
+	Component* CreateComponent(ComponentType type, int additionalParam = 0);
 
 	void ChangeParent(GameObject* parent);
 	bool IsAChild(const GameObject* gameObject) const;

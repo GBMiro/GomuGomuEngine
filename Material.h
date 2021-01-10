@@ -32,8 +32,10 @@ private:
 
 public:
 	Material() {};
-	Material(aiMaterial* mat, std::string modelPath, float aShininess = 300.0f);
+	Material(aiMaterial* mat, std::string modelPath, float aShininess = -2.0f);
+	Material(std::string diffusePath, std::string specularPath, float aShininess = -2.0f);
 	~Material();
+
 	bool  GetTextureID(unsigned int& texID, TextureType type = TextureType::DIFFUSE)const;
 	const float2& Material::GetTextureSize(TextureType type = TextureType::DIFFUSE)const;
 	const std::string& Material::GetTextureName(TextureType type = TextureType::DIFFUSE)const;

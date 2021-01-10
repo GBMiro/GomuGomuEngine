@@ -11,6 +11,7 @@ class GameObject;
 class aiNode;
 class aiScene;
 class ComponentPointLight;
+class ComponentDirectionalLight;
 
 class ModuleScene : public Module {
 
@@ -29,16 +30,17 @@ public:
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent = nullptr);
 	void DestroyGameObject(GameObject* go);
-	void AddObject(const char* path);
+	GameObject* AddObject(const char* path);
 
 	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
 
 public:
-	std::vector<unsigned> materials; // I think it's not being used
 	ComponentPointLight* pointLight = nullptr;
 	float3 ambientLight = { 0,0,0 };
+	ComponentDirectionalLight* dirLight;
+	float ambientIntensity = 0.1f;
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 

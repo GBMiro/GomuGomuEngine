@@ -201,21 +201,11 @@
     </ClCompile>
     <ClCompile Include="PreciseTimer.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="ModuleFileSystem.cpp" />
-    <ClCompile Include="ImporterMesh.cpp">
-      <Filter>Importers</Filter>
+    <ClCompile Include="ComponentDirectionalLight.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="ImporterMaterial.cpp">
-      <Filter>Importers</Filter>
-    </ClCompile>
-    <ClCompile Include="ImporterTextures.cpp">
-      <Filter>Importers</Filter>
-    </ClCompile>
-    <ClCompile Include="ImporterScene.cpp">
-      <Filter>Importers</Filter>
-    </ClCompile>
-    <ClCompile Include="ImporterModel.cpp">
-      <Filter>Importers</Filter>
+    <ClCompile Include="ComponentSpotLight.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -559,21 +549,11 @@
     </ClInclude>
     <ClInclude Include="PreciseTimer.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="ModuleFileSystem.h" />
-    <ClInclude Include="ImporterMesh.h">
-      <Filter>Importers</Filter>
+    <ClInclude Include="ComponentDirectionalLight.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="ImporterMaterial.h">
-      <Filter>Importers</Filter>
-    </ClInclude>
-    <ClInclude Include="ImporterTextures.h">
-      <Filter>Importers</Filter>
-    </ClInclude>
-    <ClInclude Include="ImporterScene.h">
-      <Filter>Importers</Filter>
-    </ClInclude>
-    <ClInclude Include="ImporterModel.h">
-      <Filter>Importers</Filter>
+    <ClInclude Include="ComponentSpotLight.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -600,9 +580,6 @@
     </Filter>
     <Filter Include="Components">
       <UniqueIdentifier>{76e8b024-5128-4ceb-a282-e71a19644a39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Importers">
-      <UniqueIdentifier>{f4e91886-73a7-402b-961d-b130fdfa397b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

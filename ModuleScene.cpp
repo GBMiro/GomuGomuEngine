@@ -15,16 +15,21 @@
 #include "ImporterScene.h"
 #include "ImporterModel.h"
 #include "ComponentPointLight.h"
+
 #include "ModuleFileSystem.h"
 #include "Timer.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
+//#include "rapidjson/document.h"
+//#include "rapidjson/writer.h"
+//#include "rapidjson/stringbuffer.h"
+
+#include "ComponentDirectionalLight.h"
+#include "ComponentSpotLight.h"
 #include "Leaks.h"
 
 
 ModuleScene::ModuleScene() {
-
+	ambientLight = float3(0.1f, 0.1f, 0.1f);
+	ambientIntensity = 0.1f;
 }
 
 ModuleScene::~ModuleScene() {
@@ -38,7 +43,6 @@ bool ModuleScene::Init() {
 	//AddObject("./Resources/Models/Sword.fbx");
 	//AddObject("./Resources/Models/AmongUs.fbx");
 	//AddObject("./Resources/Models/Street_environment_V01.fbx");
-	ambientLight = float3(0.1f, 0.1f, 0.1f);
 	root = new GameObject(nullptr, "Fake root node");
 	return true;
 }
@@ -52,22 +56,26 @@ bool ModuleScene::Start() {
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/Crow.fbx");
 	//AddObject("./Resources/Models/Crow.fbx");
-	
+
 	t->Start();
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//LOG("Second baker house from json: %.f ms", t->Read());
-	
+
 	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
 	//DestroyGameObject(dummy);
 	RELEASE(t);
 
-	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
-		root->GenerateAABB();
-	}
+	AddObject("./Resources/Models/BakerHouse.fbx");
 
-	// Commented for now so it's not saved in scene.fbx
-	//GameObject* lightObj = CreateGameObject("PointLight", root);
-	//pointLight = (ComponentPointLight*)lightObj->CreateComponent(ComponentType::CTLight);
+	GameObject* pointLightObj = CreateGameObject("PointLight", root);
+	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
+
+	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
+	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);
+
+	GameObject* spotLightObj = CreateGameObject("SpotLight", root);
+	ComponentSpotLight* spotLight = (ComponentSpotLight*)spotLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::SPOT);
+
 	return true;
 }
 
@@ -99,13 +107,15 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 }
 
 bool ModuleScene::CleanUp() {
-	ImporterScene::SaveScene();
+	//ImporterScene::SaveScene();
 	RELEASE(root);
 	return true;
 }
 
 GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent) {
 	GameObject* ret = new GameObject(parent, name);
+	ret->GenerateAABB();
+
 	return ret;
 }
 
@@ -118,7 +128,8 @@ void ModuleScene::DestroyGameObject(GameObject* go) {
 	RELEASE(go);
 }
 
-void ModuleScene::AddObject(const char* path) {
+GameObject* ModuleScene::AddObject(const char* path) {
+	GameObject* created = nullptr;
 	Timer* t = new Timer();
 	LOG("Loading object...");
 	std::string filename;
@@ -128,20 +139,21 @@ void ModuleScene::AddObject(const char* path) {
 		LOG("Loading %s from custom file format", filename.c_str());
 		ImporterModel::Load(filename);
 		LOG("Model loaded from custom file format: %.f ms", t->Read());
-	}
-	else {
+	} else {
 		LOG("Loading %s from fbx", filename.c_str());
 		const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 		if (scene) {
-			GameObject* created = CreateGameObject(path, scene, scene->mRootNode, root);
+			created = CreateGameObject(path, scene, scene->mRootNode, root);
 			LOG("Model loaded from fbx: %.f ms", t->Read());
 			ImporterModel::Save(created, path);
 		}
 	}
 	RELEASE(t);
+	return created;
 }
 
-GameObject*  ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
+
+GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
 	const char* name = node->mName.C_Str();
 	GameObject* object = new GameObject(parent, name, float3::zero, Quat::identity, float3::one);
 	if (node->mNumChildren > 0) {
@@ -166,8 +178,7 @@ GameObject*  ModuleScene::CreateGameObject(const char* path, const aiScene* scen
 					unsigned written = App->FS->Save((std::string("Assets/Library/Meshes/") + std::string(std::to_string(meshRenderer->mesh->GetFileID()))).c_str(), buffer, size);
 					if (written != size) {
 						LOG("Error writing the mesh file");
-					}
-					else {
+					} else {
 						LOG("Mesh saved in Library/Meshes");
 					}
 					RELEASE(buffer);
@@ -182,13 +193,12 @@ GameObject*  ModuleScene::CreateGameObject(const char* path, const aiScene* scen
 					written = App->FS->Save(std::string("Assets/Library/Materials/").append(newMat->name).c_str(), bufferMaterial, size);
 					if (written != size) {
 						LOG("Error writing the material file");
-					}
-					else {
+					} else {
 						LOG("Material saved in Library/Materials");
 					}
 					RELEASE(bufferMaterial);
 
-					if (newMat) {
+					if (newMat != nullptr) {
 						meshRenderer->SetMaterial(newMat);
 					}
 				}

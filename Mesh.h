@@ -6,6 +6,7 @@
 #include <vector>
 
 class ComponentPointLight;
+class ComponentDirectionalLight;
 class Material;
 class Mesh {
 
@@ -15,8 +16,9 @@ public:
 
 	void Load();
 
-	void Draw(const Material* material, const float4x4& model, const ComponentPointLight* pointLight);
+	void Draw(const Material* material, const float4x4& model, const ComponentDirectionalLight* dirLight, const ComponentPointLight* pointLight);
 	void CreateAABB();
+
 
 	int getNumVertex() const { return numVertex; }
 

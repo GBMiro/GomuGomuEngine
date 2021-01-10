@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "ModuleTextures.h"
 #include "Material.h"
+#include "Leaks.h"
 
 void ImporterTextures::Import(const char* buffer, unsigned size) {
 	ilLoadL(IL_TYPE_UNKNOWN, buffer, size);

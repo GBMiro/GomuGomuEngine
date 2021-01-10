@@ -54,11 +54,11 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) 
 	if (gameObjectSelected == gameObject) {
 		nodeFlags |= ImGuiTreeNodeFlags_Selected;
 	}
-
+	ImGui::PushID(gameObject);
 	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags); //Here I'll use UUID instead of Name
 
 	if (ImGui::IsItemClicked(ImGuiMouseButton(0)) || ImGui::IsItemClicked(ImGuiMouseButton(1)))	gameObjectSelected = gameObject;
-	if (ImGui::IsMouseDoubleClicked(0)) {
+	if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered()) {
 		App->camera->FocusOnSelected();
 	}
 	if (ImGui::BeginDragDropSource()) {
@@ -67,7 +67,7 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) 
 		ImGui::EndDragDropSource();
 	}
 	if (ImGui::BeginDragDropTarget()) {
-		LOG("%s's new parent: %s", gameObjectSelected->GetName(), gameObject->GetName());
+		//LOG("%s's new parent: %s", gameObjectSelected->GetName(), gameObject->GetName());
 		if (ImGui::AcceptDragDropPayload("Source")) {
 			if (gameObject != gameObjectSelected) {
 				if (!gameObjectSelected->IsAChild(gameObject)) gameObjectDrop = gameObject;
@@ -84,4 +84,5 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) 
 		}
 		ImGui::TreePop();
 	}
+	ImGui::PopID();
 }

@@ -1,98 +1,174 @@
 #version 440
 
+in vec3 Normal;
+in vec3 FragPos;  
+in vec2 TexCoords;
+
+out vec4 outColor;
+
 struct PointLight {
 	vec3 position;
     vec3 color;
     float intensity;
     vec3 attenuation;
+    float range;
+};
+
+struct DirectionalLight{
+	vec3 direction;
+	vec3 color;
+	float intensity;
 };
 
 struct Material{
-	sampler2D diffuseTex;
-	sampler2D specularTex;
-	bool hasSpecularTex;
-	float shininess;
-	vec3 Rf0;
 
+ bool useDiffuseTexture;
+ bool useSpecularTexture;
+ sampler2D diffuseTex;
+ sampler2D specularTex;
+
+//Material values that will be used if no SpecularTexture is found
+ vec3 materialRF0;
+ float materialShininess;
+
+
+//Default value if no diffuse texture is found
+ vec3 objectColor;
 };
 
 float GetAttenuation(PointLight p,float d){
-    float att=1.0/(p.attenuation.x+p.attenuation.y*d+p.attenuation.z*d*d);
-    return att;
+    return 1.0 / (p.attenuation.x + p.attenuation.y * d + p.attenuation.z * d * d);
 }
 
 uniform PointLight pointLight;
+uniform DirectionalLight dirLight;
+
+uniform vec3 ambientColor;
+uniform float ambientIntensity;
+
+uniform vec3 viewPos;
+
 uniform Material material;
 
-uniform  vec3 ambientColor;
+uniform bool useToneMapping;
+uniform bool useGammaCorrection;
 
-out vec4 outColor;
-in vec3 ViewPos;
-
-in vec3 Normal;
-in vec3 FragPos;  
-in vec2 TexCoords;
-void main() {
-
-//Ambient
-vec3 ambient =  ambientColor * vec3(texture(material.diffuseTex,TexCoords));
-    
-//Diffuse
-vec3 norm = normalize(Normal);
-
-vec3 lightDir = normalize(	pointLight.position - FragPos);  
-
-float diff = max(dot( lightDir,norm), 0.0);
-
-
-
-vec3 diffuse =   pointLight.color * diff * vec3(texture(material.diffuseTex,TexCoords));
-vec3 Rf0 = material.Rf0;
- if(material.hasSpecularTex){
-	Rf0 *= vec3(texture(material.specularTex,TexCoords));
- }
- float PI = 3.14159;
- 
- //Normalize diffuse
- diffuse = max(diffuse * ((1-Rf0)/PI),0);
-
-
-vec3 Li = pointLight.intensity * pointLight.color.yyz;
-
-vec3 Rfang = Rf0 + ((1-Rf0)*pow(1 - (dot(lightDir,norm)),5	));
-
-if(material.hasSpecularTex){
-Rfang = Rfang + vec3(texture(material.specularTex,TexCoords));
+vec4 CalcPointLight(PointLight light,vec3 norm, vec3 viewDir, vec3 diffColor,vec3 RF0,float shininess){
+	vec3 lightDir = normalize(light.position - FragPos);  
+	
+	//Incidental Light
+	vec3 Li = light.intensity * light.color;
+	
+	//Specular color
+	vec3 Rfang = RF0.rgb + ((1-RF0.rgb)*max(pow(1 - (dot(lightDir,norm)),5	),0));
+	
+	//Reflection vector
+	vec3 R = normalize(reflect(-lightDir,norm));
+	
+	//Normalized specular calculation (2*PI is ommited)
+	vec3 normSpec = (((shininess+2)/(2)) * Rfang * max(pow(dot(viewDir,R),shininess),0));
+	
+	//Distance attenuation
+	float dist = abs(length(FragPos - light.position));
+	float att = GetAttenuation(light,dist);
+	
+	//Phong + Shlick	
+	vec4 hdr = vec4((((diffColor.rgb  + normSpec.rgb)   * Li * max(dot(norm, lightDir),0))) * att,1) ;
+	return hdr;
 }
 
-vec3 V = normalize(FragPos-ViewPos);
-vec3 R = normalize(reflect(lightDir,norm));
-vec3 normSpec = (((material.shininess+2)/(2*PI)) * Rfang * max(pow(dot(V,R),material.shininess),0));
+vec4 CalcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir, vec3 diffColor, vec3 RF0, float shininess){
+	vec3 lightDir = -light.direction;
+	
+	//Incidental Light
+	vec3 Li = light.intensity * light.color;
+	
+	//Specular color
+	vec3 Rfang = RF0.rgb + ((1-RF0.rgb)*max(pow(1 - (dot(lightDir,norm)),5	),0));
+	
+	//Reflection vector
+	vec3 R = normalize(reflect(-lightDir,norm));
+	
+	//Normalized specular calculation (2*PI is ommited)
+	vec3 normSpec = (((shininess+2)/(2)) * Rfang * max(pow(dot(viewDir,R),shininess),0));
+	
+	
+	//Phong + Shlick	
+	vec4 hdr = vec4((((diffColor.rgb  + normSpec.rgb)   * Li * max(dot(norm, lightDir),0))),1) ;
+	return hdr;
 
-//Diffuse + Ambient
-//outColor = vec4(ambient,1.0) +vec4(diffuse * Li * dot(Normal, lightDir),1.0);
 
-//Ambient only
-//outColor = vec4(ambient,1.0);
+}
 
-//Phong + Shlick
+	void main() {
+	
+	//Texel color, if diffuse texture found, use its color, if not, use plain color
+	vec3 diffColor;
+	
+	if(material.useDiffuseTexture) {
+		diffColor = vec3(texture(material.diffuseTex,TexCoords).rgb);
+		//We set diffColor to linear space, so that later on gamma correction works properly
+		
+		if(useGammaCorrection){
+			diffColor = pow(diffColor, vec3(2.2));
+		}
+	}else {
+		diffColor = material.objectColor;
+	}
+	
+	//Ambient light - generated color
+	vec3 ambient =  normalize(ambientColor) * ambientIntensity *  diffColor;
+	   
+	//Normalizing normal and lightDir vectors     
+	vec3 norm = normalize(Normal);
+	
+	//Specular texture value (grayScale). Material specular color at ang 0
 
-float dist = abs(length(FragPos - pointLight.position));
+	vec3 RF0;
+	
+	float shininess;
+	
+	//If specular texture found, get specular color from it, and shininess from
+	//alpha channel, if not, use given values
+	if(material.useSpecularTexture){
+		vec4 specularTexel = texture(material.specularTex,TexCoords);;
+	
+		RF0 = specularTexel.rgb;
+		RF0 = pow(RF0.rgb, vec3(2.2));
+		//We set RF0 (Specular color) to linear space, so 
+		//that later on gamma correction works properly
+		
+		//Shininess via alpha channel
+		shininess = exp2(specularTexel.a*7+1);
+	}else{
+		RF0 = vec3(material.materialRF0);
+		shininess= material.materialShininess;
+	} 
+	 
+	//Diffuse normalization (((1-RF0)/PI) is omitted)
+	diffColor = diffColor * (1-RF0.rgb);
+	
+	//View vector
+	vec3 V = normalize(viewPos-FragPos);
+	
+	//Here we would iterate through all Point lights
+	vec4 hdr = CalcPointLight(pointLight,norm,V,diffColor,RF0.rgb,shininess) + CalcDirLight(dirLight,norm,V,diffColor,RF0.rgb,shininess);
+	
+	
+	
+	hdr += vec4(ambient,1);
+	
+	//Get LDR to use Tonemapping/Gamma Correction
+	vec3 ldr = hdr.rgb;
+	
+	if(useToneMapping){
+		ldr = ldr / (ldr + vec3(1.0));
+	}
+	 
+	if(useGammaCorrection){
+		ldr = pow(ldr.xyz, vec3(1/2.2));
+	}
 
-
-float att = GetAttenuation(pointLight,dist);
-
-
-//outColor = vec4((diffuse + normSpec) *att  * Li * dot(Normal, lightDir),1.0) + vec4(ambient,1) ;
-
-//Diffuse only 
-//outColor = vec4(diffuse * Li * dot(Normal, lightDir),1.0);
- 
- 
- //outColor = vec4(diffuse,1.0);
- 
-outColor = vec4(diffuse * Li * dot(Normal, lightDir) + ambient,1.0) ;
-
-  
- 
+	outColor = vec4(ldr,1);	
+	
 }

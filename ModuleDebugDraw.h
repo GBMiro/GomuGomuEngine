@@ -26,6 +26,7 @@ public:
 	void DrawAxisTriad(float4x4 axisTransform = float4x4::identity, float axisWidth = 0.3f, float axisLength = 3.0f);
 	void DrawFrustum(const Frustum& frustum);
 	void DrawAABB(const AABB& aabb);
+	void DrawLine(const float3& from, const float3& to, const float3& color);
 private:
 
 	static DDRenderInterfaceCoreGL* implementation;

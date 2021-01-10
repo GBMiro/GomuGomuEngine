@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "ShadingProgram.h"
 #include "ComponentPointLight.h"
+#include "ComponentDirectionalLight.h"
 #include "ComponentTransform.h"
 #include "GameObject.h"
 #include "Application.h"
@@ -87,49 +88,57 @@ void Mesh::CreateAABB() {
 	axisAlignedBB.SetNegativeInfinity(); // initializing the AABB to "null" before a loop of calls to Enclose()
 	axisAlignedBB.Enclose((vec*)vertices, numVertex);
 }
-//
-//class IlumantionSetup() {
-//	AmbientLight
-//	std::vector<ComponentPointLights*>
-//	std::vector<ComponentSpotLights*>
-//
-//}
 
-void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPointLight* pointLight) {
+void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirectionalLight* dirLight, const ComponentPointLight* pointLight) {
 
-	unsigned program = App->renderer->getDefaultProgram();
+	//unsigned program = App->renderer->getDefaultProgram();
 	//unsigned program = App->renderer->unLitProgram->GetID();
-	
-	//unsigned program = App->renderer->litProgram->GetID();
+
+	unsigned program = App->renderer->litProgram->GetID();
 
 	const float4x4& view = App->camera->getViewMatrix();
 	const float4x4& proj = App->camera->getProjectionMatrix();
 
 	glUseProgram(program);
+
+	//Model and camera values
 	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, (const float*)&model);
 	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, (const float*)&view);
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, (const float*)&proj);
 
-	/* Commented because right now I'm not using this. Should be uncommented
-	ComponentTransform* pointTransofrm = (ComponentTransform*)pointLight->owner->GetComponentOfType(ComponentType::CTTransform);
-	glUniform3fv(glGetUniformLocation(program, "pointLight.position"), 1, (const float*)&pointTransofrm->CalculateGlobalPosition());
-	glUniform3fv(glGetUniformLocation(program, "pointLight.color"), 1, (const float*)pointLight->lightColor.ptr());
-	//glUniform3fv(glGetUniformLocation(program, "pointLight.attenuation"), 1, (const float*)&pointLight->constantAtt, (const float*)&pointLight->linearAtt, (const float*)&pointLight->quadraticAtt);
-	glUniform3f(glGetUniformLocation(program, "pointLight.attenuation"), pointLight->constantAtt, pointLight->linearAtt, pointLight->quadraticAtt);
-	glUniform1f(glGetUniformLocation(program, "pointLight.intensity"), pointLight->lightIntensity);
-	//App->renderer->defaultColor = float3(1.0f, 0.0f, 0.0f);
-	*/
-	//glUniform3fv(glGetUniformLocation(program, "defaultColor"), 1, (const float*)&App->renderer->defaultColor);
 
+	//General values
+	glUniform3fv(glGetUniformLocation(program, "ambientColor"), 1, App->scene->ambientLight.ptr());
+	glUniform1fv(glGetUniformLocation(program, "ambientIntensity"), 1, &App->scene->ambientIntensity);
+
+	glUniform1i(glGetUniformLocation(program, "useToneMapping"), App->renderer->GetUseToneMapping());
+	glUniform1i(glGetUniformLocation(program, "useGammaCorrection"), App->renderer->GetUseGammaCorrection());
+
+	//Lightning values 
+
+	if (pointLight) {
+		pointLight->SendValuesToShadingProgram(program);
+	}
+	if (dirLight) {
+		dirLight->SendValuesToShadingProgram(program);
+	}
+	//Material values
 
 	//Texture binding
 	glActiveTexture(GL_TEXTURE0);
 	unsigned int texID;
 
-	if (mat->GetTextureID(texID, TextureType::DIFFUSE))
-		glBindTexture(GL_TEXTURE_2D, texID);
+	bool hasDiffTex = false;
 
+	if (mat->GetTextureID(texID, TextureType::DIFFUSE)) {
+		glBindTexture(GL_TEXTURE_2D, texID);
+		hasDiffTex = true;
+	}
+
+	glUniform1i(glGetUniformLocation(program, "material.useDiffuseTexture"), hasDiffTex);
 	glUniform1i(glGetUniformLocation(program, "material.diffuseTex"), 0);
+
+	glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, App->camera->getCameraPosition().ptr());
 
 	bool hasSpecular = mat->GetTextureID(texID, TextureType::SPECULAR);
 
@@ -139,11 +148,11 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentPoint
 		glUniform1i(glGetUniformLocation(program, "material.specularTex"), 1);
 	}
 
-	glUniform1i(glGetUniformLocation(program, "material.hasSpecularTex"), hasSpecular);
-	glUniform1f(glGetUniformLocation(program, "material.shininess"), mat->GetShininess());
-	glUniform3fv(glGetUniformLocation(program, "material.Rf0"), 1, mat->GetSpecularColor().ptr());
-	glUniform3fv(glGetUniformLocation(program, "ambientColor"), 1, App->scene->ambientLight.ptr());
+	glUniform1i(glGetUniformLocation(program, "material.useSpecularTexture"), hasSpecular);
+	glUniform1f(glGetUniformLocation(program, "material.materialShininess"), mat->GetShininess());
+	glUniform3fv(glGetUniformLocation(program, "material.materialRF0"), 1, mat->GetSpecularColor().ptr());
 
+	//Draw call
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
