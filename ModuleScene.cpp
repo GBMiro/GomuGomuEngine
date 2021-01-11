@@ -50,7 +50,7 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	//ImporterScene::LoadScene("Scene.fbx");
+	ImporterScene::LoadScene("Scene.fbx");
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
@@ -65,16 +65,16 @@ bool ModuleScene::Start() {
 	//DestroyGameObject(dummy);
 	RELEASE(t);
 
-	AddObject("./Resources/Models/BakerHouse.fbx");
+	/*AddObject("./Resources/Models/BakerHouse.fbx");
 
 	GameObject* pointLightObj = CreateGameObject("PointLight", root);
 	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
 
 	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
-	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);
+	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
 
-	GameObject* spotLightObj = CreateGameObject("SpotLight", root);
-	ComponentSpotLight* spotLight = (ComponentSpotLight*)spotLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::SPOT);
+	//GameObject* spotLightObj = CreateGameObject("SpotLight", root);
+	//ComponentSpotLight* spotLight = (ComponentSpotLight*)spotLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::SPOT);
 
 	return true;
 }
@@ -107,7 +107,7 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 }
 
 bool ModuleScene::CleanUp() {
-	//ImporterScene::SaveScene();
+	ImporterScene::SaveScene();
 	RELEASE(root);
 	return true;
 }

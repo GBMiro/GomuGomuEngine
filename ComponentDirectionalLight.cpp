@@ -70,6 +70,15 @@ void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& progr
 	glUniform1f(glGetUniformLocation(program, "dirLight.intensity"), lightIntensity);
 }
 
+void ComponentDirectionalLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+
+	rapidjson::Value direction(rapidjson::kArrayType);
+	direction.PushBack(this->direction.x, alloc);
+	direction.PushBack(this->direction.y, alloc);
+	direction.PushBack(this->direction.z, alloc);
+	component.AddMember("Direction", direction, alloc);
+}
+
 
 //
 //void ComponentDirectionalLight::OnTransformModified() {

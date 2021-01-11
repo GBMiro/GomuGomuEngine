@@ -26,3 +26,18 @@ void ComponentLight::DrawOnEditor() {
 void ComponentLight::SendValuesToShadingProgram(const unsigned& programID)const {
 	//Implemented on children, abstract method, could be deleted?
 }
+
+void ComponentLight::WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+	component.AddMember("Component Type", GetType(), alloc);
+	component.AddMember("UUID", GetUUID(), alloc);
+	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+	component.AddMember("Light Component Type", GetLightType(), alloc);
+
+	rapidjson::Value lightColor(rapidjson::kArrayType);
+	lightColor.PushBack(this->lightColor.x, alloc);
+	lightColor.PushBack(this->lightColor.y, alloc);
+	lightColor.PushBack(this->lightColor.z, alloc);
+	component.AddMember("Light Color", lightColor, alloc);
+	component.AddMember("Light Intensity", lightIntensity, alloc);
+	WriteLightTypeJSON(component, alloc);
+}

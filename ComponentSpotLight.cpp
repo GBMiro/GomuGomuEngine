@@ -116,3 +116,19 @@ void ComponentSpotLight::DrawGizmos() {
 		App->debugDraw->DrawLine(position, position + debugLines[i], float3::one);
 	}
 }
+
+void ComponentSpotLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+	
+	rapidjson::Value direction(rapidjson::kArrayType);
+	direction.PushBack(this->direction.x, alloc);
+	direction.PushBack(this->direction.y, alloc);
+	direction.PushBack(this->direction.z, alloc);
+	component.AddMember("Direction", direction, alloc);
+	
+	component.AddMember("Constant Att", constantAtt, alloc);
+	component.AddMember("Linear Att", linearAtt, alloc);
+	component.AddMember("Quadratic Att", quadraticAtt, alloc);
+
+	component.AddMember("Min Angle", minAngle, alloc);
+	component.AddMember("Max Angle", maxAngle, alloc);
+}

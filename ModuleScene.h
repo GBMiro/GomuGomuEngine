@@ -40,7 +40,7 @@ public:
 public:
 	ComponentPointLight* pointLight = nullptr;
 	float3 ambientLight = { 0,0,0 };
-	ComponentDirectionalLight* dirLight;
+	ComponentDirectionalLight* dirLight = nullptr;
 	float ambientIntensity = 0.1f;
 private:
 	void UpdateGameObjects(GameObject* gameObject);

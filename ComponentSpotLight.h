@@ -17,6 +17,7 @@ public:
 	void Disable()override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
+	void WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	//void OnNewParent(GameObject* prevParent, GameObject* newParent)override;
 	//void OnTransformModified()override;
 };

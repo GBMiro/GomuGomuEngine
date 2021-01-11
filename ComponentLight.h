@@ -26,7 +26,13 @@ public:
 	ComponentLight(GameObject* go, LightType type = LightType::DIRECTIONAL, float3 aColor = float3::zero, float anInt = 1.0f, int aDebugLineAmount = 20);
 	~ComponentLight();
 	void DrawOnEditor()override;
+	LightType GetLightType() const { return type; }
 	virtual void SendValuesToShadingProgram(const unsigned& programID)const;
+	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc);
+
+private:
+	virtual void WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) = 0;
+
 };
 
 #endif

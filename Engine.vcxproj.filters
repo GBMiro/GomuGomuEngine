@@ -223,7 +223,6 @@
     <ClCompile Include="ImporterTextures.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuizmo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -588,7 +587,6 @@
     <ClInclude Include="ImporterTextures.h">
       <Filter>Importers</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

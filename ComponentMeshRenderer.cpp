@@ -63,6 +63,12 @@ void ComponentMeshRenderer::DrawOnEditor() {
 		if (ImGui::InputFloat3("Specular Color", specularDummy.ptr())) {
 			material->SetSpecularColor(specularDummy);
 		}
+		if (material->diffuseTexture) {
+			ImGui::LabelText("Diffuse Texture", material->diffuseTexture->name.c_str());
+		}
+		if (material->specularTexture) {
+			ImGui::LabelText("Specular Texture", material->specularTexture->name.c_str());
+		}
 	}
 }
 
