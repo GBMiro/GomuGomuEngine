@@ -223,6 +223,7 @@
     <ClCompile Include="ImporterTextures.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="Quadtree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -587,6 +588,7 @@
     <ClInclude Include="ImporterTextures.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Quadtree.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">

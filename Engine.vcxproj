@@ -154,6 +154,7 @@
     <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="PreciseTimer.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WindowAbout.h" />
     <ClInclude Include="Application.h" />
@@ -290,6 +291,7 @@
     <ClCompile Include="ModuleFileSystem.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="PreciseTimer.cpp" />
+    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowAbout.cpp" />
     <ClCompile Include="Application.cpp" />
