@@ -18,10 +18,14 @@
 #include "GameObject.h"
 #include <iostream>
 #include <algorithm>
-
+#include "ComponentTransform.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
+
+	gizmoOperation = ImGuizmo::TRANSLATE;
+	gizmoMode = ImGuizmo::WORLD;
+
 	windows.push_back(monitor = new WindowMonitor("Monitor", 0));
 	windows.push_back(configuration = new WindowConfiguration("Configuration", 1));
 	windows.push_back(console = new WindowConsole("Console", 2));
@@ -44,7 +48,7 @@ bool ModuleEditor::Init() {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer->getContext());
 	ImGui_ImplOpenGL3_Init();
-
+	ImGuizmo::Enable(true);
 	return true;
 }
 
@@ -54,17 +58,72 @@ update_status ModuleEditor::PreUpdate() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
-
-	if (App->input->GetMouseButtonDown(1) == KeyState::KEY_DOWN) {
-		if (App->input->GetKey(SDL_SCANCODE_LALT) != KeyState::KEY_REPEAT) {
-			OnClicked(game->GetMousePosInWindow());
-		}
-	}
-
+	ImGuizmo::BeginFrame();
 
 	return UPDATE_CONTINUE;
 }
 
+void ModuleEditor::ManageGizmos() {
+	GameObject* selectedObj = GetGameObjectSelected();
+	if (selectedObj != nullptr) {
+		ComponentTransform* selectedTransform = (ComponentTransform*)GetGameObjectSelected()->GetComponentOfType(ComponentType::CTTransform);
+		if (selectedTransform) {
+			ImGuizmo::SetID(0);
+
+			ImVec2 displaySize = game->GetSize();
+
+			float4x4 viewMatrix = App->camera->getViewMatrix();
+
+			viewMatrix.Transpose();
+
+			float4x4 projectionMatrix = App->camera->getProjectionMatrix().Transposed();
+
+			float4x4 modelProjection = gizmoMode == ImGuizmo::MODE::LOCAL ? selectedTransform->localMatrix.Transposed() : selectedTransform->globalMatrix.Transposed();
+
+			float modelPtr[16];
+			memcpy(modelPtr, modelProjection.ptr(), 16 * sizeof(float));
+
+			//ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(game->GetPosition().x, game->GetPosition().y, displaySize.x, displaySize.y);
+
+			ImGuizmo::MODE modeToUse = gizmoOperation == ImGuizmo::OPERATION::SCALE ? ImGuizmo::MODE::LOCAL : gizmoMode;
+
+			ImGuizmo::Manipulate(viewMatrix.ptr(), projectionMatrix.ptr(), gizmoOperation, modeToUse, modelPtr);
+
+			if (ImGuizmo::IsUsing() == true) {
+				float4x4 newMatrix;
+				newMatrix.Set(modelPtr);
+				modelProjection = newMatrix.Transposed();
+
+				if (gizmoMode == ImGuizmo::MODE::LOCAL) {
+					selectedTransform->SetLocalMatrix(modelProjection);
+				} else {
+					selectedTransform->SetGlobalMatrix(modelProjection);
+				}
+
+			} else {
+
+				if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+					gizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+				}
+				if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
+					gizmoOperation = ImGuizmo::OPERATION::ROTATE;
+				}
+				if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+					gizmoOperation = ImGuizmo::OPERATION::SCALE;
+				}
+
+				if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) {
+					gizmoMode = ImGuizmo::MODE::WORLD;
+				}
+				if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) {
+					gizmoMode = ImGuizmo::MODE::LOCAL;
+				}
+			}
+		}
+
+	}
+}
 
 update_status ModuleEditor::Update() {
 	int windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -80,6 +139,15 @@ update_status ModuleEditor::Update() {
 		if (showMainMenu() == UPDATE_STOP) return UPDATE_STOP;
 		Draw();
 	}
+
+	if (App->input->GetMouseButtonDown(1) == KeyState::KEY_DOWN) {
+		if (App->input->GetKey(SDL_SCANCODE_LALT) != KeyState::KEY_REPEAT) {
+			OnClicked(game->GetMousePosInWindow());
+		}
+	}
+
+
+
 
 	ImGui::End();
 	ImGui::Render();
@@ -161,6 +229,8 @@ void ModuleEditor::SetGameObjectSelected(GameObject* gameObject) {
 
 
 void ModuleEditor::OnClicked(ImVec2 mousePosInWindow) {
+	if ((ImGuizmo::IsUsing()) == true)return;
+
 	Frustum f = App->camera->GetFrustum();
 	GameObject* selected = nullptr;
 

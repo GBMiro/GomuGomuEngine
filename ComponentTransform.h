@@ -29,6 +29,8 @@ public:
 	void SetLocalPosition(float3 newPos);
 	void SetLocalRotation(Quat newRot);
 	void SetLocalScale(float3 newScale);
+	void SetLocalMatrix(float4x4 newLocalMat);
+	void SetGlobalMatrix(float4x4 newGlobalMat);
 
 
 private:

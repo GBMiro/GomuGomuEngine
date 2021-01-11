@@ -4,6 +4,7 @@
 #include "Window.h"
 #include <vector>
 #include "imgui.h"
+#include "ImGuizmo.h"
 
 class WindowMonitor;
 class WindowConfiguration;
@@ -15,6 +16,9 @@ class WindowScene;
 class GameObject;
 
 class ModuleEditor : public Module {
+private:
+	ImGuizmo::OPERATION gizmoOperation;
+	ImGuizmo::MODE gizmoMode;
 public:
 	ModuleEditor();
 	~ModuleEditor();
@@ -46,7 +50,8 @@ public:
 	WindowAbout* about = nullptr;
 	WindowGameObjectHierarchy* hierarchy = nullptr;
 	WindowScene* game = nullptr;
-
+public:
+	void ManageGizmos();
 private:
 	update_status showMainMenu();
 	void Draw();

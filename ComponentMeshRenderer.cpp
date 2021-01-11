@@ -44,6 +44,7 @@ void ComponentMeshRenderer::Disable() {
 
 void ComponentMeshRenderer::Draw() {
 	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->dirLight, App->scene->pointLight);
+
 }
 
 void ComponentMeshRenderer::SetMaterial(Material* mat) {

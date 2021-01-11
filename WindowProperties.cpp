@@ -26,7 +26,7 @@ void WindowProperties::Draw() {
 		return;
 	}
 	GameObject* gameObjectSelected = App->editor->hierarchy->GetGameObjectSelected();
-	if (gameObjectSelected) {
+	if (gameObjectSelected != nullptr) {
 		for (std::vector<Component*>::const_iterator it = gameObjectSelected->components.begin(); it != gameObjectSelected->components.end(); ++it) {
 			(*it)->DrawOnEditor();
 		}
@@ -60,8 +60,7 @@ void WindowProperties::Draw() {
 					if (textureH >= textureW) {
 						textureW = textureW * (200 / (float)textureH);
 						textureH = 200;
-					}
-					else {
+					} else {
 						textureH = textureH * (200 / (float)textureW);
 						textureW = 200;
 					}

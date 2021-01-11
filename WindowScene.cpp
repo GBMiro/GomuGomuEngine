@@ -17,10 +17,9 @@ WindowScene::~WindowScene() {
 }
 
 void WindowScene::Draw() {
+
+	//Push and Pop style var generate a crash when minimization happens
 	//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-
-	ImGui::ShowDemoWindow();
-
 	if (!active) return;
 	if (!ImGui::Begin(name.c_str(), &active, flags)) {
 		ImGui::End();
@@ -41,8 +40,11 @@ void WindowScene::Draw() {
 	App->camera->SetAspectRatio(windowSize.x / (float)windowSize.y);
 	if (ImGui::IsWindowHovered()) App->editor->SetGameWindowStatus(true);
 	else App->editor->SetGameWindowStatus(false);
-	//LOG("Window Hovered %d, Focus: %d", App->editor->GetGameWindowStatus(), ImGui::IsWindowFocused());
+
 	ImGui::Image((ImTextureID)App->renderer->getFrameTexture(), windowSize, ImVec2(0, 1), ImVec2(1, 0));
+
+	App->editor->ManageGizmos();
+
 	ImGui::End();
 
 }

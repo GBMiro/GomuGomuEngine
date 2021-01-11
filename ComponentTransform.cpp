@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "Application.h"
 #include "ModuleDebugDraw.h"
+#include "Globals.h"
 #include "Leaks.h"
 
 ComponentTransform::ComponentTransform(GameObject* parent, const float3& position, const Quat& rotation, const float3& scaling) : Component(ComponentType::CTTransform, parent) {
@@ -49,6 +50,26 @@ void ComponentTransform::SetLocalScale(float3 newScale) {
 	owner->OnTransformChanged();
 }
 
+void ComponentTransform::SetGlobalMatrix(float4x4 newGlobalMat) {
+	if (!owner->parent)return;
+	ComponentTransform* parentTransform = (ComponentTransform*)owner->parent->GetComponentOfType(ComponentType::CTTransform);
+	localMatrix = parentTransform->globalMatrix.Inverted() * newGlobalMat;
+	localMatrix.Decompose(localPosition, localRotation, localScale);
+	globalMatrix = newGlobalMat;
+	UpdateGlobalMatrix();
+	owner->OnTransformChanged();
+}
+
+
+void ComponentTransform::SetLocalMatrix(float4x4 newGlobalMat) {
+	if (!owner->parent)return;
+	localMatrix = newGlobalMat;
+	localMatrix.Decompose(localPosition, localRotation, localScale);
+	UpdateGlobalMatrix();
+	owner->OnTransformChanged();
+}
+
+
 void ComponentTransform::UpdateGlobalValues() {
 	UpdateGlobalMatrix();
 }
@@ -62,10 +83,6 @@ float3 ComponentTransform::Scale() {
 }
 
 Quat ComponentTransform::Rotation() {
-
-	//TO DO Scale must be controlled after being modified OR THIS MAY RETURN ERRORS
-
-
 	float3x3 rotation = globalMatrix.RotatePart();
 
 	rotation.Orthonormalize(0, 1, 2);
@@ -150,10 +167,10 @@ void ComponentTransform::UpdateGlobalMatrix() {
 }
 
 void ComponentTransform::DrawGizmos() {
-	App->debugDraw->DrawAxisTriad(globalMatrix);
-	App->debugDraw->DrawLine(Position(), Position() + Forward() * 4.0f, float3(0.0f, 0, 1.0f));
-	App->debugDraw->DrawLine(Position(), Position() + Up() * 4.0f, float3(0, 1.0f, 0));
-	App->debugDraw->DrawLine(Position(), Position() + Right() * 4.0f, float3(1.0f, 0, 0.0f));
+	//App->debugDraw->DrawAxisTriad(globalMatrix);
+	//App->debugDraw->DrawLine(Position(), Position() + Forward() * 4.0f, float3(0.0f, 0, 1.0f));
+	//App->debugDraw->DrawLine(Position(), Position() + Up() * 4.0f, float3(0, 1.0f, 0));
+	//App->debugDraw->DrawLine(Position(), Position() + Right() * 4.0f, float3(1.0f, 0, 0.0f));
 }
 
 void ComponentTransform::WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
