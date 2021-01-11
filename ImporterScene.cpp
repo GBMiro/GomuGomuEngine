@@ -15,6 +15,7 @@
 #include "ComponentDirectionalLight.h"
 #include "ComponentPointLight.h"
 #include "ComponentTransform.h"
+#include "Quadtree.h"
 #include <vector>
 #include <map>
 #include "Leaks.h"
@@ -88,6 +89,7 @@ void ImporterScene::LoadScene(const char* scene) {
 					bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
 					im.Load(bufferMaterial, meshRenderer->material);
 					RELEASE(bufferMaterial);
+					App->scene->GetQuadTree()->InsertGameObject(node);
 					break;
 				}
 				case ComponentType::CTLight: {

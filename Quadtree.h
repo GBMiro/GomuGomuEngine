@@ -12,6 +12,11 @@ public:
 	QuadtreeNode(const AABB& boundingBox);
 	~QuadtreeNode();
 
+	void InsertGameObject(GameObject* gameObject);
+
+	void Draw();
+	void Subdivide();
+	void Organize();
 	QuadtreeNode* GetParent() const { return parent; }
 
 public:
@@ -33,8 +38,12 @@ private:
 class Quadtree {
 
 public:
-	Quadtree();
+	Quadtree(const AABB& boundingBox);
 	~Quadtree();
+
+	void InsertGameObject(GameObject* gameObject);
+
+	void Draw();
 
 
 public:

@@ -15,15 +15,12 @@
 #include "ImporterScene.h"
 #include "ImporterModel.h"
 #include "ComponentPointLight.h"
-
 #include "ModuleFileSystem.h"
 #include "Timer.h"
-//#include "rapidjson/document.h"
-//#include "rapidjson/writer.h"
-//#include "rapidjson/stringbuffer.h"
-
 #include "ComponentDirectionalLight.h"
 #include "ComponentSpotLight.h"
+#include "Quadtree.h"
+#include "MathGeoLib/Geometry/AABB.h"
 #include "Leaks.h"
 
 
@@ -44,6 +41,7 @@ bool ModuleScene::Init() {
 	//AddObject("./Resources/Models/AmongUs.fbx");
 	//AddObject("./Resources/Models/Street_environment_V01.fbx");
 	root = new GameObject(nullptr, "Fake root node");
+	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
 	return true;
 }
 
@@ -54,7 +52,7 @@ bool ModuleScene::Start() {
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
-	//AddObject("./Resources/Models/Crow.fbx");
+	AddObject("./Resources/Models/fox.fbx");
 	//AddObject("./Resources/Models/Crow.fbx");
 
 	t->Start();
@@ -91,6 +89,7 @@ update_status ModuleScene::Update() {
 	if (selectedObj) {
 		selectedObj->DrawGizmos();
 	}
+	quadTree->Draw();
 
 	return UPDATE_CONTINUE;
 }
@@ -107,8 +106,9 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 }
 
 bool ModuleScene::CleanUp() {
-	ImporterScene::SaveScene();
+	//ImporterScene::SaveScene();
 	RELEASE(root);
+	RELEASE(quadTree);
 	return true;
 }
 
@@ -204,6 +204,8 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 					if (newMat != nullptr) {
 						meshRenderer->SetMaterial(newMat);
 					}
+
+					quadTree->InsertGameObject(object);
 				}
 			}
 		}

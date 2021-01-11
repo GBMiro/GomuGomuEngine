@@ -11,6 +11,7 @@
 #include "ImporterMaterial.h"
 #include "ImporterMesh.h"
 #include "Mesh.h"
+#include "Quadtree.h"
 #include <vector>
 #include <map>
 #include "Leaks.h"
@@ -112,6 +113,8 @@ void ImporterModel::Load(const std::string& name) {
 				im.Load(bufferMaterial, meshRenderer->material);
 				meshRenderer->GenerateAABB();
 				RELEASE(bufferMaterial);
+				App->scene->GetQuadTree()->InsertGameObject(node);
+				LOG("Inserted node: %s", node->GetName());
 				break;
 			}
 
