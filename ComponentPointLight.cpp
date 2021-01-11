@@ -77,3 +77,10 @@ void ComponentPointLight::SendValuesToShadingProgram(const unsigned& program) co
 	glUniform3f(glGetUniformLocation(program, "pointLight.attenuation"), constantAtt, linearAtt, quadraticAtt);
 	glUniform1f(glGetUniformLocation(program, "pointLight.intensity"), lightIntensity);
 }
+
+void ComponentPointLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+
+	component.AddMember("Constant Att", constantAtt, alloc);
+	component.AddMember("Linear Att", linearAtt, alloc);
+	component.AddMember("Quadratic Att", quadraticAtt, alloc);
+}
