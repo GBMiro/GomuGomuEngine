@@ -13,7 +13,16 @@
 #define MaxZFar 200.0f
 #define MaxFOV 90.0f
 
+class ComponentTransform;
+class ComponentCamera;
+class GameObject;
+
 class ModuleCamera : public Module {
+private:
+	GameObject* gameObject;
+	ComponentTransform* transform;
+	ComponentCamera* camera;
+
 public:
 	ModuleCamera();
 
@@ -33,29 +42,29 @@ public:
 
 	void SetAspectRatio(float aspectRatio);
 
-	void setPlanes(float zNear, float zFar);
+	void SetPlanes(float zNear, float zFar);
 
 	void FocusOnSelected();
 
-	void orbitCamera(float xOfsset, float yOffset);
+	void OrbitCamera(float xOfsset, float yOffset);
 
 	void LookAt(const float3& point);
 
-	float4x4 getProjectionMatrix() const;
-	float4x4 getViewMatrix() const;
-	void getPlanes(float* zNear, float* zFar) const;
-	float3 getUpVector() const { return frustum.Up(); }
-	float3 getRightVector() const { return frustum.WorldRight(); }
-	float3 getFrontVector() const { return frustum.Front(); }
-	float3 getCameraPosition() const { return frustum.Pos(); }
-	float getAspectRatio() const { return frustum.AspectRatio(); }
-	float getFOV() const { return fov; }
-	const Frustum& GetFrustum() { return frustum; }
+	float4x4 GetProjectionMatrix() const;
+	float4x4 GetViewMatrix() const;
+	void GetPlanes(float* zNear, float* zFar) const;
+	float3 GetUpVector() const;
+	float3 GetRightVector() const;  
+	float3 GetFrontVector() const;  
+	float3 GetCameraPosition() const;  
+	float GetAspectRatio() const;  
+	float GetFOV() const;  
+	const Frustum& GetFrustum(); 
 private:
-	void updateCamera();
-	void rotateCamera(const float3x3& rotationMatrix);
-	void processKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed);
-	void processMouseInput(float deltaTime);
+	void UpdateCamera();
+	void RotateCamera(const float3x3& rotationMatrix);
+	void ProcessKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed);
+	void ProcessMouseInput(float deltaTime);
 
 public:
 	float cameraSpeed = 5.0f;
@@ -63,7 +72,6 @@ public:
 	float zoomSpeed = 5.0f;
 
 private:
-	Frustum frustum;
 	float posX, posY, posZ;
 	float yaw = 0.0f;
 	float pitch = 0.0f;

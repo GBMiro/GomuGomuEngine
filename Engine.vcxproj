@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentDirectionalLight.h" />
     <ClInclude Include="ComponentLight.h" />
     <ClInclude Include="ComponentMeshRenderer.h" />
@@ -275,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentDirectionalLight.cpp" />
     <ClCompile Include="ComponentLight.cpp" />
     <ClCompile Include="ComponentMeshRenderer.cpp" />

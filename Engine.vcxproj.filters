@@ -223,6 +223,10 @@
     <ClCompile Include="ImporterTextures.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuizmo.cpp" />
+    <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -586,6 +590,10 @@
     </ClInclude>
     <ClInclude Include="ImporterTextures.h">
       <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo.h" />
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

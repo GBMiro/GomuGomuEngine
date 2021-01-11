@@ -96,8 +96,8 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 
 	unsigned program = App->renderer->litProgram->GetID();
 
-	const float4x4& view = App->camera->getViewMatrix();
-	const float4x4& proj = App->camera->getProjectionMatrix();
+	const float4x4& view = App->camera->GetViewMatrix();
+	const float4x4& proj = App->camera->GetProjectionMatrix();
 
 	glUseProgram(program);
 
@@ -138,7 +138,7 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 	glUniform1i(glGetUniformLocation(program, "material.useDiffuseTexture"), hasDiffTex);
 	glUniform1i(glGetUniformLocation(program, "material.diffuseTex"), 0);
 
-	glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, App->camera->getCameraPosition().ptr());
+	glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, App->camera->GetCameraPosition().ptr());
 
 	bool hasSpecular = mat->GetTextureID(texID, TextureType::SPECULAR);
 

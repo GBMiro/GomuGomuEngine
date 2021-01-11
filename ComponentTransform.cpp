@@ -148,6 +148,8 @@ void ComponentTransform::DrawOnEditor() {
 
 void ComponentTransform::UpdateLocalMatrix() {
 	localMatrix = float4x4::FromTRS(localPosition, localRotation, localScale);
+	float3 p = localMatrix.TranslatePart();
+
 }
 
 void ComponentTransform::UpdateGlobalMatrix() {
@@ -157,7 +159,12 @@ void ComponentTransform::UpdateGlobalMatrix() {
 			ComponentTransform* parentTransform = (ComponentTransform*)owner->parent->GetComponentOfType(ComponentType::CTTransform);
 			if (parentTransform != nullptr) {
 				globalMatrix = parentTransform->globalMatrix * localMatrix;
+
+				float3 p = globalMatrix.TranslatePart();
 			}
+		} else {
+			globalMatrix = localMatrix;
+			float3 p = globalMatrix.TranslatePart();
 		}
 
 		for (std::vector<GameObject*>::iterator it = owner->children.begin(); it != owner->children.end(); ++it) {
@@ -259,4 +266,7 @@ void ComponentTransform::SetPosition(float3 newGlobalPos) {
 
 	localPosition += globalMovement;
 
+	UpdateLocalValues();
+
+	owner->OnTransformChanged();
 }

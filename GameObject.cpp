@@ -4,6 +4,7 @@
 #include "ComponentPointLight.h"
 #include "ComponentDirectionalLight.h"
 #include "ComponentSpotLight.h"
+#include "ComponentCamera.h"
 #include "assimp/scene.h"
 #include "Mesh.h"
 #include "Globals.h"
@@ -62,9 +63,10 @@ Component* GameObject::CreateComponent(ComponentType type, int additionalParam) 
 		ret = new ComponentMeshRenderer(this);
 		break;
 	case ComponentType::CTTransform:
-		//ret = new ComponentTransform();
+		ret = new ComponentTransform(this, float3::zero, Quat::identity, float3::one);
 		break;
 	case ComponentType::CTCamera:
+		ret = new ComponentCamera(this, 0.1f, 200.0f);
 		break;
 	case ComponentType::CTLight:
 

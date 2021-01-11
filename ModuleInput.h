@@ -8,24 +8,21 @@
 
 #define NUM_MOUSE_BUTTONS 5
 
-enum EventWindow
-{
+enum EventWindow {
 	WE_QUIT = 0,
 	WE_HIDE = 1,
 	WE_SHOW = 2,
 	WE_COUNT
 };
 
-enum KeyState
-{
+enum KeyState {
 	KEY_IDLE = 0,
 	KEY_DOWN,
 	KEY_REPEAT,
 	KEY_UP
 };
 
-class ModuleInput : public Module
-{
+class ModuleInput : public Module {
 
 public:
 
@@ -47,13 +44,11 @@ public:
 	bool CleanUp();
 
 	// Check key states (includes mouse and joy buttons)
-	KeyState GetKey(int id) const
-	{
+	KeyState GetKey(int id) const {
 		return keyboard[id];
 	}
 
-	KeyState GetMouseButtonDown(int id) const
-	{
+	KeyState GetMouseButtonDown(int id) const {
 		return mouse_buttons[id - 1];
 	}
 
@@ -64,7 +59,8 @@ public:
 	const iPoint& GetMouseMotion() const;
 	const iPoint& GetMousePosition() const;
 	int GetMouseWheel() const;
-
+	const float& GetMouseSensitivity()const;
+	void SetMouseSensitivity(float newSens);
 private:
 	bool		windowEvents[WE_COUNT];
 	KeyState* keyboard;
@@ -72,6 +68,7 @@ private:
 	iPoint mouse_motion;
 	iPoint mouse;
 	int mouse_wheel = 0;
+	float mouseSensitivity;
 };
 
 #endif // __MODULEINPUT_H__

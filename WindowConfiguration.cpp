@@ -40,13 +40,13 @@ void WindowConfiguration::Draw() {
 	SDL_GetWindowSize(App->window->window, &width, &height);
 
 	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
-		up = App->camera->getUpVector();
-		front = App->camera->getFrontVector();
-		right = App->camera->getRightVector();
-		pos = App->camera->getCameraPosition();
-		aspectRatio = App->camera->getAspectRatio();
-		fov = App->camera->getFOV();
-		App->camera->getPlanes(&zNear, &zFar);
+		up = App->camera->GetUpVector();
+		front = App->camera->GetFrontVector();
+		right = App->camera->GetRightVector();
+		pos = App->camera->GetCameraPosition();
+		aspectRatio = App->camera->GetAspectRatio();
+		fov = App->camera->GetFOV();
+		App->camera->GetPlanes(&zNear, &zFar);
 		if (ImGui::InputFloat3("Up", &up[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
 		if (ImGui::InputFloat3("Front", &front[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
 		if (ImGui::InputFloat3("Right", &right[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
@@ -57,12 +57,17 @@ void WindowConfiguration::Draw() {
 		if (ImGui::SliderFloat("Rotation Speed", &App->camera->angleSpeed, 1.0f, MaxRotSpeed));
 		if (ImGui::SliderFloat("Zoom Speed", &App->camera->zoomSpeed, 1.0f, MaxZoomSpeed));
 		ImGui::NewLine();
-		if (ImGui::SliderFloat("zNear", &zNear, 0.1f, MaxZNear)) App->camera->setPlanes(zNear, zFar);
-		if (ImGui::SliderFloat("zFar", &zFar, 0.1f, MaxZFar)) App->camera->setPlanes(zNear, zFar);
+		if (ImGui::SliderFloat("zNear", &zNear, 0.1f, MaxZNear)) App->camera->SetPlanes(zNear, zFar);
+		if (ImGui::SliderFloat("zFar", &zFar, 0.1f, MaxZFar)) App->camera->SetPlanes(zNear, zFar);
 		if (ImGui::SliderFloat("FOV", &fov, 1.0f, MaxFOV)) App->camera->SetFOV(fov);
 		if (ImGui::InputFloat("Aspect Ratio", &aspectRatio, 0.0f, 0.0f, "%.2f", ImGuiInputTextFlags_ReadOnly));
 	}
 	if (ImGui::CollapsingHeader("Input")) {
+		float mouseSensitivityDummy = App->input->GetMouseSensitivity();
+		if (ImGui::InputFloat("Mouse Sensitivity", &mouseSensitivityDummy, 0, 0, "%.1f")) {
+			App->input->SetMouseSensitivity(mouseSensitivityDummy);
+		}
+
 		mouse = App->input->GetMousePosition();
 		float2 pos = float2(mouse.x, mouse.y);
 		if (ImGui::InputFloat2("Mouse position", &pos[0], "%.0f", ImGuiInputTextFlags_ReadOnly));

@@ -153,8 +153,8 @@ update_status ModuleRender::Update() {
 	//OpenGLExercise
 	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
 	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, gridColor);
-	float4x4 proj = App->camera->getProjectionMatrix();
-	float4x4 view = App->camera->getViewMatrix();
+	float4x4 proj = App->camera->GetProjectionMatrix();
+	float4x4 view = App->camera->GetViewMatrix();
 	GLsizei h, w;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 	App->debugDraw->Draw(view, proj, w, h);

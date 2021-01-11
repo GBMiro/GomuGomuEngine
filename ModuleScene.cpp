@@ -65,6 +65,9 @@ bool ModuleScene::Start() {
 	//DestroyGameObject(dummy);
 	RELEASE(t);
 
+	//GameObject* cameraObj = CreateGameObject("Camera", GetRoot());
+	//cameraObj->CreateComponent(ComponentType::CTCamera);
+
 	/*AddObject("./Resources/Models/BakerHouse.fbx");
 
 	GameObject* pointLightObj = CreateGameObject("PointLight", root);

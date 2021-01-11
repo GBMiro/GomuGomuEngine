@@ -72,11 +72,11 @@ void ModuleEditor::ManageGizmos() {
 
 			ImVec2 displaySize = game->GetSize();
 
-			float4x4 viewMatrix = App->camera->getViewMatrix();
+			float4x4 viewMatrix = App->camera->GetViewMatrix();
 
 			viewMatrix.Transpose();
 
-			float4x4 projectionMatrix = App->camera->getProjectionMatrix().Transposed();
+			float4x4 projectionMatrix = App->camera->GetProjectionMatrix().Transposed();
 
 			float4x4 modelProjection = gizmoMode == ImGuizmo::MODE::LOCAL ? selectedTransform->localMatrix.Transposed() : selectedTransform->globalMatrix.Transposed();
 
