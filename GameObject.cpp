@@ -263,6 +263,20 @@ void GameObject::GetAllChilds(std::vector<GameObject*>& children) const {
 	}
 }
 
+void GameObject::RemoveParticularComponent(Component* c) {
+	std::vector<Component*>::iterator toErase;
+	bool found = false;
+	for (std::vector<Component*>::iterator it = components.begin(); it != components.end() && !found; ++it) {
+		if (*it == c) {
+			toErase = it;
+			found = true;
+		}
+	}
+	if (found)
+		components.erase(toErase);
+}
+
+
 void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc) {
 	gameObject.AddMember("UUID", GetUUID(), alloc);
 	gameObject.AddMember("Parent UUID", parent->GetUUID(), alloc);

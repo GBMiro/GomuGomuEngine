@@ -15,6 +15,7 @@
 #include "ImporterScene.h"
 #include "ImporterModel.h"
 #include "ComponentPointLight.h"
+#include "ComponentCamera.h"
 
 #include "ModuleFileSystem.h"
 #include "Timer.h"
@@ -24,6 +25,7 @@
 
 #include "ComponentDirectionalLight.h"
 #include "ComponentSpotLight.h"
+#include "ModuleRender.h"
 #include "Leaks.h"
 
 
@@ -50,7 +52,7 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	ImporterScene::LoadScene("Scene.fbx");
+	//ImporterScene::LoadScene("Scene.fbx");
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
@@ -58,15 +60,26 @@ bool ModuleScene::Start() {
 	//AddObject("./Resources/Models/Crow.fbx");
 
 	t->Start();
-	//AddObject("./Resources/Models/BakerHouse.fbx");
+	AddObject("./Resources/Models/BakerHouse.fbx");
 	//LOG("Second baker house from json: %.f ms", t->Read());
 
 	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
 	//DestroyGameObject(dummy);
 	RELEASE(t);
 
-	//GameObject* cameraObj = CreateGameObject("Camera", GetRoot());
-	//cameraObj->CreateComponent(ComponentType::CTCamera);
+	GameObject* cameraObj = CreateGameObject("Camera", GetRoot());
+	ComponentCamera* camera = (ComponentCamera*)cameraObj->CreateComponent(ComponentType::CTCamera);
+
+
+
+	GameObject* pointLightObj = CreateGameObject("PointLight", root);
+	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
+
+	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
+	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);
+
+	App->renderer->SetCullingCamera(camera);
+	App->renderer->SetFrustumCulling(true);
 
 	/*AddObject("./Resources/Models/BakerHouse.fbx");
 

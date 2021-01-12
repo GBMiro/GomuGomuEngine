@@ -23,7 +23,7 @@ public:
 	void OnTransformChanged() override;
 	//void SetTextureName(std::string name) { textureName = name; }
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
-
+	const AABB& GetAABB();
 public:
 	Mesh* mesh = nullptr;
 	Material* material = nullptr;

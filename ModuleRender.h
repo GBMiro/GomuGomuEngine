@@ -9,6 +9,8 @@ struct SDL_Renderer;
 struct SDL_Rect;
 
 class ShadingProgram;
+class ComponentCamera;
+class ComponentMeshRenderer;
 
 class ModuleRender : public Module {
 public:
@@ -55,5 +57,14 @@ public:
 	void DefaultColor(float3 newColor);
 	void SetUseToneMapping(bool should);
 	void SetUseGammaCorrection(bool should);
+private:
+	ComponentCamera* cullingCamera;
+	bool frustumCulling;
+public:
+	const ComponentCamera* GetCullingCamera()const;
+	void SetCullingCamera(ComponentCamera* newCam);
 
+	bool GetFrustumCulling()const;
+	void SetFrustumCulling(bool use);
+	bool MustDraw(ComponentMeshRenderer* renderer);
 };

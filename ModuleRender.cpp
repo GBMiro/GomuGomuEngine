@@ -4,6 +4,8 @@
 #include "ModuleWindow.h"
 #include "ShadingProgram.h"
 #include "ModuleCamera.h"
+#include "ComponentCamera.h"
+#include "ComponentMeshRenderer.h"
 #include "ModuleTextures.h"
 #include "ModuleDebugDraw.h"
 #include "debug_draw/debugdraw.h"
@@ -12,16 +14,22 @@
 #include "MathGeoLib/Geometry/Frustum.h"
 #include "ModuleScene.h"
 #include "Brofiler/include/Brofiler.h"
+#include "Mesh.h"
 #include "Leaks.h"
 
 ModuleRender::ModuleRender() {
 	gridColor = float3(0.f, 0.f, 1.f);
 	backgroundColor = float3(0.1f, 0.1f, 0.1f);
+	cullingCamera = nullptr;
+	frustumCulling = false;
 }
 
 // Destructor
 ModuleRender::~ModuleRender() {
+
 }
+
+
 
 void __stdcall OurOpenGLErrorFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
 	const char* tmp_source = "", * tmp_type = "", * tmp_severity = "";
@@ -258,4 +266,29 @@ void ModuleRender::SetUseGammaCorrection(bool should) {
 	useGammaCorrection = should;
 }
 
+const ComponentCamera* ModuleRender::GetCullingCamera()const {
+	return cullingCamera;
+}
 
+void  ModuleRender::SetCullingCamera(ComponentCamera* newCam) {
+	cullingCamera = newCam;
+	SetFrustumCulling(cullingCamera == nullptr ? false : true);
+}
+
+bool  ModuleRender::GetFrustumCulling()const {
+	return frustumCulling;
+
+}
+void  ModuleRender::SetFrustumCulling(bool use) {
+	frustumCulling = use;
+}
+
+bool  ModuleRender::MustDraw(ComponentMeshRenderer* renderer) {
+	if (!frustumCulling || cullingCamera == nullptr)
+		return true;
+
+	if (cullingCamera->GetFrustum().Intersects(renderer->GetAABB())) {
+		return true;
+	}
+	return false;
+}

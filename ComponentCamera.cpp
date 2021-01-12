@@ -6,6 +6,8 @@
 #include "ModuleWindow.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "ModuleCamera.h"
+#include "ModuleRender.h"
 
 void ComponentCamera::Enable() {
 
@@ -19,8 +21,17 @@ void ComponentCamera::Disable() {
 
 }
 
-void ComponentCamera::DrawOnEditor() {
 
+void ComponentCamera::DrawOnEditor() {
+	if (ImGui::CollapsingHeader("Camera")) {
+		bool thisCameraCulls = App->renderer->GetCullingCamera() == this;
+		bool frustumCulling = App->renderer->GetFrustumCulling() && thisCameraCulls;
+
+		if (ImGui::Checkbox("Frustum Culling", &frustumCulling)) {
+			App->renderer->SetCullingCamera(frustumCulling ? this : nullptr);
+		}
+
+	}
 }
 
 void ComponentCamera::OnNewParent(GameObject* prevParent, GameObject* newParent) {
@@ -32,6 +43,12 @@ Frustum& ComponentCamera::GetFrustum() {
 }
 
 ComponentCamera::~ComponentCamera() {
+
+	if (App->renderer != nullptr) {
+		if (App->renderer->GetCullingCamera() == this) {
+			App->renderer->SetCullingCamera(nullptr);
+		}
+	}
 }
 //
 void ComponentCamera::SetUpFrustum(float nearDistance, float farDistance) {

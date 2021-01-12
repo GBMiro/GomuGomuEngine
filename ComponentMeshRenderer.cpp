@@ -11,6 +11,7 @@
 #include "ModuleDebugDraw.h"
 #include "ComponentPointLight.h"
 #include "ModuleScene.h"
+#include "ModuleRender.h"
 #include "Leaks.h"
 
 ComponentMeshRenderer::ComponentMeshRenderer(GameObject* parent) : Component(ComponentType::CTMeshRenderer, parent) {
@@ -43,9 +44,15 @@ void ComponentMeshRenderer::Disable() {
 }
 
 void ComponentMeshRenderer::Draw() {
-	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->dirLight, App->scene->pointLight);
-
+	if (App->renderer->MustDraw(this)) {
+		mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->dirLight, App->scene->pointLight);
+	}
 }
+
+const AABB& ComponentMeshRenderer::GetAABB() {
+	return localAxisAlignedBoundingBox;
+}
+
 
 void ComponentMeshRenderer::SetMaterial(Material* mat) {
 	material = mat;

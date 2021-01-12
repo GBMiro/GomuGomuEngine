@@ -7,6 +7,8 @@
 #include "ModuleScene.h"
 #include "ModuleInput.h"
 #include "MathGeoLib/Math/float3.h"
+#include "ComponentCamera.h"
+#include "GameObject.h"
 #include "Point.h"
 #include "GL/glew.h"
 #include "Leaks.h"
@@ -98,13 +100,17 @@ void WindowConfiguration::Draw() {
 		if (ImGui::Checkbox("Gamme Correction", &dummyGammaCorrection)) {
 			App->renderer->SetUseGammaCorrection(dummyGammaCorrection);
 		}
-
-
 	}
 	if (ImGui::CollapsingHeader("Scene Settings")) {
 		ImGui::DragFloat3("Ambient light Color", App->scene->ambientLight.ptr());
 		ImGui::DragFloat("Ambient light intensity ", &App->scene->ambientIntensity);
-
+		ImGui::Text("Culling Camera:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(1.0, 1.0, 0.0, 1.0), App->renderer->GetCullingCamera() == nullptr ? "None" : App->renderer->GetCullingCamera()->owner->GetName());
+		bool dummyFrustumCulling = App->renderer->GetFrustumCulling();
+		if (ImGui::Checkbox("Frustum Culling ", &dummyFrustumCulling)) {
+			App->renderer->SetFrustumCulling(dummyFrustumCulling);
+		}
 	}
 	if (ImGui::CollapsingHeader("Textures")) {
 		static int indexMin = 0;

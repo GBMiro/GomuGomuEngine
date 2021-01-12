@@ -54,12 +54,12 @@ public:
 	float4x4 GetViewMatrix() const;
 	void GetPlanes(float* zNear, float* zFar) const;
 	float3 GetUpVector() const;
-	float3 GetRightVector() const;  
-	float3 GetFrontVector() const;  
-	float3 GetCameraPosition() const;  
-	float GetAspectRatio() const;  
-	float GetFOV() const;  
-	const Frustum& GetFrustum(); 
+	float3 GetRightVector() const;
+	float3 GetFrontVector() const;
+	float3 GetCameraPosition() const;
+	float GetAspectRatio() const;
+	float GetFOV() const;
+	const Frustum& GetFrustum();
 private:
 	void UpdateCamera();
 	void RotateCamera(const float3x3& rotationMatrix);

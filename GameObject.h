@@ -39,7 +39,7 @@ public:
 
 	void GetAllChilds(std::vector<GameObject*>& children) const;
 	void WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc);
-
+	void RemoveParticularComponent(Component* c);
 public:
 	bool active; //TODO
 	AABB globalAABB;
