@@ -13,6 +13,7 @@ public:
 	~QuadtreeNode();
 
 	void InsertGameObject(GameObject* gameObject);
+	void EraseGameObject(GameObject* gameObject);
 
 	void Draw();
 	void Subdivide();
@@ -42,6 +43,7 @@ public:
 	~Quadtree();
 
 	void InsertGameObject(GameObject* gameObject);
+	void EraseGameObject(GameObject* gameObject);
 
 	void Draw();
 

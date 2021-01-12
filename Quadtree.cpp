@@ -17,7 +17,6 @@ QuadtreeNode::~QuadtreeNode() {
 void QuadtreeNode::InsertGameObject(GameObject* gameObject) {
 	if (!nw) { //It's not subdivided
 		gameObjects.push_back(gameObject);
-		LOG("Game Object inserted");
 		if (gameObjects.size() > NODE_MAX_CAPACITY) {
 			Subdivide();
 			Organize();
@@ -33,6 +32,24 @@ void QuadtreeNode::InsertGameObject(GameObject* gameObject) {
 	}
 }
 
+// Right now not using it because I make the quadtree from scratch every frame. Inefficient
+void QuadtreeNode::EraseGameObject(GameObject* gameObject) {
+	std::list<GameObject*>::iterator it = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
+
+	if (it != gameObjects.end()) { // Game Object found in node
+		gameObjects.erase(it);
+	}
+
+	if (nw) { // If node has children check in every node for the object
+		nw->EraseGameObject(*it);
+		ne->EraseGameObject(*it);
+		sw->EraseGameObject(*it);
+		se->EraseGameObject(*it);
+	}
+
+
+}
+
 void QuadtreeNode::Draw() {
 	dd::aabb(boundingBox.minPoint, boundingBox.maxPoint, float3::one);
 	if (nw) { // If pointer is valid, draw all children
@@ -44,7 +61,6 @@ void QuadtreeNode::Draw() {
 }
 
 void QuadtreeNode::Subdivide() {
-	LOG("Node is full. We need to subdivide");
 	AABB aaBB;
 	float3 centerPoint = boundingBox.CenterPoint();
 	float3 childSize = boundingBox.HalfSize();
@@ -128,6 +144,12 @@ void Quadtree::InsertGameObject(GameObject* gameObject) {
 		if (gameObject->GetAABB().Intersects(root->boundingBox)) {
 			root->InsertGameObject(gameObject);
 		}
+	}
+}
+
+void Quadtree::EraseGameObject(GameObject* gameObject) {
+	if (root) {
+		root->EraseGameObject(gameObject);
 	}
 }
 

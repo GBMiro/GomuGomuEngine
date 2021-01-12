@@ -78,6 +78,9 @@ bool ModuleScene::Start() {
 }
 
 update_status ModuleScene::PreUpdate() {
+	// We calculate quadTree each frame. Try to find an efficient way.
+	RELEASE(quadTree);
+	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
 	return UPDATE_CONTINUE;
 }
 
@@ -99,6 +102,7 @@ update_status ModuleScene::PostUpdate() {
 }
 
 void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
+	if (gameObject->GetComponentOfType(CTMeshRenderer)) quadTree->InsertGameObject(gameObject);
 	gameObject->Update();
 	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 		UpdateGameObjects(*it);
