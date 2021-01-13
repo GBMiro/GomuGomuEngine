@@ -124,6 +124,12 @@ void ComponentTransform::DrawOnEditor() {
 	if (owner->parent) {
 		if (ImGui::CollapsingHeader("Transformations")) {
 
+			if (ImGui::BeginPopupContextWindow()) {
+				if (ImGui::Selectable("Reset")) {
+					Reset();
+				}
+				ImGui::EndPopup();
+			}
 			float3 localPositionDummy = localPosition;
 			if (ImGui::DragFloat3("Position", &localPositionDummy.x, 0.1f, -90.0f, 90.0f, "%.3f")) {
 				SetLocalPosition(localPositionDummy);
@@ -240,9 +246,12 @@ float3 ComponentTransform::CalculateGlobalPosition()const {
 }
 
 void ComponentTransform::Reset() {
+
 	localPosition = float3::zero;
 	localRotation = Quat::identity;
 	localScale = float3::one;
+	UpdateLocalValues();
+	owner->OnTransformChanged();
 }
 
 void ComponentTransform::OnNewParent(GameObject* oldParent, GameObject* newParent) {

@@ -141,10 +141,7 @@ void ModuleCamera::UpdateCamera() {
 
 	float speed = cameraSpeed;
 	float cameraRotationSpeed = angleSpeed;
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT)) {
-		speed *= 2;
-		cameraRotationSpeed *= 2;
-	}
+
 
 	ProcessKeyboardInput(App->GetDeltaTime(), speed, cameraRotationSpeed);
 	ProcessMouseInput(App->GetDeltaTime());
@@ -159,10 +156,16 @@ void ModuleCamera::RotateCamera(const float3x3& rotationMatrix) {
 }
 
 void ModuleCamera::ProcessKeyboardInput(float deltaTime, float speed, float cameraRotationSpeed) {
+
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KeyState::KEY_REPEAT) {
+		speed *= 2;
+		cameraRotationSpeed *= 2;
+	}
+
 	float movementSpeed = speed * deltaTime;
 
 	if (App->input->GetKey(SDL_SCANCODE_F)) FocusOnSelected();
-	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
+	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KeyState::KEY_REPEAT) {
 		float3 motion = float3::zero;
 		if (App->input->GetKey(SDL_SCANCODE_W)) {
 			motion += camera->GetFrustum().Front();
@@ -235,26 +238,37 @@ void ModuleCamera::ProcessMouseInput(float deltaTime) {
 	float xOffset = motion.x * angleSpeed * deltaTime;
 	float yOffset = motion.y * angleSpeed * deltaTime;
 
-	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
-		if (xOffset != 0) {
-			yaw += xOffset;
-			float3x3 rotationMatrix = GetFrustum().ViewMatrix().RotatePart();
-			rotationMatrix = rotationMatrix.RotateY(DEGTORAD * -xOffset);
-			RotateCamera(rotationMatrix);
+
+	if (App->input->GetKey(SDL_SCANCODE_LALT)) {
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KeyState::KEY_REPEAT) {
+			OrbitCamera(xOffset, yOffset);
 		}
 
-		if (yOffset != 0) {
-			float oldPitch = pitch;
-			if (pitch > 89.0f) pitch = 89.0f;
-			if (pitch < -89.0f) pitch = -89.0f;
-			pitch += yOffset;
-			float3x3 rotationMatrix = GetFrustum().ViewMatrix().RotatePart();
-			rotationMatrix = rotationMatrix.RotateAxisAngle(GetFrustum().WorldRight(), (DEGTORAD * -(pitch - oldPitch)));
-			RotateCamera(rotationMatrix);
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KeyState::KEY_REPEAT) {
+			float totalMotion = motion.x + motion.y;
+			transform->SetPosition(transform->localPosition + camera->GetFrustum().Front() * totalMotion * 2.0 * App->GetDeltaTime());
+		}
+
+	} else {
+		if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT) {
+			if (xOffset != 0) {
+				yaw += xOffset;
+				float3x3 rotationMatrix = GetFrustum().ViewMatrix().RotatePart();
+				rotationMatrix = rotationMatrix.RotateY(DEGTORAD * -xOffset);
+				RotateCamera(rotationMatrix);
+			}
+
+			if (yOffset != 0) {
+				float oldPitch = pitch;
+				if (pitch > 89.0f) pitch = 89.0f;
+				if (pitch < -89.0f) pitch = -89.0f;
+				pitch += yOffset;
+				float3x3 rotationMatrix = GetFrustum().ViewMatrix().RotatePart();
+				rotationMatrix = rotationMatrix.RotateAxisAngle(GetFrustum().WorldRight(), (DEGTORAD * -(pitch - oldPitch)));
+				RotateCamera(rotationMatrix);
+			}
 		}
 	}
-	if (App->input->GetKey(SDL_SCANCODE_LALT) && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT)) OrbitCamera(xOffset, yOffset);
-
 	int wheelYOffset = App->input->GetMouseWheel();
 
 	if (wheelYOffset != 0) {

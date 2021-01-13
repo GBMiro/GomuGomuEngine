@@ -242,7 +242,7 @@ bool ModuleScene::CheckRayIntersectionWithMeshRenderer(const LineSegment& pickin
 
 	float4x4 model = transform->globalMatrix;
 
-	LineSegment lineToUse = model.Inverted() * lineToUse;
+	LineSegment lineToUse = model.Inverted() * picking;
 
 	std::vector<Triangle> tris = mesh->mesh->GetTriangles();
 
@@ -251,7 +251,7 @@ bool ModuleScene::CheckRayIntersectionWithMeshRenderer(const LineSegment& pickin
 	for (std::vector<Triangle>::iterator it = tris.begin(); it != tris.end() && !intersection; ++it) {
 		float dist;
 		float3 point;
-		if (picking.Intersects(*it, &dist, &point)) {
+		if (lineToUse.Intersects(*it, &dist, &point)) {
 			intersection = true;
 		}
 	}
