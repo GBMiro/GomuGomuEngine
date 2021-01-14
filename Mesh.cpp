@@ -191,7 +191,7 @@ std::vector<Triangle> Mesh::GetTriangles()const {
 	std::vector<Triangle> tris;
 	tris.reserve(numIndices / (3 * 3));
 
-	for (int i = 0; i < numIndices; i += 3 * 3) {
+	for (int i = 0; i < numIndices-9; i += 3 * 3) {
 		float3 triVertices[3];
  
 		triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);

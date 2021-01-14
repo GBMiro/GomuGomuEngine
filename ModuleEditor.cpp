@@ -83,41 +83,42 @@ void ModuleEditor::ManageGizmos() {
 			float modelPtr[16];
 			memcpy(modelPtr, modelProjection.ptr(), 16 * sizeof(float));
 
-			//ImGuizmo::SetDrawlist();
-			ImGuizmo::SetRect(game->GetPosition().x, game->GetPosition().y, displaySize.x, displaySize.y);
+			if (App->input->GetKey(SDL_SCANCODE_LALT) != KeyState::KEY_REPEAT) {
+				//ImGuizmo::SetDrawlist();
+				ImGuizmo::SetRect(game->GetPosition().x, game->GetPosition().y, displaySize.x, displaySize.y);
 
-			ImGuizmo::MODE modeToUse = gizmoOperation == ImGuizmo::OPERATION::SCALE ? ImGuizmo::MODE::LOCAL : gizmoMode;
+				ImGuizmo::MODE modeToUse = gizmoOperation == ImGuizmo::OPERATION::SCALE ? ImGuizmo::MODE::LOCAL : gizmoMode;
+				ImGuizmo::Manipulate(viewMatrix.ptr(), projectionMatrix.ptr(), gizmoOperation, modeToUse, modelPtr);
 
-			ImGuizmo::Manipulate(viewMatrix.ptr(), projectionMatrix.ptr(), gizmoOperation, modeToUse, modelPtr);
+				if (ImGuizmo::IsUsing() == true) {
+					float4x4 newMatrix;
+					newMatrix.Set(modelPtr);
+					modelProjection = newMatrix.Transposed();
 
-			if (ImGuizmo::IsUsing() == true) {
-				float4x4 newMatrix;
-				newMatrix.Set(modelPtr);
-				modelProjection = newMatrix.Transposed();
+					if (gizmoMode == ImGuizmo::MODE::LOCAL) {
+						selectedTransform->SetLocalMatrix(modelProjection);
+					} else {
+						selectedTransform->SetGlobalMatrix(modelProjection);
+					}
 
-				if (gizmoMode == ImGuizmo::MODE::LOCAL) {
-					selectedTransform->SetLocalMatrix(modelProjection);
 				} else {
-					selectedTransform->SetGlobalMatrix(modelProjection);
-				}
 
-			} else {
+					if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+						gizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+					}
+					if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
+						gizmoOperation = ImGuizmo::OPERATION::ROTATE;
+					}
+					if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+						gizmoOperation = ImGuizmo::OPERATION::SCALE;
+					}
 
-				if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-					gizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-				}
-				if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
-					gizmoOperation = ImGuizmo::OPERATION::ROTATE;
-				}
-				if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
-					gizmoOperation = ImGuizmo::OPERATION::SCALE;
-				}
-
-				if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) {
-					gizmoMode = ImGuizmo::MODE::WORLD;
-				}
-				if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) {
-					gizmoMode = ImGuizmo::MODE::LOCAL;
+					if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) {
+						gizmoMode = ImGuizmo::MODE::WORLD;
+					}
+					if (App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) {
+						gizmoMode = ImGuizmo::MODE::LOCAL;
+					}
 				}
 			}
 		}
@@ -257,15 +258,30 @@ void ModuleEditor::OnClicked(ImVec2 mousePosInWindow) {
 			float lDist = (frustumPosition - l->GetAABB().CenterPoint()).Length();
 			float rDist = (frustumPosition - r->GetAABB().CenterPoint()).Length();
 
-			return lDist > rDist;
+			return lDist < rDist;
 			});
 		std::reverse(possibleObjs.begin(), possibleObjs.end());
-		for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
-			if (App->scene->CheckRayIntersectionWithMeshRenderer(picking, *it)) {
-				selected = *it;
-				SetGameObjectSelected(selected);
+
+		if (hierarchy->GetGameObjectSelected() == possibleObjs[0]) {
+			for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
+				if (App->scene->CheckRayIntersectionWithMeshRenderer(picking, *it)) {
+					selected = *it;
+				}
 			}
+		} else {
+			selected = possibleObjs[0];
 		}
+		SetGameObjectSelected(selected);
+
+		//for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
+		//	if (App->scene->CheckRayIntersectionWithMeshRenderer(picking, *it)) {
+		//		selected = *it;
+		//		SetGameObjectSelected(selected);
+		//	}
+		//}
+
+
+
 	}
 
 	if (!selected) {

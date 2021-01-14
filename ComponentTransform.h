@@ -41,7 +41,6 @@ private:
 	float3 CalculateGlobalScale()const;
 
 public:
-	bool enabled;
 	float4x4 localMatrix;
 	float4x4 globalMatrix;
 

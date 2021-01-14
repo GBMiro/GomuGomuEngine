@@ -20,8 +20,7 @@ public:
 	virtual void Enable() = 0;
 	virtual void Update() = 0;
 	virtual void Disable() = 0;
-
-	virtual void DrawOnEditor() {};
+	virtual void DrawOnEditor() = {};
 	virtual void OnNewParent(GameObject* oldParent, GameObject* newParent) {};
 	virtual void OnTransformChanged() {};
 	virtual void DrawGizmos() {};
@@ -34,8 +33,9 @@ public:
 public:
 	GameObject* owner;
 	ComponentType type;
-	bool active = false;
-
+	bool enabled = true;
+protected:
+	bool Enabled()const;
 private:
 	uint32_t UUID;
 };

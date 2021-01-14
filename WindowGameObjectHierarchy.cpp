@@ -35,7 +35,7 @@ void WindowGameObjectHierarchy::Draw() {
 			ImGui::EndPopup();
 		}
 	}
-	DrawGameObjectHierarchy(App->scene->GetRoot());
+	DrawGameObjectHierarchy(App->scene->GetRoot(), false);
 	//End Scrolling Region
 	ImGui::EndChild();
 	ImGui::End();
@@ -44,45 +44,53 @@ void WindowGameObjectHierarchy::Draw() {
 	gameObjectDrop = nullptr;
 }
 
-void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject) {
+void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject, bool drawSelf) {
 	//TODO: Do not draw root node
-	ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-	if (gameObject->children.size() == 0) {
-		nodeFlags |= ImGuiTreeNodeFlags_Leaf;
-	}
 
-	if (gameObjectSelected == gameObject) {
-		nodeFlags |= ImGuiTreeNodeFlags_Selected;
-	}
-	ImGui::PushID(gameObject);
-	bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags); //Here I'll use UUID instead of Name
 
-	if (ImGui::IsItemClicked(ImGuiMouseButton(0)) || ImGui::IsItemClicked(ImGuiMouseButton(1)))	gameObjectSelected = gameObject;
-	if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered()) {
-		App->camera->FocusOnSelected();
-	}
-	if (ImGui::BeginDragDropSource()) {
-		gameObjectSelected = gameObject;
-		ImGui::SetDragDropPayload("Source", &gameObject, sizeof(GameObject*));
-		ImGui::EndDragDropSource();
-	}
-	if (ImGui::BeginDragDropTarget()) {
-		//LOG("%s's new parent: %s", gameObjectSelected->GetName(), gameObject->GetName());
-		if (ImGui::AcceptDragDropPayload("Source")) {
-			if (gameObject != gameObjectSelected) {
-				if (!gameObjectSelected->IsAChild(gameObject)) gameObjectDrop = gameObject;
-				else LOG("You can't move a parent into a child");
-			}
+	if (drawSelf) {
+		ImGuiTreeNodeFlags	nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+		if (gameObject->children.size() == 0) {
+			nodeFlags |= ImGuiTreeNodeFlags_Leaf;
 		}
-		ImGui::EndDragDropTarget();
-	}
 
-	if (node_open) {
+		if (gameObjectSelected == gameObject) {
+			nodeFlags |= ImGuiTreeNodeFlags_Selected;
+		}
+		ImGui::PushID(gameObject);
+		bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags); //Here I'll use UUID instead of Name
 
+		if (ImGui::IsItemClicked(ImGuiMouseButton(0)) || ImGui::IsItemClicked(ImGuiMouseButton(1)))	gameObjectSelected = gameObject;
+		if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered()) {
+			App->camera->FocusOnSelected();
+		}
+		if (ImGui::BeginDragDropSource()) {
+			gameObjectSelected = gameObject;
+			ImGui::SetDragDropPayload("Source", &gameObject, sizeof(GameObject*));
+			ImGui::EndDragDropSource();
+		}
+		if (ImGui::BeginDragDropTarget()) {
+			//LOG("%s's new parent: %s", gameObjectSelected->GetName(), gameObject->GetName());
+			if (ImGui::AcceptDragDropPayload("Source")) {
+				if (gameObject != gameObjectSelected) {
+					if (!gameObjectSelected->IsAChild(gameObject)) gameObjectDrop = gameObject;
+					else LOG("You can't move a parent into a child");
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (node_open) {
+
+			for (std::vector<GameObject*>::const_iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
+				DrawGameObjectHierarchy(*it);
+			}
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+	} else {
 		for (std::vector<GameObject*>::const_iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 			DrawGameObjectHierarchy(*it);
 		}
-		ImGui::TreePop();
 	}
-	ImGui::PopID();
 }

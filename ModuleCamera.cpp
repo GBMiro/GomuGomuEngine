@@ -61,14 +61,13 @@ bool ModuleCamera::CleanUp() {
 	return true;
 }
 
-void ModuleCamera::SetFOV(float fov) {
-	Frustum frustum = camera->GetFrustum();
-	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD * fov, frustum.AspectRatio());
-	this->fov = fov;
+void ModuleCamera::SetFOV(float newFov) {
+	fov = newFov;
+	camera->GetFrustum().SetHorizontalFovAndAspectRatio(DegToRad(fov), camera->GetFrustum().AspectRatio());
 }
 
 void ModuleCamera::SetAspectRatio(float aspectRatio) {
-	camera->GetFrustum().SetHorizontalFovAndAspectRatio(camera->GetFrustum().HorizontalFov(), aspectRatio);
+	camera->GetFrustum().SetHorizontalFovAndAspectRatio(DegToRad(fov), aspectRatio);
 }
 
 void ModuleCamera::SetPlanes(float zNear, float zFar) {
@@ -79,16 +78,25 @@ void ModuleCamera::SetPlanes(float zNear, float zFar) {
 
 void ModuleCamera::FocusOnSelected() {
 	GameObject* selection = App->editor->GetGameObjectSelected();
-	float distance = 0;
+	if (!selection)return;
+
+	float distance = 1;
 	vec center = vec(0, 0, 0);
-	if (selection) {
-		AABB aaBB = selection->GetAABB();
-		distance = (aaBB.MinimalEnclosingSphere().Diameter() / 2) / Abs(sin(DEGTORAD * fov / 2));
-		center = aaBB.CenterPoint();
+
+	ComponentTransform* selectedTransform = (ComponentTransform*)selection->GetComponentOfType(ComponentType::CTTransform);
+
+	if (selectedTransform != nullptr) {
+		center = selectedTransform->Position();
 	}
+
+	AABB aaBB = selection->GetAABB();
+	distance += (aaBB.MinimalEnclosingSphere().Diameter() / 3) / Abs(sin(DEGTORAD * fov / 2));
+	center = aaBB.CenterPoint();
+
 	Frustum frustum = camera->GetFrustum();
-	frustum.SetPos(center + frustum.Front().Neg() * distance * 2);
+	transform->SetPosition(center + frustum.Front().Neg() * distance * 2);
 	LookAt(center);
+
 }
 
 void ModuleCamera::OrbitCamera(float xOffset, float yOffset) {
@@ -164,7 +172,9 @@ void ModuleCamera::ProcessKeyboardInput(float deltaTime, float speed, float came
 
 	float movementSpeed = speed * deltaTime;
 
-	if (App->input->GetKey(SDL_SCANCODE_F)) FocusOnSelected();
+	if (App->input->GetKey(SDL_SCANCODE_F)) {
+		FocusOnSelected();
+	}
 	if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KeyState::KEY_REPEAT) {
 		float3 motion = float3::zero;
 		if (App->input->GetKey(SDL_SCANCODE_W)) {

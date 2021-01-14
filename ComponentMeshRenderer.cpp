@@ -32,15 +32,16 @@ void ComponentMeshRenderer::GenerateAABB() {
 }
 
 void ComponentMeshRenderer::Enable() {
-	active = true;
+	enabled = true;
 }
 
 void ComponentMeshRenderer::Update() {
+	if (!Enabled()) return;
 	Draw();
 }
 
 void ComponentMeshRenderer::Disable() {
-	active = false;
+	enabled = false;
 }
 
 void ComponentMeshRenderer::Draw() {
@@ -59,24 +60,43 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 }
 
 void ComponentMeshRenderer::DrawOnEditor() {
-	//float3(1.0, 0.71, 0.29);
-	if (ImGui::CollapsingHeader("Material Values")) {
-		float shininessDummy = material->GetShininess();
-		if (ImGui::DragFloat("Shininess", &shininessDummy)) {
-			material->SetShininess(shininessDummy);
-		}
 
-		float3 specularDummy = material->GetSpecularColor();
-		if (ImGui::InputFloat3("Specular Color", specularDummy.ptr())) {
-			material->SetSpecularColor(specularDummy);
-		}
-		if (material->diffuseTexture) {
-			ImGui::LabelText("Diffuse Texture", material->diffuseTexture->name.c_str());
-		}
-		if (material->specularTexture) {
-			ImGui::LabelText("Specular Texture", material->specularTexture->name.c_str());
+	Component::DrawOnEditor();
+
+	bool dummyEnabled = enabled;
+	ImGui::PushID(1);
+	if (ImGui::Checkbox("", &dummyEnabled)) {
+		if (dummyEnabled) {
+			Enable();
+		} else {
+			Disable();
 		}
 	}
+	ImGui::PopID();
+	ImGui::SameLine();
+
+	if (ImGui::CollapsingHeader("Mesh Renderer")) {
+		//float3(1.0, 0.71, 0.29);
+		if (ImGui::TreeNode("Material Values")) {
+			float shininessDummy = material->GetShininess();
+			if (ImGui::DragFloat("Shininess", &shininessDummy)) {
+				material->SetShininess(shininessDummy);
+			}
+
+			float3 specularDummy = material->GetSpecularColor();
+			if (ImGui::InputFloat3("Specular Color", specularDummy.ptr())) {
+				material->SetSpecularColor(specularDummy);
+			}
+			if (material->diffuseTexture) {
+				ImGui::LabelText("Diffuse Texture", material->diffuseTexture->name.c_str());
+			}
+			if (material->specularTexture) {
+				ImGui::LabelText("Specular Texture", material->specularTexture->name.c_str());
+			}
+			ImGui::TreePop();
+		}
+	}
+
 }
 
 void ComponentMeshRenderer::OnTransformChanged() {

@@ -51,8 +51,10 @@ GameObject::~GameObject() {
 }
 
 void GameObject::Update() {
-	for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
-		(*it)->Update();
+	if (Active()) {
+		for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
+			(*it)->Update();
+		}
 	}
 }
 
@@ -233,6 +235,17 @@ void GameObject::OnTransformChanged() {
 
 }
 
+bool GameObject::Active() const {
+	if (parent == nullptr) {
+		return active;
+	}
+
+	if (parent->Active()) {
+		return active;
+	}
+	return false;
+}
+
 void GameObject::RemoveFromParent() {
 	std::vector<GameObject*>::iterator myItAtParent;
 	bool found = false;
@@ -292,4 +305,9 @@ void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::
 		}
 		gameObject.AddMember("Components", gameObjectComponents, alloc);
 	}
+}
+
+
+void GameObject::SetActive(bool should) {
+	active = should;
 }

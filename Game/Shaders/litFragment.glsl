@@ -134,16 +134,18 @@ vec4 CalcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir, vec3 diffColo
 		vec4 specularTexel = texture(material.specularTex,TexCoords);;
 	
 		RF0 = specularTexel.rgb;
-		RF0 = pow(RF0.rgb, vec3(2.2));
-		//We set RF0 (Specular color) to linear space, so 
-		//that later on gamma correction works properly
-		
 		//Shininess via alpha channel
 		shininess = exp2(specularTexel.a*7+1);
 	}else{
 		RF0 = vec3(material.materialRF0);
 		shininess= material.materialShininess;
 	} 
+	
+	//We set RF0 (Specular color) to linear space, so 
+	//that later on gamma correction works properly
+	if(useGammaCorrection){
+		RF0 = pow(RF0.rgb, vec3(2.2));
+	}
 	 
 	//Diffuse normalization (((1-RF0)/PI) is omitted)
 	diffColor = diffColor * (1-RF0.rgb);
@@ -169,6 +171,6 @@ vec4 CalcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir, vec3 diffColo
 		ldr = pow(ldr.xyz, vec3(1/2.2));
 	}
 
-	outColor = vec4(ldr,1);	
+	outColor = vec4(ldr,1);		
 	
 }

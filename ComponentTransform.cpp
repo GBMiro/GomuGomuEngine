@@ -23,7 +23,7 @@ ComponentTransform::~ComponentTransform() {
 }
 
 void ComponentTransform::Enable() {
-	active = true;
+	enabled = true;
 }
 
 void ComponentTransform::Update() {
@@ -117,7 +117,7 @@ void ComponentTransform::UpdateLocalValues() {
 }
 
 void ComponentTransform::Disable() {
-	active = false;
+	enabled = false;
 }
 
 void ComponentTransform::DrawOnEditor() {

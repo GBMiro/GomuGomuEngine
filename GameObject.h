@@ -7,6 +7,15 @@
 class Component;
 
 class GameObject {
+public:
+	bool active; //TODO
+	std::string name;
+	GameObject* parent = nullptr;
+	std::vector<GameObject*> children;
+	std::vector<Component*> components;
+
+private:
+	AABB globalAABB;
 
 public:
 	//boolean for ctransform
@@ -40,13 +49,8 @@ public:
 	void GetAllChilds(std::vector<GameObject*>& children) const;
 	void WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc);
 	void RemoveParticularComponent(Component* c);
-public:
-	bool active; //TODO
-	AABB globalAABB;
-	std::string name;
-	std::vector<GameObject*> children;
-	std::vector<Component*> components;
-	GameObject* parent = nullptr;
+	void SetActive(bool should);
+	bool Active()const;
 
 private:
 	uint32_t UUID;
