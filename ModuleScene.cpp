@@ -52,7 +52,7 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	//ImporterScene::LoadScene("Scene.fbx");
+	ImporterScene::LoadScene("Scene.fbx");
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
@@ -60,7 +60,7 @@ bool ModuleScene::Start() {
 	//AddObject("./Resources/Models/Crow.fbx");
 
 	t->Start();
-	AddObject("./Resources/Models/BakerHouse.fbx");
+	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//LOG("Second baker house from json: %.f ms", t->Read());
 
 	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
@@ -72,11 +72,11 @@ bool ModuleScene::Start() {
 
 
 
-	GameObject* pointLightObj = CreateGameObject("PointLight", root);
+	/*GameObject* pointLightObj = CreateGameObject("PointLight", root);
 	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
 
 	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
-	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);
+	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
 
 	App->renderer->SetCullingCamera(camera);
 	App->renderer->SetFrustumCulling(true);
@@ -123,7 +123,7 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 }
 
 bool ModuleScene::CleanUp() {
-	ImporterScene::SaveScene();
+	//ImporterScene::SaveScene();
 	RELEASE(root);
 	return true;
 }
@@ -174,7 +174,10 @@ GameObject* ModuleScene::AddObject(const char* path) {
 
 GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
 	const char* name = node->mName.C_Str();
-	GameObject* object = new GameObject(parent, name, float3::zero, Quat::identity, float3::one);
+	aiVector3D position, scale;
+	aiQuaternion rotation;
+	node->mTransformation.Decompose(scale, rotation, position);
+	GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x/scale.x, scale.y/scale.y, scale.z/scale.z));
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
 			CreateGameObject(path, scene, node->mChildren[i], object);

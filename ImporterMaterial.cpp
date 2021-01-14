@@ -21,6 +21,7 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 			char* buffer;
 			read = App->FS->Load(file.C_Str(), &buffer);
 			if (read == 0) read = App->FS->Load((std::string("Resources/Textures/") + file.C_Str()).c_str(), &buffer);
+			if (read == 0) read = App->FS->Load(std::string("Resources/Textures/black.jpg").c_str(), &buffer);
 			ImporterTextures::Import(buffer, read);
 			RELEASE(buffer);
 			unsigned size = ImporterTextures::Save(&ddsTexture);
@@ -143,11 +144,13 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		ourMaterial->diffuseTexture->name = name;
 		char* bufferTexture;
 		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/") + name).c_str(), &bufferTexture);
-		ImporterTextures::Load(ourMaterial->diffuseTexture, bufferTexture, read);
-//		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(name, name, ourMaterial->diffuseTexture->texSize);
+		if (read != 0) {
+			ImporterTextures::Load(ourMaterial->diffuseTexture, bufferTexture, read);
+			//		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(name, name, ourMaterial->diffuseTexture->texSize);	
+			RELEASE(bufferTexture);
+		}
 		cursor += bytes;
 		RELEASE_ARRAY(name);
-		RELEASE(bufferTexture);
 		//LOG("Diffuse texture's name: %s", ourMaterial->diffuseTexture->name.c_str());
 
 		// Call texture importer to load texture named name
@@ -164,7 +167,6 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		//LOG("Specular texture's name: %s", ourMaterial->specularTexture->name.c_str());
 		// Call texture importer to load texture named name
 	}
-
 	bytes = sizeof(char) * header[4];
 	char* name = new char[bytes];
 	memcpy(name, cursor, bytes);
