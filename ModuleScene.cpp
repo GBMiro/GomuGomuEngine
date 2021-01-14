@@ -52,7 +52,7 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	//ImporterScene::LoadScene("Scene.fbx");
+	ImporterScene::LoadScene("Scene.fbx");
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
@@ -60,7 +60,7 @@ bool ModuleScene::Start() {
 	//AddObject("./Resources/Models/Crow.fbx");
 
 	t->Start();
-	AddObject("./Resources/Models/BakerHouse.fbx");
+	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//LOG("Second baker house from json: %.f ms", t->Read());
 
 	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
@@ -72,11 +72,11 @@ bool ModuleScene::Start() {
 
 
 
-	GameObject* pointLightObj = CreateGameObject("PointLight", root);
+	/*GameObject* pointLightObj = CreateGameObject("PointLight", root);
 	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
 
 	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
-	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);
+	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
 
 	App->renderer->SetCullingCamera(camera);
 	App->renderer->SetFrustumCulling(true);
@@ -123,7 +123,7 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 }
 
 bool ModuleScene::CleanUp() {
-	ImporterScene::SaveScene();
+	//ImporterScene::SaveScene();
 	RELEASE(root);
 	return true;
 }
