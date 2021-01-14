@@ -174,7 +174,10 @@ GameObject* ModuleScene::AddObject(const char* path) {
 
 GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
 	const char* name = node->mName.C_Str();
-	GameObject* object = new GameObject(parent, name, float3::zero, Quat::identity, float3::one);
+	aiVector3D position, scale;
+	aiQuaternion rotation;
+	node->mTransformation.Decompose(scale, rotation, position);
+	GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x/scale.x, scale.y/scale.y, scale.z/scale.z));
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
 			CreateGameObject(path, scene, node->mChildren[i], object);

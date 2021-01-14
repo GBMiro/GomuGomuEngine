@@ -15,8 +15,13 @@ void ImporterMesh::Import(const aiMesh* mesh, Mesh* ourMesh) {
 		ourMesh->numIndices = mesh->mNumFaces * 3; //Each face has 3 vertices
 		ourMesh->indices = new unsigned[ourMesh->numIndices];
 		for (unsigned i = 0; i < mesh->mNumFaces; ++i) {
-			assert(mesh->mFaces[i].mNumIndices == 3);
-			memcpy(&ourMesh->indices[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(unsigned));
+			if (mesh->mFaces[i].mNumIndices == 3) {
+				memcpy(&ourMesh->indices[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(unsigned));
+			}
+			else if (mesh->mFaces[i].mNumIndices == 2) {
+				memcpy(&ourMesh->indices[i * 3], mesh->mFaces[i].mIndices, 2 * sizeof(unsigned));
+				ourMesh->indices[i * 3 + 2] = 0;
+			}
 		}
 	}
 
