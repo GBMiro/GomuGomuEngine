@@ -59,10 +59,7 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 	material = mat;
 }
 
-void ComponentMeshRenderer::DrawOnEditor() {
-
-	Component::DrawOnEditor();
-
+void ComponentMeshRenderer::DrawOnEditor() { 
 	bool dummyEnabled = enabled;
 	ImGui::PushID(1);
 	if (ImGui::Checkbox("", &dummyEnabled)) {

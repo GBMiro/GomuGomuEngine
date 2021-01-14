@@ -223,6 +223,7 @@
     <ClCompile Include="ImporterTextures.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="ImGuizmo.cpp" />
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Components</Filter>
@@ -591,6 +592,7 @@
     <ClInclude Include="ImporterTextures.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="ImGuizmo.h" />
     <ClInclude Include="ComponentCamera.h">
       <Filter>Components</Filter>

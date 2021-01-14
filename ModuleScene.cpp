@@ -16,16 +16,13 @@
 #include "ImporterModel.h"
 #include "ComponentPointLight.h"
 #include "ComponentCamera.h"
-
 #include "ModuleFileSystem.h"
 #include "Timer.h"
-//#include "rapidjson/document.h"
-//#include "rapidjson/writer.h"
-//#include "rapidjson/stringbuffer.h"
-
 #include "ComponentDirectionalLight.h"
 #include "ComponentSpotLight.h"
 #include "ModuleRender.h"
+#include "Quadtree.h"
+#include "MathGeoLib/Geometry/AABB.h"
 #include "Leaks.h"
 
 
@@ -46,6 +43,7 @@ bool ModuleScene::Init() {
 	//AddObject("./Resources/Models/AmongUs.fbx");
 	//AddObject("./Resources/Models/Street_environment_V01.fbx");
 	root = new GameObject(nullptr, "Fake root node");
+	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
 	return true;
 }
 
@@ -56,7 +54,7 @@ bool ModuleScene::Start() {
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
-	//AddObject("./Resources/Models/Crow.fbx");
+	AddObject("./Resources/Models/fox.fbx");
 	//AddObject("./Resources/Models/Crow.fbx");
 
 	t->Start();
@@ -96,6 +94,9 @@ bool ModuleScene::Start() {
 }
 
 update_status ModuleScene::PreUpdate() {
+	// We calculate quadTree each frame. Try to find an efficient way.
+	RELEASE(quadTree);
+	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
 	return UPDATE_CONTINUE;
 }
 
@@ -107,6 +108,7 @@ update_status ModuleScene::Update() {
 	if (selectedObj) {
 		selectedObj->DrawGizmos();
 	}
+	quadTree->Draw();
 
 	return UPDATE_CONTINUE;
 }
@@ -116,6 +118,7 @@ update_status ModuleScene::PostUpdate() {
 }
 
 void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
+	if (gameObject->GetComponentOfType(CTMeshRenderer)) quadTree->InsertGameObject(gameObject);
 	gameObject->Update();
 	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 		UpdateGameObjects(*it);
@@ -125,6 +128,7 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 bool ModuleScene::CleanUp() {
 	//ImporterScene::SaveScene();
 	RELEASE(root);
+	RELEASE(quadTree);
 	return true;
 }
 
@@ -177,7 +181,7 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 	aiVector3D position, scale;
 	aiQuaternion rotation;
 	node->mTransformation.Decompose(scale, rotation, position);
-	GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x/scale.x, scale.y/scale.y, scale.z/scale.z));
+	GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
 			CreateGameObject(path, scene, node->mChildren[i], object);
@@ -223,6 +227,8 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 					if (newMat != nullptr) {
 						meshRenderer->SetMaterial(newMat);
 					}
+
+					quadTree->InsertGameObject(object);
 				}
 			}
 		}
