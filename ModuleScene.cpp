@@ -86,7 +86,6 @@ bool ModuleScene::Start() {
 
 	return true;
 }
-
 update_status ModuleScene::PreUpdate() {
 	// We calculate quadTree each frame. Try to find an efficient way.
 	SceneType scene = App->editor->GetSceneToLoad();
@@ -94,9 +93,18 @@ update_status ModuleScene::PreUpdate() {
 		LoadScene(scene);
 		App->editor->SetGameObjectSelected(root);
 		App->editor->SetSceneToLoad(NO_SCENE);
+		RegenerateQuadTree();
+	} else {
+		static bool once = false;
+		if (!once) {
+			RegenerateQuadTree();
+			once = true;
+		}
 	}
-	RELEASE(quadTree);
-	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
+	//RELEASE(quadTree);
+	//quadTree = new Quadtree(AABB(float3(-15, 0, -15), float3(15, 20, 15)));
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -104,16 +112,20 @@ update_status ModuleScene::Update() {
 
 	UpdateGameObjects(root);
 
-	DrawGameObjects();
 	//Draw method, similar to that on the MousePicking
-
+	DrawGameObjects();
 
 	GameObject* selectedObj = App->editor->GetGameObjectSelected();
 
+	//Draw selected object's Gizmos
 	if (selectedObj) {
 		selectedObj->DrawGizmos();
 	}
-	quadTree->Draw();
+
+	//Draw QuadTree
+	if (App->editor->GetDrawQuadTree()) {
+		quadTree->Draw();
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -123,7 +135,7 @@ update_status ModuleScene::PostUpdate() {
 }
 
 void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
-	if (gameObject->GetComponentOfType(CTMeshRenderer)) quadTree->InsertGameObject(gameObject);
+	//if (gameObject->GetComponentOfType(CTMeshRenderer)) quadTree->InsertGameObject(gameObject);
 	gameObject->Update();
 	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 		UpdateGameObjects(*it);
@@ -169,7 +181,7 @@ GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent) 
 }
 
 void ModuleScene::DestroyGameObject(GameObject* go) {
-
+	if (go == nullptr)return;
 	App->editor->SetGameObjectSelected(nullptr);
 	if (go->parent != nullptr) {
 		go->RemoveFromParent();
@@ -257,7 +269,7 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 						meshRenderer->SetMaterial(newMat);
 					}
 
-					quadTree->InsertGameObject(object);
+					//quadTree->InsertGameObject(object);
 				}
 			}
 		}
@@ -266,10 +278,18 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 	return object;
 }
 
-void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {
-	for (std::vector<GameObject*>::const_iterator it = root->children.begin(); it != root->children.end(); ++it) {
-		gameObjects.push_back(*it);
+void ModuleScene::GetChildrenGameObjects(GameObject* obj, std::vector<GameObject*>& gameObjects, bool isRoot) {
+	if (!isRoot) {
+		gameObjects.push_back(obj);
 	}
+
+	for (std::vector<GameObject*>::iterator it = obj->children.begin(); it != obj->children.end(); ++it) {
+		GetChildrenGameObjects(*it, gameObjects, false);
+	}
+
+	//for (std::vector<GameObject*>::iterator it = obj->children.begin(); it != root->children.end(); ++it) {
+	//	GetChildrenGameObjects(*it, gameObjects, false);
+	//}
 }
 
 void ModuleScene::LoadScene(SceneType type) {
@@ -298,4 +318,30 @@ void ModuleScene::DestroyScene() {
 		RELEASE(*it);
 	}
 	root->children.clear();
+}
+
+
+void ModuleScene::RegenerateQuadTree() {
+	RELEASE(quadTree);
+	quadTree = new Quadtree(AABB(float3(-15, 0, -15), float3(15, 20, 15)));
+	std::vector<GameObject*>objs;
+	GetChildrenGameObjects(root, objs);
+
+	for (std::vector<GameObject*>::iterator it = objs.begin(); it != objs.end(); ++it) {
+
+		//ReestablishGameObjectOnQuadTree(*it);
+
+		if ((*it)->renderingComponents.size() > 0) {
+			quadTree->InsertGameObject(*it);
+		}
+	}
+
+}
+
+void ModuleScene::ReestablishGameObjectOnQuadTree(GameObject* obj) {
+	if (obj->renderingComponents.size() == 0)return;
+	quadTree->root->EraseGameObject(obj);
+
+	if (!obj->Active())return;
+	quadTree->root->InsertGameObject(obj);
 }

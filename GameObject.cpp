@@ -12,6 +12,7 @@
 #include "Application.h"
 #include "MathGeoLib/Algorithm/Random/LCG.h"
 #include "ModuleDebugDraw.h"
+#include "ModuleScene.h"
 #include "Leaks.h"
 
 GameObject::GameObject(GameObject* parent, const char* name) {
@@ -233,6 +234,12 @@ void GameObject::OnTransformChanged() {
 
 	GenerateAABB();
 
+	if (App) {
+		if (App->scene) {
+			App->scene->ReestablishGameObjectOnQuadTree(this);
+		}
+	}
+
 }
 
 bool GameObject::Active() const {
@@ -262,7 +269,7 @@ void GameObject::RemoveFromParent() {
 }
 
 void GameObject::DrawGizmos() {
-
+	if (!Active())return;
 	App->debugDraw->DrawAABB(globalAABB);
 	for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
 		(*it)->DrawGizmos();
@@ -309,6 +316,7 @@ void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::
 
 void GameObject::SetActive(bool should) {
 	active = should;
+	App->scene->ReestablishGameObjectOnQuadTree(this);
 }
 
 /// <summary>

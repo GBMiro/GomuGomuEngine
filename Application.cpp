@@ -27,6 +27,7 @@ Application::Application() {
 	modules.push_back(camera = new ModuleCamera());
 	modules.push_back(FS = new ModuleFileSystem());
 	capTimer = new Timer();
+	isFrameRateCapped = true;
 	SetFrameCap(60);
 }
 
@@ -71,12 +72,13 @@ update_status Application::Update() {
 		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 			ret = (*it)->PostUpdate();
 
+	if (GetUseFrameCap()) {
+		if (millisPerFrame > (Uint32)0) {
+			Uint32 frameMillis = capTimer->Read();
 
-	if (millisPerFrame > (Uint32)0) {
-		Uint32 frameMillis = capTimer->Read();
-
-		if (frameMillis < millisPerFrame) {
-			SDL_Delay(millisPerFrame - frameMillis);
+			if (frameMillis < millisPerFrame) {
+				SDL_Delay(millisPerFrame - frameMillis);
+			}
 		}
 	}
 
@@ -109,4 +111,12 @@ bool Application::CleanUp() {
 	delete capTimer;
 
 	return ret;
+}
+
+bool Application::GetUseFrameCap()const {
+	return isFrameRateCapped;
+}
+
+void Application::SetUseFrameCap(bool should) {
+	isFrameRateCapped = should;
 }

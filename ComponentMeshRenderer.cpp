@@ -61,7 +61,7 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 
 void ComponentMeshRenderer::DrawOnEditor() {
 	bool dummyEnabled = enabled;
-	ImGui::PushID(1);
+	ImGui::PushID(&dummyEnabled);
 	if (ImGui::Checkbox("", &dummyEnabled)) {
 		if (dummyEnabled) {
 			Enable();
@@ -70,6 +70,9 @@ void ComponentMeshRenderer::DrawOnEditor() {
 		}
 	}
 	ImGui::PopID();
+
+
+
 	ImGui::SameLine();
 
 	if (ImGui::CollapsingHeader("Mesh Renderer")) {
@@ -92,7 +95,6 @@ void ComponentMeshRenderer::DrawOnEditor() {
 			ImGui::TreePop();
 		}
 	}
-
 }
 
 void ComponentMeshRenderer::OnTransformChanged() {
@@ -108,6 +110,7 @@ void ComponentMeshRenderer::WriteToJSON(rapidjson::Value& component, rapidjson::
 }
 
 void ComponentMeshRenderer::DrawGizmos() {
+	if (!Enabled())return;
 	if (App->debugDraw) {
 		App->debugDraw->DrawAABB(localAxisAlignedBoundingBox);
 	}

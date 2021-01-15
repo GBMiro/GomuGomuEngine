@@ -29,7 +29,7 @@ void WindowProperties::Draw() {
 	if (gameObjectSelected != nullptr) {
 
 		ImGui::BeginChild("Components", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-		ImGui::PushID(2);
+		ImGui::PushID(gameObjectSelected);
 		bool dummyActive = gameObjectSelected->active;
 		if (ImGui::Checkbox("", &dummyActive)) {
 			gameObjectSelected->SetActive(dummyActive);
@@ -43,7 +43,9 @@ void WindowProperties::Draw() {
 		}
 
 		for (std::vector<Component*>::const_iterator it = gameObjectSelected->components.begin(); it != gameObjectSelected->components.end(); ++it) {
+			ImGui::PushID(*it);
 			(*it)->DrawOnEditor();
+			ImGui::PopID();
 		}
 		ImGui::EndChild();
 	}

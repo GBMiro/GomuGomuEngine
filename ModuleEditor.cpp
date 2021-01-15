@@ -27,7 +27,8 @@
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
-	useQuadTreeAcceleration = useMultiMap = false;
+	useQuadTreeAcceleration = useMultiMap = true;
+	drawQuadTree = false;
 	gizmoOperation = ImGuizmo::TRANSLATE;
 	gizmoMode = ImGuizmo::WORLD;
 
@@ -64,10 +65,6 @@ update_status ModuleEditor::PreUpdate() {
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
-
-	for (int i = 0; i < distances.size(); ++i) {
-		App->debugDraw->DrawLine(distances[i].first, distances[i].second, float3::one);
-	}
 
 	return UPDATE_CONTINUE;
 }
@@ -160,7 +157,9 @@ update_status ModuleEditor::Update() {
 		}
 	}
 
-
+	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KeyState::KEY_DOWN) {
+		App->scene->DestroyGameObject(GetGameObjectSelected());
+	}
 
 
 	ImGui::End();
@@ -217,8 +216,7 @@ update_status ModuleEditor::showMainMenu() {
 				state = STOP;
 				SetSceneToLoad(TEMPORAL_SCENE);
 				LOG("Previous scene loaded");
-			}
-			else {
+			} else {
 				state = PLAY;
 				App->scene->SaveScene("Assets/Library/Scenes/temporalScene.fbx");
 				LOG("Scene saved");
@@ -298,10 +296,6 @@ GameObject* ModuleEditor::TryToSelectGameObject(const LineSegment& picking, bool
 
 			float3 frustumPosition = App->camera->GetFrustum().Pos();
 
-			for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
-				distances.push_back(std::pair<float3, float3>(frustumPosition, (*it)->GetAABB().CenterPoint()));
-			}
-
 			int id = 0;
 
 			while (selected == nullptr && id < possibleObjs.size()) {
@@ -366,10 +360,6 @@ GameObject* ModuleEditor::TryToSelectGameObject(const LineSegment& picking, bool
 
 				float3 frustumPosition = App->camera->GetFrustum().Pos();
 
-				for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
-					distances.push_back(std::pair<float3, float3>(frustumPosition, (*it)->GetAABB().CenterPoint()));
-				}
-
 				int id = 0;
 
 				while (selected == nullptr && id < possibleObjs.size()) {
@@ -395,8 +385,6 @@ GameObject* ModuleEditor::TryToSelectGameObject(const LineSegment& picking, bool
 
 void ModuleEditor::OnClicked(ImVec2 mousePosInWindow) {
 	if ((ImGuizmo::IsUsing()) == true)return;
-
-	distances.clear();
 
 	Frustum f = App->camera->GetFrustum();
 	GameObject* selected = nullptr;
@@ -515,6 +503,13 @@ void ModuleEditor::CheckRayIntersectionWithQuadTreeNode(const LineSegment& picki
 			CheckRayIntersectionWithQuadTreeNode(picking, possibleObjs, *it, frustumPos);
 		}
 	}
+}
+
+bool ModuleEditor::GetDrawQuadTree()const {
+	return drawQuadTree;
+}
+void ModuleEditor::SetDrawQuadTree(bool should) {
+	drawQuadTree = should;
 }
 
 //

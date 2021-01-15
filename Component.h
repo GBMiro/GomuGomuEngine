@@ -35,7 +35,6 @@ public:
 	GameObject* owner;
 	ComponentType type;
 	bool enabled = true;
-protected:
 	bool Enabled()const;
 private:
 	uint32_t UUID;
