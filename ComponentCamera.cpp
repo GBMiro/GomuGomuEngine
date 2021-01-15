@@ -62,6 +62,22 @@ void ComponentCamera::SetUpFrustum(float nearDistance, float farDistance) {
 	frustum.SetUp(float3::unitY);
 }
 
+void ComponentCamera::WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
+	component.AddMember("Component Type", GetType(), alloc);
+	component.AddMember("UUID", GetUUID(), alloc);
+	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+	component.AddMember("Horizontal FOV", RadToDeg(frustum.HorizontalFov()), alloc);
+	component.AddMember("Aspect Ratio", frustum.AspectRatio(), alloc);
+	component.AddMember("Near Distance", frustum.NearPlaneDistance(), alloc);
+	component.AddMember("Far Distance", frustum.FarPlaneDistance(), alloc);
+}
+
+void ComponentCamera::LoadFromJSON(const rapidjson::Value& component) {
+	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
+	frustum.SetViewPlaneDistances(component["Near Distance"].GetFloat(), component["Far Distance"].GetFloat());
+	frustum.SetHorizontalFovAndAspectRatio(DegToRad(component["Horizontal FOV"].GetFloat()), component["Aspect Ratio"].GetFloat());
+}
+
 
 ComponentCamera::ComponentCamera(GameObject* anOwner, float aNearPDistance, float aFarPDistance) : Component(ComponentType::CTCamera, anOwner) {
 	SetUpFrustum(aNearPDistance, aFarPDistance);

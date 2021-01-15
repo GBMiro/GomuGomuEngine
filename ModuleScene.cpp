@@ -65,9 +65,6 @@ bool ModuleScene::Start() {
 	//DestroyGameObject(dummy);
 	RELEASE(t);
 
-	GameObject* cameraObj = CreateGameObject("Camera", GetRoot());
-	ComponentCamera* camera = (ComponentCamera*)cameraObj->CreateComponent(ComponentType::CTCamera);
-
 
 
 	/*GameObject* pointLightObj = CreateGameObject("PointLight", root);
@@ -75,9 +72,6 @@ bool ModuleScene::Start() {
 
 	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
 	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
-
-	App->renderer->SetCullingCamera(camera);
-	App->renderer->SetFrustumCulling(true);
 
 	/*AddObject("./Resources/Models/BakerHouse.fbx");
 
@@ -268,21 +262,17 @@ void ModuleScene::LoadScene(SceneType type) {
 		break;
 	case USER_SCENE:
 		ImporterScene::LoadScene(std::string("Assets/Library/Scenes/userScene.fbx").c_str());
+		break;
+	case TEMPORAL_SCENE:
+		ImporterScene::LoadScene(std::string("Assets/Library/Scenes/temporalScene.fbx").c_str());
+		break;
 	default:
 		break;
 	}
-	/*
-	This code will be remove. Camara will load from json
-	*/
-	GameObject* cameraObj = CreateGameObject("Camera", GetRoot());
-	ComponentCamera* camera = (ComponentCamera*)cameraObj->CreateComponent(ComponentType::CTCamera);
-
-	App->renderer->SetCullingCamera(camera);
-	App->renderer->SetFrustumCulling(true);
 }
 
-void ModuleScene::SaveScene() {
-	ImporterScene::SaveScene(std::string("Assets/Library/Scenes/userScene.fbx").c_str());
+void ModuleScene::SaveScene(const char* scene) {
+	ImporterScene::SaveScene(scene);
 }
 
 void ModuleScene::DestroyScene() {

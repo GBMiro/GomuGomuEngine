@@ -18,6 +18,7 @@ class QuadtreeNode;
 enum SceneType {
 	USER_SCENE,
 	DEFAULT_SCENE,
+	TEMPORAL_SCENE,
 	NO_SCENE
 };
 
@@ -46,7 +47,7 @@ public:
 	Quadtree* GetQuadTree() const { return quadTree; }
 
 	void LoadScene(SceneType type);
-	void SaveScene();
+	void SaveScene(const char* scene);
 	void DestroyScene();
 
 

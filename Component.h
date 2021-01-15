@@ -29,6 +29,7 @@ public:
 	uint32_t GetUUID() { return UUID; }
 
 	virtual void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {}
+	virtual void LoadFromJSON(const rapidjson::Value& component) {}
 
 public:
 	GameObject* owner;

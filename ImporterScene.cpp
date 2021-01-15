@@ -15,6 +15,8 @@
 #include "ComponentDirectionalLight.h"
 #include "ComponentPointLight.h"
 #include "ComponentTransform.h"
+#include "ComponentCamera.h"
+#include "ModuleRender.h"
 #include "Quadtree.h"
 #include <vector>
 #include <map>
@@ -91,6 +93,13 @@ void ImporterScene::LoadScene(const char* scene) {
 						im.Load(bufferMaterial, meshRenderer->material);
 						RELEASE(bufferMaterial);
 						App->scene->GetQuadTree()->InsertGameObject(node);
+						break;
+					}
+					case ComponentType::CTCamera: {
+						ComponentCamera* camera = (ComponentCamera*)node->CreateComponent((ComponentType)type);
+						camera->LoadFromJSON(component);
+						App->renderer->SetCullingCamera(camera);
+						App->renderer->SetFrustumCulling(true);
 						break;
 					}
 					case ComponentType::CTLight: {

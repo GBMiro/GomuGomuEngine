@@ -20,6 +20,12 @@ class GameObject;
 class Quadtree;
 class QuadtreeNode;
 
+enum GameState {
+	STOP,
+	PAUSE,
+	PLAY
+};
+
 
 class ModuleEditor : public Module {
 private:
@@ -85,5 +91,6 @@ private:
 	bool gameWindowSelectedOrHovered = false;
 	void OnClicked(ImVec2 mousePosInScene);
 	SceneType sceneToLoad = DEFAULT_SCENE;
+	GameState state = STOP;
 };
 
