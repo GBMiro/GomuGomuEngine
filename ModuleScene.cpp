@@ -50,7 +50,7 @@ bool ModuleScene::Init() {
 bool ModuleScene::Start() {
 	Timer* t = new Timer();
 	t->Start();
-	ImporterScene::LoadScene("Scene.fbx");
+	//ImporterScene::LoadScene("Scene.fbx");
 	//LOG("Scene loaded from json: %.f ms", t->Read());
 	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//AddObject("./Resources/Models/BakerHouse.fbx");
@@ -65,9 +65,6 @@ bool ModuleScene::Start() {
 	//DestroyGameObject(dummy);
 	RELEASE(t);
 
-	GameObject* cameraObj = CreateGameObject("Camera", GetRoot());
-	ComponentCamera* camera = (ComponentCamera*)cameraObj->CreateComponent(ComponentType::CTCamera);
-
 
 
 	/*GameObject* pointLightObj = CreateGameObject("PointLight", root);
@@ -75,9 +72,6 @@ bool ModuleScene::Start() {
 
 	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
 	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
-
-	App->renderer->SetCullingCamera(camera);
-	App->renderer->SetFrustumCulling(true);
 
 	/*AddObject("./Resources/Models/BakerHouse.fbx");
 
@@ -95,6 +89,12 @@ bool ModuleScene::Start() {
 
 update_status ModuleScene::PreUpdate() {
 	// We calculate quadTree each frame. Try to find an efficient way.
+	SceneType scene = App->editor->GetSceneToLoad();
+	if (scene != NO_SCENE) {
+		LoadScene(scene);
+		App->editor->SetGameObjectSelected(root);
+		App->editor->SetSceneToLoad(NO_SCENE);
+	}
 	RELEASE(quadTree);
 	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
 	return UPDATE_CONTINUE;
@@ -225,7 +225,7 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 					std::string filename;
 					App->FS->GetFileName(path, filename);
 					std::hash<std::string> str_hash;
-					meshRenderer->mesh->SetFileID(str_hash(filename + std::string(name)));
+					meshRenderer->mesh->SetFileID(str_hash(filename + std::string(name).append(std::to_string(i))));
 					ImporterMesh a;
 					a.Import(scene->mMeshes[node->mMeshes[i]], meshRenderer->mesh);
 					char* buffer;
@@ -270,4 +270,32 @@ void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {
 	for (std::vector<GameObject*>::const_iterator it = root->children.begin(); it != root->children.end(); ++it) {
 		gameObjects.push_back(*it);
 	}
+}
+
+void ModuleScene::LoadScene(SceneType type) {
+	DestroyScene();
+	switch (type) {
+	case DEFAULT_SCENE:
+		ImporterScene::LoadScene(std::string("Assets/Library/Scenes/defaultScene.fbx").c_str());
+		break;
+	case USER_SCENE:
+		ImporterScene::LoadScene(std::string("Assets/Library/Scenes/userScene.fbx").c_str());
+		break;
+	case TEMPORAL_SCENE:
+		ImporterScene::LoadScene(std::string("Assets/Library/Scenes/temporalScene.fbx").c_str());
+		break;
+	default:
+		break;
+	}
+}
+
+void ModuleScene::SaveScene(const char* scene) {
+	ImporterScene::SaveScene(scene);
+}
+
+void ModuleScene::DestroyScene() {
+	for (std::vector<GameObject*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
+		RELEASE(*it);
+	}
+	root->children.clear();
 }

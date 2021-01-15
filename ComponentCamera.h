@@ -20,6 +20,10 @@ public:
 	Frustum& GetFrustum();
 	void ComponentCamera::SetUpFrustum(float nearDistance, float farDistance);
 
+	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc);
+	void LoadFromJSON(const rapidjson::Value& component);
+
+
 
 };
 

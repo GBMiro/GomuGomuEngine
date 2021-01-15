@@ -189,6 +189,9 @@ update_status ModuleEditor::showMainMenu() {
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit")) keepGoing = UPDATE_STOP;
+			if (ImGui::MenuItem("Save scene")) App->scene->SaveScene("Assets/Library/Scenes/userScene.fbx");
+			if (ImGui::MenuItem("Load default scene")) SetSceneToLoad(DEFAULT_SCENE);
+			if (ImGui::MenuItem("Load last saved scene")) SetSceneToLoad(USER_SCENE);
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Windows")) {
@@ -205,6 +208,24 @@ update_status ModuleEditor::showMainMenu() {
 			if (ImGui::MenuItem("About GomuGomuEngine", NULL, &about->active));
 			ImGui::EndMenu();
 		}
+		ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+		std::string tag;
+		if (state == PLAY) tag = "Stop";
+		else tag = "Play";
+		if (ImGui::Button(tag.c_str())) {
+			if (state == PLAY) {
+				state = STOP;
+				SetSceneToLoad(TEMPORAL_SCENE);
+				LOG("Previous scene loaded");
+			}
+			else {
+				state = PLAY;
+				App->scene->SaveScene("Assets/Library/Scenes/temporalScene.fbx");
+				LOG("Scene saved");
+			}
+		}
+		if (ImGui::Button("Pause"));
+		if (ImGui::Button("Step"));
 		ImGui::EndMenuBar();
 	}
 	return keepGoing;

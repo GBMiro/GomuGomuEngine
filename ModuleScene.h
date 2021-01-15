@@ -15,6 +15,13 @@ class ComponentDirectionalLight;
 class Quadtree;
 class QuadtreeNode;
 
+enum SceneType {
+	USER_SCENE,
+	DEFAULT_SCENE,
+	TEMPORAL_SCENE,
+	NO_SCENE
+};
+
 class ModuleScene : public Module {
 
 public:
@@ -38,6 +45,10 @@ public:
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
 	Quadtree* GetQuadTree() const { return quadTree; }
+
+	void LoadScene(SceneType type);
+	void SaveScene(const char* scene);
+	void DestroyScene();
 
 
 
