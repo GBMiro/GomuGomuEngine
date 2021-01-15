@@ -2,7 +2,6 @@
 #include "Window.h"
 
 class GameObject;
-
 class WindowGameObjectHierarchy : public Window {
 
 public:
@@ -13,7 +12,7 @@ public:
 	void Draw();
 
 	GameObject* GetGameObjectSelected() const { return gameObjectSelected; }
-	
+
 	void SetGameObjectSelected(GameObject* gameObject) {
 		gameObjectSelected = gameObject;
 	}

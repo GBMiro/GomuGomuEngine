@@ -128,6 +128,7 @@ update_status ModuleInput::PreUpdate() {
 			mouse_motion.y = event.motion.yrel / 2;
 			mouse.x = event.motion.x / 2;
 			mouse.y = event.motion.y / 2;
+			App->editor->OnMouseMotion();
 			break;
 
 		case SDL_MOUSEWHEEL:

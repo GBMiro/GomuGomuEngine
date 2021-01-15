@@ -27,6 +27,7 @@ public:
 
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	void SetLocalPosition(float3 newPos);
+	void RotateFor(Quat deltaRot);
 	void SetLocalRotation(Quat newRot);
 	void SetLocalScale(float3 newScale);
 	void SetLocalMatrix(float4x4 newLocalMat);

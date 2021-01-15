@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "ModuleCamera.h"
 #include <vector>
+#include "MathGeoLib/Math/float3.h"
 
 WindowGameObjectHierarchy::WindowGameObjectHierarchy(std::string name, int windowID) : Window(name, windowID) {
 }
@@ -58,6 +59,8 @@ void WindowGameObjectHierarchy::DrawGameObjectHierarchy(GameObject* gameObject, 
 			nodeFlags |= ImGuiTreeNodeFlags_Selected;
 		}
 		ImGui::PushID(gameObject);
+
+
 		bool node_open = ImGui::TreeNodeEx(gameObject->GetName(), nodeFlags); //Here I'll use UUID instead of Name
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton(0)) || ImGui::IsItemClicked(ImGuiMouseButton(1)))	gameObjectSelected = gameObject;

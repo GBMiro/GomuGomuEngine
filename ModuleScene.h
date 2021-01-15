@@ -13,6 +13,7 @@ class aiScene;
 class ComponentPointLight;
 class ComponentDirectionalLight;
 class Quadtree;
+class QuadtreeNode;
 
 class ModuleScene : public Module {
 
@@ -37,8 +38,9 @@ public:
 	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
 	GameObject* GetRoot() const { return root; }
 	Quadtree* GetQuadTree() const { return quadTree; }
-	void CheckRayIntersectionWithGameObject(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected);
-	bool CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o);
+
+
+
 public:
 	ComponentPointLight* pointLight = nullptr;
 	float3 ambientLight = { 0,0,0 };
@@ -46,6 +48,7 @@ public:
 	float ambientIntensity = 0.1f;
 private:
 	void UpdateGameObjects(GameObject* gameObject);
+	void DrawGameObjects();
 
 private:
 	GameObject* root = nullptr;

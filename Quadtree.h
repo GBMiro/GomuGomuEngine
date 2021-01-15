@@ -9,26 +9,31 @@ class GameObject;
 class QuadtreeNode {
 
 public:
-	QuadtreeNode(const AABB& boundingBox);
+	QuadtreeNode(AABB boundingBox);
 	~QuadtreeNode();
 
 	void InsertGameObject(GameObject* gameObject);
 	void EraseGameObject(GameObject* gameObject);
 
-	void Draw();
+	void Draw()const;
 	void Subdivide();
 	void Organize();
 	QuadtreeNode* GetParent() const { return parent; }
 
 public:
+	bool subdivided;
 	AABB boundingBox;
 
-	QuadtreeNode* nw = nullptr;
-	QuadtreeNode* ne = nullptr;
-	QuadtreeNode* sw = nullptr;
-	QuadtreeNode* se = nullptr;
+	//QuadtreeNode* nw = nullptr;
+	//QuadtreeNode* ne = nullptr;
+	//QuadtreeNode* sw = nullptr;
+	//QuadtreeNode* se = nullptr;
 
-	std::list<GameObject*> gameObjects;
+	std::vector<QuadtreeNode> childNodes;
+	std::vector<GameObject*> gameObjects;
+
+	//std::vector<GameObject*> gameObjects
+	//gameObjects.reserve (NODE_MAX_CAPACITY);
 
 private:
 

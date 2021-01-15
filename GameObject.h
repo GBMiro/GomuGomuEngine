@@ -25,6 +25,9 @@ public:
 
 	void Update();
 
+	//TO DO
+	void Draw();
+
 	Component* CreateComponent(ComponentType type, int additionalParam = 0);
 
 	void ChangeParent(GameObject* parent);

@@ -12,6 +12,7 @@
 #include "Point.h"
 #include "GL/glew.h"
 #include "Leaks.h"
+#include "ModuleEditor.h"
 
 constexpr char* filterMinModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
 constexpr char* filterMagModes[] = { "Linear", "Nearest" };
@@ -40,6 +41,15 @@ void WindowConfiguration::Draw() {
 	static iPoint mouse;
 
 	SDL_GetWindowSize(App->window->window, &width, &height);
+
+	if (ImGui::CollapsingHeader("Editor", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+		bool dummyUseQuadTreeAccel = App->editor->UseQuadTreeAcceleration();
+
+		if (ImGui::Checkbox("QuadTree acceleration", &dummyUseQuadTreeAccel)) {
+			App->editor->SetUseQuadTreeAcceleration(dummyUseQuadTreeAccel);
+		}
+	}
 
 	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 		up = App->camera->GetUpVector();

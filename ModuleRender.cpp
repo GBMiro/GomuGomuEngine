@@ -283,12 +283,10 @@ void  ModuleRender::SetFrustumCulling(bool use) {
 	frustumCulling = use;
 }
 
+//QuadTree acceleration is not possible here, centralize
 bool  ModuleRender::MustDraw(ComponentMeshRenderer* renderer) {
-	if (!frustumCulling || cullingCamera == nullptr)
-		return true;
-
-	if (cullingCamera->GetFrustum().Intersects(renderer->GetAABB())) {
+	if (!frustumCulling || cullingCamera == nullptr) {
 		return true;
 	}
-	return false;
+	return cullingCamera->GetFrustum().Intersects(renderer->GetAABB());
 }

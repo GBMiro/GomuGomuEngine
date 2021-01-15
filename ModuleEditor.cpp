@@ -19,10 +19,15 @@
 #include <iostream>
 #include <algorithm>
 #include "ComponentTransform.h"
+#include "Quadtree.h"
+
+#include "PreciseTimer.h"
+#include "Mesh.h"
+#include "ComponentMeshRenderer.h"
 #include "Leaks.h"
 
 ModuleEditor::ModuleEditor() {
-
+	useQuadTreeAcceleration = false;
 	gizmoOperation = ImGuizmo::TRANSLATE;
 	gizmoMode = ImGuizmo::WORLD;
 
@@ -59,6 +64,10 @@ update_status ModuleEditor::PreUpdate() {
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
+
+	for (int i = 0; i < distances.size(); ++i) {
+		App->debugDraw->DrawLine(distances[i].first, distances[i].second, float3::one);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -124,6 +133,10 @@ void ModuleEditor::ManageGizmos() {
 		}
 
 	}
+}
+
+void ModuleEditor::OnMouseMotion() {
+	previouslySelectedGameObjects.clear();
 }
 
 update_status ModuleEditor::Update() {
@@ -228,9 +241,95 @@ void ModuleEditor::SetGameObjectSelected(GameObject* gameObject) {
 	hierarchy->SetGameObjectSelected(gameObject);
 }
 
+bool ModuleEditor::UseQuadTreeAcceleration()const {
+	return useQuadTreeAcceleration;
+}
+void ModuleEditor::SetUseQuadTreeAcceleration(bool should) {
+	useQuadTreeAcceleration = should;
+}
+ 
+GameObject* ModuleEditor::TryToSelectGameObject(const LineSegment& picking, bool useQuadTreeAccel) {
+	GameObject* selected = nullptr;
+
+	if (!useQuadTreeAccel) {
+		std::vector<GameObject*>possibleObjs;
+		CheckRayIntersectionWithGameObjectAndChildren(picking, possibleObjs, App->scene->GetRoot(), GetGameObjectSelected());
+
+		if (possibleObjs.size() > 0) {
+
+			std::sort(possibleObjs.begin(), possibleObjs.end(), [](GameObject* l, GameObject* r) {
+				float3 frustumPosition = App->camera->GetFrustum().Pos();
+				float lDist = (frustumPosition - l->GetAABB().CenterPoint()).Length();
+				float rDist = (frustumPosition - r->GetAABB().CenterPoint()).Length();
+
+				return lDist < rDist;
+				});
+
+			float3 frustumPosition = App->camera->GetFrustum().Pos();
+
+			for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
+				distances.push_back(std::pair<float3, float3>(frustumPosition, (*it)->GetAABB().CenterPoint()));
+			}
+
+			//std::reverse(possibleObjs.begin(), possibleObjs.end());
+			int id = 0;
+
+			while (selected == nullptr && id < possibleObjs.size()) {
+				if (possibleObjs[id] != App->scene->GetRoot()) {
+					if (hierarchy->GetGameObjectSelected() == possibleObjs[id]) {
+						for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
+							if (CheckRayIntersectionWithMeshRenderer(picking, *it)) {
+								selected = *it;
+							}
+						}
+					} else if (!PreviouslySelected(possibleObjs[id])) {
+						selected = possibleObjs[id];
+					}
+				}
+
+				id++;
+			}
+
+		}
+	} else {
+		//Check if ray collides with QuadTrees
+		std::vector<QuadtreeNode>nodes;
+
+		//This should return std::vector<GameObject*>, even better, a multimap<float,GameObject*> -> 
+		CheckRayIntersectionWithQuadTreeNode(picking, nodes, *App->scene->GetQuadTree()->root);
+
+		std::sort(nodes.begin(), nodes.end(), [](QuadtreeNode l, QuadtreeNode r) {
+			float3 frustumPosition = App->camera->GetFrustum().Pos();
+			float lDist = (frustumPosition - l.boundingBox.CenterPoint()).Length();
+			float rDist = (frustumPosition - r.boundingBox.CenterPoint()).Length();
+			return lDist > rDist;
+			});
+
+
+		float3 frustumPosition = App->camera->GetFrustum().Pos();
+		for (std::vector<QuadtreeNode>::iterator it = nodes.begin(); it != nodes.end() && selected == nullptr; ++it) {
+			distances.push_back(std::pair<float3, float3>(frustumPosition, (*it).boundingBox.CenterPoint()));
+		}
+
+		for (std::vector<QuadtreeNode>::iterator it = nodes.begin(); it != nodes.end() && selected == nullptr; ++it) {
+			for (std::vector<GameObject*>::iterator it2 = (*it).gameObjects.begin(); it2 != (*it).gameObjects.end() && selected == nullptr; ++it2) {
+				if (!PreviouslySelected(*it2)) {
+					if (CheckRayIntersectionWithGameObject(picking, *it2, hierarchy->GetGameObjectSelected())) {
+						selected = *it2;
+					}
+				}
+			}
+		}
+
+	}
+	return selected;
+}
+
 
 void ModuleEditor::OnClicked(ImVec2 mousePosInWindow) {
 	if ((ImGuizmo::IsUsing()) == true)return;
+
+	distances.clear();
 
 	Frustum f = App->camera->GetFrustum();
 	GameObject* selected = nullptr;
@@ -246,45 +345,114 @@ void ModuleEditor::OnClicked(ImVec2 mousePosInWindow) {
 
 	//-MouseNormY because IMGUI inverts Y
 	LineSegment picking = f.UnProjectLineSegment(mouseNormX, -mouseNormY);
+	PreciseTimer* timer = new PreciseTimer();
+	timer->Start();
+	selected = TryToSelectGameObject(picking, useQuadTreeAcceleration);
 
+	LOG("Selection took %lf secs", timer->Read());
 
-	std::vector<GameObject*>possibleObjs;
-	App->scene->CheckRayIntersectionWithGameObject(picking, possibleObjs, App->scene->GetRoot(), GetGameObjectSelected());
-
-	if (possibleObjs.size() > 0) {
-
-		std::sort(possibleObjs.begin(), possibleObjs.end(), [](GameObject* l, GameObject* r) {
-			float3 frustumPosition = App->camera->GetFrustum().Pos();
-			float lDist = (frustumPosition - l->GetAABB().CenterPoint()).Length();
-			float rDist = (frustumPosition - r->GetAABB().CenterPoint()).Length();
-
-			return lDist < rDist;
-			});
-		std::reverse(possibleObjs.begin(), possibleObjs.end());
-
-		if (hierarchy->GetGameObjectSelected() == possibleObjs[0]) {
-			for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
-				if (App->scene->CheckRayIntersectionWithMeshRenderer(picking, *it)) {
-					selected = *it;
-				}
-			}
-		} else {
-			selected = possibleObjs[0];
-		}
-		SetGameObjectSelected(selected);
-
-		//for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
-		//	if (App->scene->CheckRayIntersectionWithMeshRenderer(picking, *it)) {
-		//		selected = *it;
-		//		SetGameObjectSelected(selected);
-		//	}
-		//}
-
-
-
-	}
+	delete timer;
+	SetGameObjectSelected(selected);
 
 	if (!selected) {
-		SetGameObjectSelected(nullptr);
+		previouslySelectedGameObjects.clear();
+	} else {
+		previouslySelectedGameObjects.push_back(selected);
 	}
+}
+
+bool ModuleEditor::PreviouslySelected(GameObject* obj)const {
+	bool found = false;
+	for (std::vector<GameObject*>::const_iterator it = previouslySelectedGameObjects.begin(); it != previouslySelectedGameObjects.end() && !found; ++it) {
+		if (obj == *it) {
+			found = true;
+		}
+	}
+	return found;
+}
+
+
+
+bool ModuleEditor::CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o) {
+	ComponentMeshRenderer* mesh = (ComponentMeshRenderer*)o->GetComponentOfType(ComponentType::CTMeshRenderer);
+	if (!mesh)return false;
+	ComponentTransform* transform = (ComponentTransform*)o->GetComponentOfType(ComponentType::CTTransform);
+
+	float4x4 model = transform->globalMatrix;
+
+	LineSegment lineToUse = model.Inverted() * picking;
+
+	std::vector<Triangle> tris = mesh->mesh->GetTriangles();
+
+	bool intersection = false;
+
+	for (std::vector<Triangle>::iterator it = tris.begin(); it != tris.end() && !intersection; ++it) {
+		float dist;
+		float3 point;
+		if (lineToUse.Intersects(*it, &dist, &point)) {
+			intersection = true;
+		}
+	}
+
+	return intersection;
+}
+
+
+void ModuleEditor::CheckRayIntersectionWithGameObjectAndChildren(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected) {
+	//Use multi map
+	if (o != currentSelected) {
+		AABB aabb = o->GetAABB();
+		Ray realRay = ray.ToRay();
+
+		if (realRay.Intersects(aabb)) {
+			possibleAABBs.push_back(o);
+		}
+	}
+
+	for (std::vector<GameObject*>::iterator it = o->children.begin(); it != o->children.end(); ++it) {
+		CheckRayIntersectionWithGameObjectAndChildren(ray, possibleAABBs, *it, currentSelected);
+	}
+
+}
+
+bool ModuleEditor::CheckRayIntersectionWithGameObject(const LineSegment& ray, GameObject* a, const GameObject* currentSelected) {
+	if (a == currentSelected || a == App->scene->GetRoot())return false;
+	if (ray.Intersects(a->GetAABB())) {
+		return true;
+	}
+	return false;
+}
+
+void ModuleEditor::CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::multimap<float, GameObject*>& possibleObjs, QuadtreeNode& node, const float3& frustumPos) {
+	AABB aabb = node.boundingBox;
+	Ray realRay = picking.ToRay();
+
+	if (realRay.Intersects(aabb)) {
+		for (std::vector<GameObject*>::iterator it = node.gameObjects.begin(); it != node.gameObjects.end(); ++it) {
+			AABB aabb = (*it)->GetAABB();
+			if (realRay.Intersects(aabb)) {
+				std::pair<float, GameObject*> pair = { Length(frustumPos - aabb.CenterPoint()), *it };
+				possibleObjs.insert(pair);
+			}
+		}
+		for (std::vector< QuadtreeNode>::iterator it = node.childNodes.begin(); it != node.childNodes.end(); ++it) {
+			CheckRayIntersectionWithQuadTreeNode(picking, possibleObjs, *it, frustumPos);
+		}
+	}
+}
+
+void ModuleEditor::CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::vector<QuadtreeNode>& possibleQTrees, QuadtreeNode& node) {
+	AABB aabb = node.boundingBox;
+	Ray realRay = picking.ToRay();
+
+	if (realRay.Intersects(aabb)) {
+		possibleQTrees.push_back(node);
+	}
+
+	if (node.subdivided) {
+		for (std::vector<QuadtreeNode>::iterator it = node.childNodes.begin(); it != node.childNodes.end(); ++it) {
+			CheckRayIntersectionWithQuadTreeNode(picking, possibleQTrees, *it);
+		}
+	}
+
 }

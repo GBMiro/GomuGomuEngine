@@ -101,7 +101,11 @@ update_status ModuleScene::PreUpdate() {
 }
 
 update_status ModuleScene::Update() {
+
 	UpdateGameObjects(root);
+	DrawGameObjects();
+	//Draw method, similar to that on the MousePicking
+
 
 	GameObject* selectedObj = App->editor->GetGameObjectSelected();
 
@@ -123,6 +127,13 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 		UpdateGameObjects(*it);
 	}
+}
+
+
+void ModuleScene::DrawGameObjects() {
+	//TO DO GET ALL QUADS THAT INTERSECT WITH FRUSTUM
+	//TO DO GET ALL GAMEOBJECTS CONTAINED WITHIN SAID QUADS
+	//TO DO GET ALL MESHRENDERERS AND CALL DRAW (ONCE)
 }
 
 bool ModuleScene::CleanUp() {
@@ -241,46 +252,4 @@ void ModuleScene::GetSceneGameObjects(std::vector<GameObject*>& gameObjects) {
 	for (std::vector<GameObject*>::const_iterator it = root->children.begin(); it != root->children.end(); ++it) {
 		gameObjects.push_back(*it);
 	}
-}
-
-
-bool ModuleScene::CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o) {
-	ComponentMeshRenderer* mesh = (ComponentMeshRenderer*)o->GetComponentOfType(ComponentType::CTMeshRenderer);
-	if (!mesh)return false;
-	ComponentTransform* transform = (ComponentTransform*)o->GetComponentOfType(ComponentType::CTTransform);
-
-	float4x4 model = transform->globalMatrix;
-
-	LineSegment lineToUse = model.Inverted() * picking;
-
-	std::vector<Triangle> tris = mesh->mesh->GetTriangles();
-
-	bool intersection = false;
-
-	for (std::vector<Triangle>::iterator it = tris.begin(); it != tris.end() && !intersection; ++it) {
-		float dist;
-		float3 point;
-		if (lineToUse.Intersects(*it, &dist, &point)) {
-			intersection = true;
-		}
-	}
-
-	return intersection;
-}
-
-
-void ModuleScene::CheckRayIntersectionWithGameObject(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected) {
-	if (o != currentSelected) {
-		AABB aabb = o->GetAABB();
-		Ray realRay = ray.ToRay();
-
-		if (realRay.Intersects(aabb)) {
-			possibleAABBs.push_back(o);
-		}
-	}
-
-	for (std::vector<GameObject*>::iterator it = o->children.begin(); it != o->children.end(); ++it) {
-		CheckRayIntersectionWithGameObject(ray, possibleAABBs, *it, currentSelected);
-	}
-
 }
