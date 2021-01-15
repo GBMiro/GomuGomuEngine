@@ -14,7 +14,8 @@
 #include "ModuleRender.h"
 #include "Leaks.h"
 
-ComponentMeshRenderer::ComponentMeshRenderer(GameObject* parent) : Component(ComponentType::CTMeshRenderer, parent) {
+ComponentMeshRenderer::ComponentMeshRenderer(GameObject* anOwner) : RenderingComponent(ComponentType::CTMeshRenderer, anOwner) {
+	owner->AddRenderingComponent(this);
 }
 
 ComponentMeshRenderer::~ComponentMeshRenderer() {
@@ -37,7 +38,7 @@ void ComponentMeshRenderer::Enable() {
 
 void ComponentMeshRenderer::Update() {
 	if (!Enabled()) return;
-	Draw();
+	//Draw();
 }
 
 void ComponentMeshRenderer::Disable() {
@@ -45,9 +46,8 @@ void ComponentMeshRenderer::Disable() {
 }
 
 void ComponentMeshRenderer::Draw() {
-	if (App->renderer->MustDraw(this)) {
-		mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->dirLight, App->scene->pointLight);
-	}
+	if (!Enabled()) return;
+	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->dirLight, App->scene->pointLight);
 }
 
 const AABB& ComponentMeshRenderer::GetAABB() {
@@ -59,7 +59,7 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 	material = mat;
 }
 
-void ComponentMeshRenderer::DrawOnEditor() { 
+void ComponentMeshRenderer::DrawOnEditor() {
 	bool dummyEnabled = enabled;
 	ImGui::PushID(1);
 	if (ImGui::Checkbox("", &dummyEnabled)) {
@@ -73,7 +73,6 @@ void ComponentMeshRenderer::DrawOnEditor() {
 	ImGui::SameLine();
 
 	if (ImGui::CollapsingHeader("Mesh Renderer")) {
-		//float3(1.0, 0.71, 0.29);
 		if (ImGui::TreeNode("Material Values")) {
 			float shininessDummy = material->GetShininess();
 			if (ImGui::DragFloat("Shininess", &shininessDummy)) {

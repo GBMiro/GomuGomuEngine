@@ -46,9 +46,18 @@ void WindowConfiguration::Draw() {
 
 		bool dummyUseQuadTreeAccel = App->editor->UseQuadTreeAcceleration();
 
-		if (ImGui::Checkbox("QuadTree acceleration", &dummyUseQuadTreeAccel)) {
+		if (ImGui::Checkbox("Mouse Picking QuadTree acceleration", &dummyUseQuadTreeAccel)) {
 			App->editor->SetUseQuadTreeAcceleration(dummyUseQuadTreeAccel);
 		}
+
+		dummyUseQuadTreeAccel = App->editor->UseMultiMap();
+
+		if (ImGui::Checkbox("Use MultiMap for quadTree Selection acceleration", &dummyUseQuadTreeAccel)) {
+			App->editor->SetUseMultiMap(dummyUseQuadTreeAccel);
+		}
+
+		
+
 	}
 
 	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {

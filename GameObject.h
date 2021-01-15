@@ -3,8 +3,7 @@
 #include <vector>
 #include "MathGeoLib/MathGeoLib.h"
 #include "Component.h"
-
-class Component;
+#include "RenderingComponent.h"
 
 class GameObject {
 public:
@@ -13,6 +12,7 @@ public:
 	GameObject* parent = nullptr;
 	std::vector<GameObject*> children;
 	std::vector<Component*> components;
+	std::vector<RenderingComponent*> renderingComponents;
 
 private:
 	AABB globalAABB;
@@ -54,6 +54,9 @@ public:
 	void RemoveParticularComponent(Component* c);
 	void SetActive(bool should);
 	bool Active()const;
+
+	void AddRenderingComponent(RenderingComponent* c);
+	void RemoveRenderingComponent(RenderingComponent* c);
 
 private:
 	uint32_t UUID;

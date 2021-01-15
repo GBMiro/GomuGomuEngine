@@ -1,12 +1,12 @@
 #pragma once
-#include "Component.h"
+#include "RenderingComponent.h"
 #include <string>
 #include "../MathGeoLib/MathGeoLib.h"
 
 class Mesh;
 class Material;
 
-class ComponentMeshRenderer : public Component {
+class ComponentMeshRenderer : public RenderingComponent {
 
 public:
 	ComponentMeshRenderer(GameObject* parent);
@@ -17,7 +17,7 @@ public:
 	void Update() override;
 	void Disable() override;
 
-	void Draw();
+	void Draw() override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void OnTransformChanged() override;

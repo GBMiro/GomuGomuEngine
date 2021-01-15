@@ -307,7 +307,29 @@ void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::
 	}
 }
 
-
 void GameObject::SetActive(bool should) {
 	active = should;
+}
+
+/// <summary>
+/// Iterates RenderingComponents and calls their abstract override of the Draw method
+/// </summary>
+void GameObject::Draw() {
+	if (!Active())return;
+
+	for (std::vector<RenderingComponent*>::const_iterator it = renderingComponents.begin(); it != renderingComponents.end(); ++it) {
+		(*it)->Draw();
+	}
+}
+
+void GameObject::AddRenderingComponent(RenderingComponent* c) {
+	renderingComponents.push_back(c);
+}
+
+void GameObject::RemoveRenderingComponent(RenderingComponent* c) {
+	std::vector<RenderingComponent*>::iterator it = std::find(renderingComponents.begin(), renderingComponents.end(), c);
+
+	if ((*it) != nullptr)
+		renderingComponents.erase(it);
+
 }

@@ -15,6 +15,8 @@
 #include "ModuleScene.h"
 #include "Brofiler/include/Brofiler.h"
 #include "Mesh.h"
+#include "Quadtree.h"
+#include "GameObject.h"
 #include "Leaks.h"
 
 ModuleRender::ModuleRender() {
@@ -102,20 +104,10 @@ bool ModuleRender::Init() {
 	#endif // _DEBUG
 	*/
 
-	//char* vtx_shader = App->program->loadShaderSource("./Shaders/default_vertex.glsl");
-	//char* frg_shader = App->program->loadShaderSource("./Shaders/default_fragment.glsl");
-
-	//unsigned vtxId = App->program->compileShader(GL_VERTEX_SHADER, vtx_shader);
-	//unsigned frgId = App->program->compileShader(GL_FRAGMENT_SHADER, frg_shader);
-
-	//defaultProgram = App->program->createProgram(vtxId, frgId);
-
 	defaultProgram = new ShadingProgram("./Shaders/default_vertex.glsl", "./Shaders/default_fragment.glsl");
 	unLitProgram = new ShadingProgram("./Shaders/unlit.vs", "./Shaders/unlit.fs");
 	litProgram = new ShadingProgram("./Shaders/litVertex.glsl", "./Shaders/litFragment.glsl");
 
-	//RELEASE(vtx_shader);
-	//RELEASE(frg_shader);
 
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -137,7 +129,6 @@ bool ModuleRender::Init() {
 		LOG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//App->model->Load("./Resources/Models/BakerHouse.fbx");
 	return true;
 }
 
@@ -158,20 +149,21 @@ update_status ModuleRender::PreUpdate() {
 // Called every draw update
 update_status ModuleRender::Update() {
 
-	//OpenGLExercise
-	dd::axisTriad(float4x4::identity, 0.1f, 1.0f);
+	//Draw Grid
 	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, gridColor);
 	float4x4 proj = App->camera->GetProjectionMatrix();
 	float4x4 view = App->camera->GetViewMatrix();
 	GLsizei h, w;
+
 	SDL_GetWindowSize(App->window->window, &w, &h);
+
+	//DebugDraw call
 	App->debugDraw->Draw(view, proj, w, h);
 
-
+	//Now we pass on to draw on the viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 
-	//App->model->Draw();
 	return UPDATE_CONTINUE;
 }
 
@@ -283,10 +275,22 @@ void  ModuleRender::SetFrustumCulling(bool use) {
 	frustumCulling = use;
 }
 
-//QuadTree acceleration is not possible here, centralize
-bool  ModuleRender::MustDraw(ComponentMeshRenderer* renderer) {
-	if (!frustumCulling || cullingCamera == nullptr) {
-		return true;
+
+/// <summary>
+/// This method gets all QuadTreeNodes that intersect with the cullingFrustum, GameObjects contained
+/// within said QuadtreeNodes are then checked for an intersection between the gameObjects AABBand the frustum
+/// </summary>
+/// <param name="objs">vector of GameObject* passed by reference</param>
+/// <param name="qtn"></param>
+void ModuleRender::CheckCullingFrustumIntersectionWithQuadTree(std::vector<GameObject*>& objs, const QuadtreeNode& qtn)const {
+	if (cullingCamera->GetFrustum().Intersects(qtn.boundingBox)) {
+		for (std::vector<GameObject*>::const_iterator it = qtn.gameObjects.begin(); it != qtn.gameObjects.end(); ++it) {
+			if (cullingCamera->GetFrustum().Intersects((*it)->GetAABB())) {
+				objs.push_back(*it);
+			}
+		}
+		for (std::vector<QuadtreeNode>::const_iterator it = qtn.childNodes.begin(); it != qtn.childNodes.end(); ++it) {
+			CheckCullingFrustumIntersectionWithQuadTree(objs, *it);
+		}
 	}
-	return cullingCamera->GetFrustum().Intersects(renderer->GetAABB());
 }

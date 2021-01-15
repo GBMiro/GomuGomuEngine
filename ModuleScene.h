@@ -49,7 +49,7 @@ public:
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 	void DrawGameObjects();
-
+	void RecursiveDraw(GameObject* gameObject);
 private:
 	GameObject* root = nullptr;
 	Quadtree* quadTree = nullptr;

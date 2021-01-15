@@ -24,7 +24,7 @@ class ModuleEditor : public Module {
 private:
 	ImGuizmo::OPERATION gizmoOperation;
 	ImGuizmo::MODE gizmoMode;
-	bool useQuadTreeAcceleration;
+	bool useQuadTreeAcceleration, useMultiMap;
 	std::vector<GameObject*>previouslySelectedGameObjects;
 	std::vector<std::pair<float3, float3>> distances;
 public:
@@ -52,16 +52,20 @@ public:
 	void SetGameObjectSelected(GameObject* gameObject);
 	GameObject* TryToSelectGameObject(const LineSegment& segment, bool quadTreeAccel = true);
 	bool UseQuadTreeAcceleration()const;
-	bool PreviouslySelected(GameObject* obj)const;
 	void SetUseQuadTreeAcceleration(bool should);
+	bool UseMultiMap()const;
+	void SetUseMultiMap(bool should);
+	bool PreviouslySelected(GameObject* obj)const;
+
 private:
 	void CheckRayIntersectionWithGameObjectAndChildren(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected);
 	bool CheckRayIntersectionWithGameObject(const LineSegment& ray, GameObject* a, const GameObject* currentSelected);
 	bool CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o);
 	//void CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::vector<QuadtreeNode*>& possibleQTrees, QuadtreeNode* node);
 
-	void CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::vector<QuadtreeNode>& possibleQTrees, QuadtreeNode& node);
-	void CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::multimap<float, GameObject*>& possibleObjs, QuadtreeNode& node, const float3& frustumPos);
+	//void CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::vector<QuadtreeNode>& possibleQTrees, QuadtreeNode& node);
+	void CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::multimap<float, GameObject*>& possibleObjs, const QuadtreeNode& node, const float3& frustumPos);
+	void CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::vector<GameObject*>& possibleObjs, const QuadtreeNode& node);
 
 public:
 	WindowMonitor* monitor = nullptr;

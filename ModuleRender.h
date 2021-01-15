@@ -11,6 +11,8 @@ struct SDL_Rect;
 class ShadingProgram;
 class ComponentCamera;
 class ComponentMeshRenderer;
+class QuadtreeNode;
+class GameObject;
 
 class ModuleRender : public Module {
 public:
@@ -66,5 +68,5 @@ public:
 
 	bool GetFrustumCulling()const;
 	void SetFrustumCulling(bool use);
-	bool MustDraw(ComponentMeshRenderer* renderer);
+	void CheckCullingFrustumIntersectionWithQuadTree(std::vector<GameObject*>&, const QuadtreeNode& qt)const;
 };

@@ -103,6 +103,7 @@ update_status ModuleScene::PreUpdate() {
 update_status ModuleScene::Update() {
 
 	UpdateGameObjects(root);
+
 	DrawGameObjects();
 	//Draw method, similar to that on the MousePicking
 
@@ -129,11 +130,28 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 	}
 }
 
+void ModuleScene::RecursiveDraw(GameObject* gameObject) {
+	gameObject->Draw();
+	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
+		RecursiveDraw(*it);
+	}
+}
+
+
 
 void ModuleScene::DrawGameObjects() {
-	//TO DO GET ALL QUADS THAT INTERSECT WITH FRUSTUM
-	//TO DO GET ALL GAMEOBJECTS CONTAINED WITHIN SAID QUADS
-	//TO DO GET ALL MESHRENDERERS AND CALL DRAW (ONCE)
+	if (App->renderer->GetCullingCamera() && App->renderer->GetFrustumCulling()) {
+		std::vector<GameObject*>objectsToDraw;
+		App->renderer->CheckCullingFrustumIntersectionWithQuadTree(objectsToDraw, *quadTree->root);
+
+		for (std::vector<GameObject*>::const_iterator it = objectsToDraw.begin(); it != objectsToDraw.end(); ++it) {
+			(*it)->Draw();
+		}
+	} else {
+		//No frustum culling required
+		RecursiveDraw(root);
+	}
+
 }
 
 bool ModuleScene::CleanUp() {
