@@ -189,6 +189,9 @@ update_status ModuleEditor::showMainMenu() {
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit")) keepGoing = UPDATE_STOP;
+			if (ImGui::MenuItem("Save scene")) App->scene->SaveScene();
+			if (ImGui::MenuItem("Load default scene")) SetSceneToLoad(DEFAULT_SCENE);
+			if (ImGui::MenuItem("Load last saved scene")) SetSceneToLoad(USER_SCENE);
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Windows")) {

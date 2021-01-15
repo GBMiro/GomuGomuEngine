@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "ImGuizmo.h"
 #include "MathGeoLib/Geometry/LineSegment.h"
+#include "ModuleScene.h"
 #include <map>
 class WindowMonitor;
 class WindowConfiguration;
@@ -54,6 +55,9 @@ public:
 	bool UseQuadTreeAcceleration()const;
 	bool PreviouslySelected(GameObject* obj)const;
 	void SetUseQuadTreeAcceleration(bool should);
+
+	void SetSceneToLoad(SceneType type) { sceneToLoad = type; }
+	SceneType GetSceneToLoad() const { return sceneToLoad; }
 private:
 	void CheckRayIntersectionWithGameObjectAndChildren(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected);
 	bool CheckRayIntersectionWithGameObject(const LineSegment& ray, GameObject* a, const GameObject* currentSelected);
@@ -80,5 +84,6 @@ private:
 	std::vector<Window*> windows;
 	bool gameWindowSelectedOrHovered = false;
 	void OnClicked(ImVec2 mousePosInScene);
+	SceneType sceneToLoad = DEFAULT_SCENE;
 };
 

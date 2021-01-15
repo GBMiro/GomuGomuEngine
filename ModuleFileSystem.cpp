@@ -1,6 +1,7 @@
 #include "ModuleFileSystem.h"
 #include <direct.h>
 #include <fileapi.h>
+#include <windows.h>
 #include <fstream>
 #include <filesystem>
 #include "Leaks.h"
@@ -16,10 +17,13 @@ ModuleFileSystem::~ModuleFileSystem() {
 bool ModuleFileSystem::Init() {
 	if (!IsDirectory("Assets")) MakeDirectory("Assets");
 	if (!IsDirectory("Assets/Library")) MakeDirectory("Assets/Library");
+	if (!IsDirectory("Assets/Models")) MakeDirectory("Assets/Models");
+	if (!IsDirectory("Assets/Textures")) MakeDirectory("Assets/Textures");
 	if (!IsDirectory("Assets/Library/Meshes")) MakeDirectory("Assets/Library/Meshes");
 	if (!IsDirectory("Assets/Library/Materials")) MakeDirectory("Assets/Library/Materials");
 	if (!IsDirectory("Assets/Library/Textures")) MakeDirectory("Assets/Library/Textures");
 	if (!IsDirectory("Assets/Library/Models")) MakeDirectory("Assets/Library/Models");
+	if (!IsDirectory("Assets/Library/Scenes")) MakeDirectory("Assets/Library/Scenes");
 	return true;
 
 }
@@ -85,4 +89,17 @@ void ModuleFileSystem::GetFileName(const char* path, std::string& name) const {
 	int namePosition = file.find_last_of("\\/") + 1;
 	std::string filename = file.substr(namePosition);
 	name = std::string(filename);
+}
+
+void ModuleFileSystem::GetDirectoryFiles(const std::string& path, std::vector<std::string>& files) const {
+	std::string pattern(path);
+	pattern.append("\\*");
+	WIN32_FIND_DATA data;
+	HANDLE h;
+	if ((h = FindFirstFile(pattern.c_str(), &data)) != INVALID_HANDLE_VALUE) {
+		do {
+			files.push_back(data.cFileName);
+		} while (FindNextFile(h, &data) != 0);
+		FindClose(h);
+	}
 }

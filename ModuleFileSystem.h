@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "Module.h"
 
 class ModuleFileSystem : public Module {
@@ -23,5 +24,6 @@ public:
 	bool IsDirectory(const char* file) const;
 
 	void GetFileName(const char* path, std::string& name) const;
+	void GetDirectoryFiles(const std::string& path, std::vector<std::string>& files) const;
 };
 
