@@ -16,7 +16,7 @@ public:
 
 	void Load();
 
-	void Draw(const Material* material, const float4x4& model, const ComponentDirectionalLight* dirLight, const ComponentPointLight* pointLight);
+	void Draw(const Material* material, const float4x4& model, const ComponentDirectionalLight* dirLight, const std::vector<ComponentPointLight* >& pointLight);
 	void CreateAABB();
 
 

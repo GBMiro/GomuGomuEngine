@@ -101,7 +101,7 @@ void Mesh::CreateAABB() {
 	axisAlignedBB.Enclose((vec*)vertices, numVertex);
 }
 
-void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirectionalLight* dirLight, const ComponentPointLight* pointLight) {
+void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirectionalLight* dirLight, const std::vector<ComponentPointLight*>& pointLights) {
 
 	//unsigned program = App->renderer->getDefaultProgram();
 	//unsigned program = App->renderer->unLitProgram->GetID();
@@ -128,9 +128,16 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 
 	//Lightning values 
 
-	if (pointLight) {
-		pointLight->SendValuesToShadingProgram(program);
+	//if (pointLight) {
+	//	pointLight->SendValuesToShadingProgram(program);
+	//}
+	glUniform1i(glGetUniformLocation(program, "nPointLights"), (int)pointLights.size());
+	glUniform1i(glGetUniformLocation(program, "directionalLightFound"), dirLight != nullptr);
+
+	for (int i = 0; i < pointLights.size(); ++i) {
+		pointLights[i]->SendValuesToShadingProgram(program, i);
 	}
+
 	if (dirLight) {
 		dirLight->SendValuesToShadingProgram(program);
 	}
@@ -203,9 +210,9 @@ std::vector<Triangle> Mesh::GetTriangles()const {
 	std::vector<Triangle> tris;
 	tris.reserve(numIndices / (3 * 3));
 
-	for (int i = 0; i < numIndices-9; i += 3 * 3) {
+	for (int i = 0; i < numIndices - 9; i += 3 * 3) {
 		float3 triVertices[3];
- 
+
 		triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);
 		triVertices[1] = float3(vertices[i + 3], vertices[i + 4], vertices[i + 5]);
 		triVertices[2] = float3(vertices[i + 6], vertices[i + 7], vertices[i + 8]);

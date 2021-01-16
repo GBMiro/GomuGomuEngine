@@ -3,7 +3,8 @@
 #include <imgui.h>
 #include <GL/glew.h>
 #include "Leaks.h"
-
+#include "Application.h"
+#include "ModuleScene.h"
 
 void ComponentLight::GenerateDebugLines() {
 
@@ -11,11 +12,12 @@ void ComponentLight::GenerateDebugLines() {
 
 
 ComponentLight::ComponentLight(GameObject* go, LightType type, float3 aColor, float anInt, int aDebugLineAmount) :Component(ComponentType::CTLight, go), type(type), lightColor(aColor), lightIntensity(anInt), debugLineAmount(aDebugLineAmount) {
-
+	App->scene->AddLightComponent(this);
 }
 
 ComponentLight::~ComponentLight() {
-
+	if (App->scene != nullptr)
+	App->scene->RemoveLightComponent(this);
 }
 
 void ComponentLight::DrawOnEditor() {
@@ -23,7 +25,7 @@ void ComponentLight::DrawOnEditor() {
 	ImGui::InputFloat3("Color", lightColor.ptr());
 }
 
-void ComponentLight::SendValuesToShadingProgram(const unsigned& programID)const {
+void ComponentLight::SendValuesToShadingProgram(const unsigned& programID, int id)const {
 	//Implemented on children, abstract method, could be deleted?
 }
 

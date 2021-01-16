@@ -6,6 +6,7 @@
 
 class Mesh;
 
+
 class ComponentMeshRenderer : public RenderingComponent {
 
 public:
@@ -36,6 +37,7 @@ public:
 
 private:
 	void CreateTexture(TextureType type);
+private:
 
 };
 
