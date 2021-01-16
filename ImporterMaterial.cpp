@@ -22,8 +22,8 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 		if (!App->FS->Exists((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str())) {
 			char* buffer;
 			read = App->FS->Load(file.C_Str(), &buffer);
-			if (read == 0) read = App->FS->Load((std::string("Resources/Textures/") + file.C_Str()).c_str(), &buffer);
-			if (read == 0) read = App->FS->Load(std::string("Resources/Textures/black.jpg").c_str(), &buffer);
+			if (read == 0) read = App->FS->Load((std::string("Assets/Textures/") + file.C_Str()).c_str(), &buffer);
+			if (read == 0) read = App->FS->Load(std::string("Assets/Textures/black.jpg").c_str(), &buffer);
 			ImporterTextures::Import(buffer, read);
 			RELEASE(buffer);
 			unsigned size = ImporterTextures::Save(&ddsTexture);
@@ -52,8 +52,8 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 		if (!App->FS->Exists((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str())) {
 			char* buffer;
 			read = App->FS->Load(file.C_Str(), &buffer);
-			if (read == 0) read = App->FS->Load((std::string("Resources/Textures/") + file.C_Str()).c_str(), &buffer);
-			if (read == 0) read = App->FS->Load(std::string("Resources/Textures/black.jpg").c_str(), &buffer);
+			if (read == 0) read = App->FS->Load((std::string("Assets/Textures/") + file.C_Str()).c_str(), &buffer);
+			if (read == 0) read = App->FS->Load(std::string("Assets/Textures/black.jpg").c_str(), &buffer);
 			ImporterTextures::Import(buffer, read);
 			RELEASE(buffer);
 			unsigned size = ImporterTextures::Save(&ddsTexture);

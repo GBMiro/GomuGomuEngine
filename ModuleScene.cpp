@@ -37,11 +37,6 @@ ModuleScene::~ModuleScene() {
 
 bool ModuleScene::Init() {
 
-	//AddObject("./Resources/Models/Fox.fbx");
-	//AddObject("./Resources/Models/Crow.fbx");
-	//AddObject("./Resources/Models/Sword.fbx");
-	//AddObject("./Resources/Models/AmongUs.fbx");
-	//AddObject("./Resources/Models/Street_environment_V01.fbx");
 	root = new GameObject(nullptr, "Fake root node");
 	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
 	return true;
@@ -52,13 +47,8 @@ bool ModuleScene::Start() {
 	t->Start();
 	//ImporterScene::LoadScene("Scene.fbx");
 	//LOG("Scene loaded from json: %.f ms", t->Read());
-	//AddObject("./Resources/Models/BakerHouse.fbx");
-	//AddObject("./Resources/Models/BakerHouse.fbx");
-	AddObject("./Resources/Models/fox.fbx");
-	//AddObject("./Resources/Models/Crow.fbx");
 
 	t->Start();
-	//AddObject("./Resources/Models/BakerHouse.fbx");
 	//LOG("Second baker house from json: %.f ms", t->Read());
 
 	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
@@ -73,7 +63,7 @@ bool ModuleScene::Start() {
 	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
 	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
 
-	/*AddObject("./Resources/Models/BakerHouse.fbx");
+	/*
 
 	GameObject* pointLightObj = CreateGameObject("PointLight", root);
 	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);

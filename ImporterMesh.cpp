@@ -44,19 +44,21 @@ void ImporterMesh::Import(const aiMesh* mesh, Mesh* ourMesh) {
 
 unsigned ImporterMesh::Save(const Mesh* ourMesh, char** buffer) {
 
-	/* Storing num textures and normals in header is not needed. It can be calculated from num vertex */
+	unsigned numText = ourMesh->textureCoords ? ourMesh->numVertex * 2 : 0;
+	unsigned numNormals = ourMesh->normals ? ourMesh->numVertex * 3 : 0;
+
 	unsigned header[4] = {
 		ourMesh->numVertex,			// Num. Vertices
 		ourMesh->numIndices,		// Num. Indices
-		ourMesh->numVertex * 2,		// Num. Textures
-		ourMesh->numVertex * 3		// Num. Normals 
+		numText,					// Num. Textures
+		numNormals					// Num. Normals 
 	};
 
 	unsigned size = sizeof(header)
 		+ sizeof(float) * ourMesh->numVertex * 3
 		+ sizeof(unsigned) * ourMesh->numIndices
-		+ sizeof(float) * ourMesh->numVertex * 2
-		+ sizeof(float) * ourMesh->numVertex * 3;
+		+ sizeof(float) * numText
+		+ sizeof(float) * numNormals;
 
 	*buffer = new char[size];
 	char* cursor = *buffer;
@@ -78,14 +80,18 @@ unsigned ImporterMesh::Save(const Mesh* ourMesh, char** buffer) {
 
 
 	// Copy textures coordinates
-	bytes = sizeof(float) * ourMesh->numVertex * 2;
-	memcpy(cursor, ourMesh->textureCoords, bytes);
-	cursor += bytes;
+	if (ourMesh->textureCoords) {
+		bytes = sizeof(float) * numText;
+		memcpy(cursor, ourMesh->textureCoords, bytes);
+		cursor += bytes;
+	}
 
 	// Copy vertices normals
-	bytes = sizeof(float) * ourMesh->numVertex * 3;
-	memcpy(cursor, ourMesh->normals, bytes);
-	cursor += bytes;
+	if (ourMesh->normals) {
+		bytes = sizeof(float) * numNormals;
+		memcpy(cursor, ourMesh->normals, bytes);
+		cursor += bytes;
+	}
 
 	return size;
 }
@@ -103,6 +109,9 @@ void ImporterMesh::Load(const char* buffer, Mesh* ourMesh) {
 	ourMesh->numVertex = header[0];
 	ourMesh->numIndices = header[1];
 
+	unsigned numText = header[2];
+	unsigned numNorm = header[3];
+
 	// Copy vertices
 	ourMesh->vertices = new float[ourMesh->numVertex * 3];
 	bytes = sizeof(float) * ourMesh->numVertex * 3;
@@ -116,14 +125,18 @@ void ImporterMesh::Load(const char* buffer, Mesh* ourMesh) {
 	cursor += bytes;
 
 	// Copy textures
-	ourMesh->textureCoords = new float[ourMesh->numVertex * 2];
-	bytes = sizeof(float) * ourMesh->numVertex * 2;
-	memcpy(ourMesh->textureCoords, cursor, bytes);
-	cursor += bytes;
+	if (numText > 0) {
+		ourMesh->textureCoords = new float[numText];
+		bytes = sizeof(float) * numText;
+		memcpy(ourMesh->textureCoords, cursor, bytes);
+		cursor += bytes;
+	}
 
 	// Copy normals
-	ourMesh->normals = new float[ourMesh->numVertex * 3];
-	bytes = sizeof(float) * ourMesh->numVertex * 3;
-	memcpy(ourMesh->normals, cursor, bytes);
-	cursor += bytes;
+	if (numNorm > 0) {
+		ourMesh->normals = new float[numNorm];
+		bytes = sizeof(float) * numNorm;
+		memcpy(ourMesh->normals, cursor, bytes);
+		cursor += bytes;
+	}
 }

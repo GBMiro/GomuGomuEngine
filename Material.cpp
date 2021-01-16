@@ -7,53 +7,6 @@ Material::~Material() {
 	RELEASE(specularTexture);
 }
 
-Material::Material(aiMaterial* mat, std::string modelPath, float aShininess) :shininess(aShininess), diffuseTexture(nullptr), specularTexture(nullptr), specularColor(float3(0.04f, 0.04f, 0.04f)) {
-
-	name = mat->GetName().C_Str();
-	const char* matName = mat->GetName().C_Str();
-
-	aiString file = aiString(modelPath);
-	if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &file) == AI_SUCCESS) {
-		diffuseTexture = new Texture();
-
-		LOG("Trying to load  %s as Diffuse texture", matName);
-		//materialPath = file.C_Str();
-		diffuseTexture->id = App->textures->LoadTexture(file.C_Str(), modelPath.c_str(), diffuseTexture->texSize);
-
-		diffuseTexture->path = file.C_Str();
-	}
-
-	if (mat->GetTexture(aiTextureType_SPECULAR, 0, &file) == AI_SUCCESS) {
-		specularTexture = new Texture();
-
-		LOG("Trying to load  %s as Specular texture", matName);
-		//materialPath = file.C_Str();
-		specularTexture->id = App->textures->LoadTexture(file.C_Str(), modelPath.c_str(), specularTexture->texSize);
-
-		specularTexture->path = file.C_Str();
-	}
-
-
-}
-
-Material::Material(std::string diffusePath, std::string specularPath, float aShininess ) :shininess(aShininess), diffuseTexture(nullptr), specularTexture(nullptr), specularColor(float3(0.04f, 0.04f, 0.04f)) {
-	diffuseTexture = new Texture();
-	specularTexture = new Texture();
-	LOG("Trying to load  %s as Diffuse texture", diffusePath);
-	//materialPath = file.C_Str();
-	diffuseTexture->id = App->textures->LoadTexture(diffusePath.c_str(), diffusePath.c_str(), diffuseTexture->texSize);
-
-	diffuseTexture->path = diffusePath;
-
-
-	specularTexture->id = App->textures->LoadTexture(specularPath.c_str(), specularPath.c_str(), specularTexture->texSize);
-
-	specularTexture->path = specularPath;
-
-}
-
-
-
 bool Material::GetTextureID(unsigned int& texID, TextureType type)const {
 	switch (type) {
 	case TextureType::DIFFUSE:

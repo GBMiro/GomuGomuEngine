@@ -34,8 +34,9 @@ Mesh::~Mesh() {
 }
 
 void Mesh::Load() {
-
-	unsigned vertexSize = sizeof(float) * 3 + sizeof(float) * 2 + sizeof(float) * 3; // coordinates + texture coordinates + normals
+	unsigned hasTextCoords = textureCoords ? 1 : 0;
+	unsigned hasNormals = normals ? 1 : 0;
+	unsigned vertexSize = sizeof(float) * 3 + sizeof(float) * 2 * hasTextCoords + sizeof(float) * 3 * hasNormals; // coordinates + texture coordinates + normals
 	unsigned bufferSize = numVertex * vertexSize;
 
 	glGenBuffers(1, &VBO);
@@ -48,12 +49,16 @@ void Mesh::Load() {
 		*(vertex++) = vertices[i * 3 + 1];
 		*(vertex++) = vertices[i * 3 + 2];
 
-		*(vertex++) = textureCoords[i * 2];
-		*(vertex++) = textureCoords[i * 2 + 1];
+		if (hasTextCoords) {
+			*(vertex++) = textureCoords[i * 2];
+			*(vertex++) = textureCoords[i * 2 + 1];
+		}
 
-		*(vertex++) = normals[i * 3];
-		*(vertex++) = normals[i * 3 + 1];
-		*(vertex++) = normals[i * 3 + 2];
+		if (hasNormals) {
+			*(vertex++) = normals[i * 3];
+			*(vertex++) = normals[i * 3 + 1];
+			*(vertex++) = normals[i * 3 + 2];
+		}
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 
@@ -66,17 +71,24 @@ void Mesh::Load() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
+	unsigned offset = 3 + hasTextCoords * 2 + hasNormals * 3;
+
 	//Position
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * offset, (void*)0);
 
 	//TexCoords
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(sizeof(float) * 3));
+	if (hasTextCoords) {
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * offset, (void*)(sizeof(float) * 3));
+	}
 
 	//Normals
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(sizeof(float) * 5));
+	if (hasNormals) {
+		unsigned jump = hasTextCoords ? 3 + 2 : 3;
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * offset, (void*)(sizeof(float) * jump));
+	}
 
 	glBindVertexArray(0);
 
