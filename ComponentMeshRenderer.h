@@ -15,6 +15,8 @@ public:
 
 	void GenerateAABB();
 	void Enable() override;
+	void OnEnable()override;
+	void OnDisable()override;
 	void Update() override;
 	void Disable() override;
 

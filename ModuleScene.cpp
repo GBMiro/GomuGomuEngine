@@ -172,8 +172,9 @@ GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent) 
 }
 
 void ModuleScene::DestroyGameObject(GameObject* go) {
-	if (go == nullptr)return;
 	App->editor->SetGameObjectSelected(nullptr);
+	if (go == nullptr)return;
+
 	if (go->parent != nullptr) {
 		go->RemoveFromParent();
 	}

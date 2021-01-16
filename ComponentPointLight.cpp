@@ -27,6 +27,20 @@ ComponentPointLight::~ComponentPointLight() {
 }
 
 void ComponentPointLight::DrawOnEditor() {
+	bool dummyEnabled = enabled;
+	ImGui::PushID(this);
+
+	if (ImGui::Checkbox("", &dummyEnabled)) {
+		if (dummyEnabled) {
+			Enable();
+		} else {
+			Disable();
+		}
+	}
+
+	ImGui::SameLine();
+
+	ImGui::PopID();
 	if (ImGui::CollapsingHeader("Point Light")) {
 		ComponentLight::DrawOnEditor();
 
@@ -38,7 +52,7 @@ void ComponentPointLight::DrawOnEditor() {
 }
 
 void ComponentPointLight::DrawGizmos() {
-
+	if (!Enabled())return;
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
 	for (int i = 0; i < debugLines.size(); ++i) {
 		float3 position = transform->Position();
@@ -47,17 +61,10 @@ void ComponentPointLight::DrawGizmos() {
 	//App->debugDraw->Draw
 }
 
-
-void ComponentPointLight::Enable() {
-
-}
-
 void ComponentPointLight::Update() {
 
 }
 
-void ComponentPointLight::Disable() {
-}
 
 void ComponentPointLight::GenerateDebugLines() {
 

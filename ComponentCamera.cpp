@@ -21,6 +21,12 @@ void ComponentCamera::Disable() {
 
 }
 
+void ComponentCamera::OnEnable() {
+
+}
+void ComponentCamera::OnDisable() {
+
+}
 
 void ComponentCamera::DrawOnEditor() {
 	if (ImGui::CollapsingHeader("Camera")) {

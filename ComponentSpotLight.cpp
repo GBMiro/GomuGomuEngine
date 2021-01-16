@@ -82,18 +82,14 @@ ComponentSpotLight::ComponentSpotLight(GameObject* anOwner, float3 pos, float an
 ComponentSpotLight::~ComponentSpotLight() {
 
 }
-void ComponentSpotLight::Enable() {
-}
 
 void ComponentSpotLight::Update() {
 }
 
-void ComponentSpotLight::Disable() {
-}
+
 
 void ComponentSpotLight::DrawOnEditor() {
 	if (ImGui::CollapsingHeader("Spot Light")) {
-
 		ComponentLight::DrawOnEditor();
 
 		if (ImGui::InputFloat("Constant Attenuation", &constantAtt)) {}
@@ -118,13 +114,13 @@ void ComponentSpotLight::DrawGizmos() {
 }
 
 void ComponentSpotLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
-	
+
 	rapidjson::Value direction(rapidjson::kArrayType);
 	direction.PushBack(this->direction.x, alloc);
 	direction.PushBack(this->direction.y, alloc);
 	direction.PushBack(this->direction.z, alloc);
 	component.AddMember("Direction", direction, alloc);
-	
+
 	component.AddMember("Constant Att", constantAtt, alloc);
 	component.AddMember("Linear Att", linearAtt, alloc);
 	component.AddMember("Quadratic Att", quadraticAtt, alloc);

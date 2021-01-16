@@ -52,6 +52,14 @@ void ComponentMeshRenderer::Disable() {
 	enabled = false;
 }
 
+void ComponentMeshRenderer::OnEnable() {
+
+}
+
+void ComponentMeshRenderer::OnDisable() {
+
+}
+
 void ComponentMeshRenderer::Draw() {
 	if (!Enabled()) return;
 	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, directionalLight, closestPointLights);

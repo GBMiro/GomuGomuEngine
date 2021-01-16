@@ -20,6 +20,11 @@ public:
 	virtual void Enable() = 0;
 	virtual void Update() = 0;
 	virtual void Disable() = 0;
+
+	virtual void OnDisable() = 0;
+	virtual void OnEnable() = 0;
+
+
 	virtual void DrawOnEditor() = 0;
 	virtual void OnNewParent(GameObject* oldParent, GameObject* newParent) {};
 	virtual void OnTransformChanged() {};

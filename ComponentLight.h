@@ -29,7 +29,10 @@ public:
 	LightType GetLightType() const { return type; }
 	virtual void SendValuesToShadingProgram(const unsigned& programID, int id = 0)const;
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc);
-
+	void Enable() override;
+	void Disable()override;
+	void OnEnable()override;
+	void OnDisable()override;
 private:
 	virtual void WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) = 0;
 

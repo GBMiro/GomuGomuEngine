@@ -8,9 +8,7 @@ private:
 public:
 	ComponentDirectionalLight(GameObject* go, float3 direction, int debugLineAmount = 30);
 	~ComponentDirectionalLight();
-	void Enable() override;
 	void Update()override;
-	void Disable()override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void OnNewParent(GameObject* prevParent, GameObject* newParent)override;

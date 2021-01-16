@@ -17,7 +17,7 @@ ComponentLight::ComponentLight(GameObject* go, LightType type, float3 aColor, fl
 
 ComponentLight::~ComponentLight() {
 	if (App->scene != nullptr)
-	App->scene->RemoveLightComponent(this);
+		App->scene->RemoveLightComponent(this);
 }
 
 void ComponentLight::DrawOnEditor() {
@@ -42,4 +42,21 @@ void ComponentLight::WriteToJSON(rapidjson::Value& component, rapidjson::Documen
 	component.AddMember("Light Color", lightColor, alloc);
 	component.AddMember("Light Intensity", lightIntensity, alloc);
 	WriteLightTypeJSON(component, alloc);
+}
+
+void ComponentLight::Enable() {
+	Component::Enable();
+}
+
+
+void ComponentLight::Disable() {
+	Component::Disable();
+}
+
+void ComponentLight::OnEnable() {
+	App->scene->AddLightComponent(this);
+}
+
+void ComponentLight::OnDisable() {
+	App->scene->RemoveLightComponent(this);
 }
