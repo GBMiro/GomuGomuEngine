@@ -60,29 +60,24 @@ void ImporterTextures::ImportTexture(const char* path) {
 	App->FS->GetFileNameNoExtension(filename, ddsName);
 	ddsName.append(".dds");
 	std::string dest("Assets/Textures/");
-	if (!App->FS->Exists((dest + filename).c_str())) {
-		if (App->FS->Copy(path, (dest + filename).c_str())) {
-			LOG("Texture copied to assets folder");
-			char* buffer;
-			unsigned read = App->FS->Load((dest + filename).c_str(), &buffer);
-			if (read != 0) {
-				Import(buffer, read);
-				RELEASE(buffer);
-				char* ddsBuffer;
-				unsigned size = Save(&ddsBuffer);
-				std::string libraryPath("Assets/Library/Textures/");
-				App->FS->Save((libraryPath + ddsName).c_str(), ddsBuffer, size);
-				RELEASE(ddsBuffer);
-			}
-			else {
-				LOG("Could not load texture");
-			}
+	if (App->FS->Copy(path, (dest + filename).c_str())) {
+		LOG("Texture copied to assets folder");
+		char* buffer;
+		unsigned read = App->FS->Load((dest + filename).c_str(), &buffer);
+		if (read != 0) {
+			Import(buffer, read);
+			RELEASE(buffer);
+			char* ddsBuffer;
+			unsigned size = Save(&ddsBuffer);
+			std::string libraryPath("Assets/Library/Textures/");
+			App->FS->Save((libraryPath + ddsName).c_str(), ddsBuffer, size);
+			RELEASE(ddsBuffer);
 		}
 		else {
-			LOG("Could not copy texture");
+			LOG("Could not load texture");
 		}
 	}
 	else {
-		LOG("Texture already in assets");
+		LOG("Could not copy texture");
 	}
 }

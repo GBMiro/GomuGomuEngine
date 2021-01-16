@@ -11,9 +11,18 @@
 void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // if const material I can't get name
 	aiString file;
 	ourMaterial->name = material->GetName().C_Str();
+
+	float shininess = 0;
+	material->Get(AI_MATKEY_SHININESS, shininess);
+	ourMaterial->SetShininess(shininess);
+
 	if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
 		material->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 		ourMaterial->diffuseTexture = new Material::Texture();
+
+		aiColor3D color(0.5f, 0.5f, 0.5f);
+		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		ourMaterial->SetDiffuseColor(float3(color.r, color.g, color.b));
 		
 		char* ddsTexture;
 		unsigned read = 0;
@@ -43,6 +52,10 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 	if (material->GetTextureCount(aiTextureType_SPECULAR) > 0) {
 		material->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		ourMaterial->specularTexture = new Material::Texture();
+
+		aiColor3D color(0.04f, 0.04f, 0.04f);
+		material->Get(AI_MATKEY_COLOR_SPECULAR, color);
+		ourMaterial->SetSpecularColor(float3(color.r, color.g, color.b));
 
 		char* ddsTexture;
 		unsigned read = 0;
@@ -77,7 +90,8 @@ unsigned ImporterMaterial::Save(const Material* ourMaterial, char** buffer) {
 	unsigned specularLength = ourMaterial->specularTexture ? ourMaterial->specularTexture->name.length() + 1 : 0;
 	unsigned nameLength = ourMaterial->name.length() + 1;
 
-	unsigned header[5] = {
+	unsigned header[6] = {
+		3,
 		3,
 		1,
 		diffuseLength,
@@ -86,6 +100,7 @@ unsigned ImporterMaterial::Save(const Material* ourMaterial, char** buffer) {
 	};
 
 	unsigned size = sizeof(header)
+		+ sizeof(float) * 3 // diffuse color
 		+ sizeof(float) * 3 // specular color
 		+ sizeof(float) // shininess
 		+ sizeof(char) * diffuseLength
@@ -99,6 +114,12 @@ unsigned ImporterMaterial::Save(const Material* ourMaterial, char** buffer) {
 	// Copy header
 	unsigned bytes = sizeof(header);
 	memcpy(cursor, header, bytes);
+	cursor += bytes;
+
+	// Copy diffuse
+	float diffuse[3] = { ourMaterial->GetDiffuseColor().x, ourMaterial->GetDiffuseColor().y, ourMaterial->GetDiffuseColor().z };
+	bytes = sizeof(float) * 3;
+	memcpy(cursor, diffuse, bytes);
 	cursor += bytes;
 
 	// Copy specular
@@ -138,30 +159,38 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 
 	const char* cursor = buffer;
 
-	unsigned header[5];
+	unsigned header[6];
 
 	unsigned bytes = sizeof(header);
 	memcpy(header, cursor, bytes);
 	cursor += bytes;
 
+	// Copy diffuse
+	float3 diffuse;
+	bytes = sizeof(float) * header[0];
+	memcpy(&diffuse, cursor, bytes);
+	ourMaterial->SetDiffuseColor(diffuse);
+	cursor += bytes;
+
 	// Copy specular
 	float3 specular;
-	bytes = sizeof(float) * header[0];
+	bytes = sizeof(float) * header[1];
 	memcpy(&specular, cursor, bytes);
 	ourMaterial->SetSpecularColor(specular);
 	cursor += bytes;
 
 	// Copy shininess
-	bytes = sizeof(float) * header[1];
+	bytes = sizeof(float) * header[2];
 	float shininess;
 	memcpy(&shininess, cursor, bytes);
+	ourMaterial->SetShininess(shininess);
 	cursor += bytes;
 
 	// Copy diffuse name
-	bytes = sizeof(char) * header[2];
+	bytes = sizeof(char) * header[3];
 	if (bytes > 0) {
 		ourMaterial->diffuseTexture = new Material::Texture();
-		char* name = new char[header[2]];
+		char* name = new char[header[3]];
 		memcpy(name, cursor, bytes);
 		ourMaterial->diffuseTexture->name = name;
 		std::string filename;
@@ -178,10 +207,10 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		RELEASE_ARRAY(name);
 	}
 
-	bytes = sizeof(char) * header[3];
+	bytes = sizeof(char) * header[4];
 	if (bytes > 0) {
 		ourMaterial->specularTexture = new Material::Texture();
-		char* name = new char[header[3]];
+		char* name = new char[header[4]];
 		memcpy(name, cursor, bytes);
 		ourMaterial->specularTexture->name = std::string(name);
 		std::string filename;
@@ -197,7 +226,7 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		cursor += bytes;
 		RELEASE_ARRAY(name);
 	}
-	bytes = sizeof(char) * header[4];
+	bytes = sizeof(char) * header[5];
 	char* name = new char[bytes];
 	memcpy(name, cursor, bytes);
 	ourMaterial->name = std::string(name);
