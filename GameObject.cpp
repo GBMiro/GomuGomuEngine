@@ -13,6 +13,7 @@
 #include "MathGeoLib/Algorithm/Random/LCG.h"
 #include "ModuleDebugDraw.h"
 #include "ModuleScene.h"
+#include "Quadtree.h"
 #include "Leaks.h"
 
 GameObject::GameObject(GameObject* parent, const char* name) {
@@ -49,7 +50,7 @@ GameObject::~GameObject() {
 	for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it) {
 		RELEASE(*it);
 	}
-
+	App->scene->GetQuadTree()->EraseGameObject(this);
 	children.clear();
 	components.clear();
 }
