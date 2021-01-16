@@ -200,9 +200,10 @@ GameObject* ModuleScene::AddObject(const char* path) {
 		LOG("Loading %s from fbx", filename.c_str());
 		const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_GenBoundingBoxes);
 		if (scene) {
-			created = CreateGameObject(path, scene, scene->mRootNode, root);
+			created = CreateGameObject(path, scene, scene->mRootNode, root, float4x4::identity);
 			LOG("Model loaded from fbx: %.f ms", t->Read());
 			ImporterModel::Save(created, path);
+			aiReleaseImport(scene);
 		}
 	}
 	if (created) {
@@ -213,15 +214,33 @@ GameObject* ModuleScene::AddObject(const char* path) {
 }
 
 
-GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent) {
+GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent, float4x4 transf) {
 	const char* name = node->mName.C_Str();
 	aiVector3D position, scale;
 	aiQuaternion rotation;
 	node->mTransformation.Decompose(scale, rotation, position);
-	GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
+	GameObject* object = nullptr;
+	bool noise = std::string(node->mName.C_Str()).find("$Assimp") != std::string::npos;
+	if (!noise) {
+		float4x4 aux = float4x4::FromTRS(float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
+		transf = transf * aux;
+		float3 pos, sc;
+		Quat rot;
+		transf.Decompose(pos, rot, sc);
+		object = new GameObject(parent, name, pos, rot, sc);
+		//float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
+	}
+	//GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
-			CreateGameObject(path, scene, node->mChildren[i], object);
+			if (noise) {
+				float4x4 aux = float4x4::FromTRS(float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
+				transf = transf * aux;
+				CreateGameObject(path, scene, node->mChildren[i], parent, transf);
+			}
+			else {
+				CreateGameObject(path, scene, node->mChildren[i], object, transf);
+			}
 		}
 	} else {
 		if (node->mNumMeshes > 0) {
@@ -270,7 +289,7 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 			}
 		}
 	}
-	object->GenerateAABB();
+	if (!noise) object->GenerateAABB();
 	return object;
 }
 

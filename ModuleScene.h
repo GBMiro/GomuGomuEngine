@@ -41,7 +41,7 @@ public:
 	void DestroyGameObject(GameObject* go);
 	GameObject* AddObject(const char* path);
 
-	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
+	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent, float4x4 transf);
 	void GetChildrenGameObjects(GameObject* obj, std::vector<GameObject*>& gameObjects, bool isRoot = true);
 	GameObject* GetRoot() const { return root; }
 	Quadtree* GetQuadTree() const { return quadTree; }
