@@ -120,6 +120,12 @@ void ComponentMeshRenderer::DrawOnEditor() {
 			if (ImGui::InputFloat3("Specular Color", specularDummy.ptr())) {
 				material->SetSpecularColor(specularDummy);
 			}
+
+			float3 diffuseDummy = material->GetDiffuseColor();
+			if (ImGui::InputFloat3("Diffuse Color", diffuseDummy.ptr())) {
+				material->SetDiffuseColor(diffuseDummy);
+			}
+
 			if (material->diffuseTexture) {
 				ShowTextureInfo("Diffuse texture", material->diffuseTexture);
 			} else {

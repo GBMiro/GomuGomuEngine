@@ -86,6 +86,14 @@ const float3& Material::GetSpecularColor()const {
 	return specularColor;
 }
 
+const float3& Material::GetDiffuseColor() const {
+	return diffuseColor;
+}
+
 void Material::SetSpecularColor(float3 newColor) {
 	specularColor = newColor;
+}
+
+void Material::SetDiffuseColor(float3 newColor) {
+	diffuseColor = newColor;
 }

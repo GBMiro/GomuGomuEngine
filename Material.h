@@ -28,7 +28,8 @@ public:
 private:
 	//Shader variables
 	float shininess = 1;
-	float3 specularColor = float3{ 1,1,1 };
+	float3 specularColor = float3{ 0.04, 0.04, 0.04 };
+	float3 diffuseColor = float3{ 0.5, 0.5 , 0.5 };
 
 public:
 	Material() {};
@@ -41,7 +42,9 @@ public:
 	const float& GetShininess()const;
 	void SetShininess(float newS);
 	const float3& GetSpecularColor()const;
+	const float3& GetDiffuseColor()const;
 	void SetSpecularColor(float3 newColor);
+	void SetDiffuseColor(float3 newColor);
 };
 
 #endif
