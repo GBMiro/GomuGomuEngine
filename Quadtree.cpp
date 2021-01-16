@@ -37,16 +37,13 @@ void QuadtreeNode::EraseGameObject(GameObject* gameObject) {
 
 	if (it != gameObjects.end()) { // Game Object found in node
 		gameObjects.erase(it);
-	} else {
+	} 
 
-		if (subdivided) {
-
-
-			for (int i = 0; i < childNodes.size(); ++i) {
-				childNodes[i].EraseGameObject(gameObject);
-			}
-
+	if (subdivided) {
+		for (int i = 0; i < childNodes.size(); ++i) {
+			childNodes[i].EraseGameObject(gameObject);
 		}
+
 	}
 
 	//This could be optimized by collecting the AMOUNT of gameobjects contained within children, if children contain less than the MAX_CAPACITY, then their gameObjects would
