@@ -23,22 +23,13 @@ public:
 public:
 	bool subdivided;
 	AABB boundingBox;
-
-	//QuadtreeNode* nw = nullptr;
-	//QuadtreeNode* ne = nullptr;
-	//QuadtreeNode* sw = nullptr;
-	//QuadtreeNode* se = nullptr;
-
 	std::vector<QuadtreeNode> childNodes;
 	std::vector<GameObject*> gameObjects;
-
-	//std::vector<GameObject*> gameObjects
-	//gameObjects.reserve (NODE_MAX_CAPACITY);
 
 private:
 
 	QuadtreeNode* parent = nullptr;
-
+	bool IsEmpty()const;
 };
 
 class Quadtree {

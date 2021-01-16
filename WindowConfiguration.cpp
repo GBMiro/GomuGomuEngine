@@ -44,19 +44,33 @@ void WindowConfiguration::Draw() {
 
 	if (ImGui::CollapsingHeader("Editor", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-		bool dummyUseQuadTreeAccel = App->editor->UseQuadTreeAcceleration();
+		bool dummyBool = App->editor->UseQuadTreeAcceleration();
 
-		if (ImGui::Checkbox("Mouse Picking QuadTree acceleration", &dummyUseQuadTreeAccel)) {
-			App->editor->SetUseQuadTreeAcceleration(dummyUseQuadTreeAccel);
+		if (ImGui::Checkbox("Mouse Picking QuadTree acceleration", &dummyBool)) {
+			App->editor->SetUseQuadTreeAcceleration(dummyBool);
 		}
 
-		dummyUseQuadTreeAccel = App->editor->UseMultiMap();
+		dummyBool = App->editor->UseMultiMap();
 
-		if (ImGui::Checkbox("Use MultiMap for quadTree Selection acceleration", &dummyUseQuadTreeAccel)) {
-			App->editor->SetUseMultiMap(dummyUseQuadTreeAccel);
+		if (ImGui::Checkbox("Use MultiMap for quadTree Selection acceleration", &dummyBool)) {
+			App->editor->SetUseMultiMap(dummyBool);
 		}
 
-		
+		dummyBool = App->GetUseFrameCap();
+
+		if (ImGui::Checkbox("Cap Frame Rate", &dummyBool)) {
+			App->SetUseFrameCap(dummyBool);
+		}
+
+		dummyBool = App->editor->GetDrawQuadTree();
+
+		if (ImGui::Checkbox("Draw Quad Tree", &dummyBool)) {
+			App->editor->SetDrawQuadTree(dummyBool);
+		}
+
+
+		//TO DO VSync
+		//TO DO FrameCap	
 
 	}
 

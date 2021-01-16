@@ -43,8 +43,11 @@ public:
 	void SetFrameCap(int frameCap);
 	const int& GetFrameCap()const;
 
+	bool GetUseFrameCap()const;
+	void SetUseFrameCap(bool should);
 
 private:
+	bool isFrameRateCapped;
 	unsigned int frameCap, millisPerFrame;
 	float lastDeltaTime;
 	std::list<Module*> modules;

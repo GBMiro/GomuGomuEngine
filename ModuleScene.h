@@ -42,14 +42,15 @@ public:
 	GameObject* AddObject(const char* path);
 
 	GameObject* CreateGameObject(const char* path, const aiScene* scene, const aiNode* node, GameObject* parent);
-	void GetSceneGameObjects(std::vector<GameObject*>& gameObjects);
+	void GetChildrenGameObjects(GameObject* obj, std::vector<GameObject*>& gameObjects, bool isRoot = true);
 	GameObject* GetRoot() const { return root; }
 	Quadtree* GetQuadTree() const { return quadTree; }
 
 	void LoadScene(SceneType type);
 	void SaveScene(const char* scene);
 	void DestroyScene();
-
+	void RegenerateQuadTree();
+	void ReestablishGameObjectOnQuadTree(GameObject* obj);
 
 
 public:

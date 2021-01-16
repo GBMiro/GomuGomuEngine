@@ -31,9 +31,8 @@ class ModuleEditor : public Module {
 private:
 	ImGuizmo::OPERATION gizmoOperation;
 	ImGuizmo::MODE gizmoMode;
-	bool useQuadTreeAcceleration, useMultiMap;
+	bool useQuadTreeAcceleration, useMultiMap, drawQuadTree;
 	std::vector<GameObject*>previouslySelectedGameObjects;
-	std::vector<std::pair<float3, float3>> distances;
 public:
 	ModuleEditor();
 	~ModuleEditor();
@@ -65,6 +64,10 @@ public:
 	bool PreviouslySelected(GameObject* obj)const;
 	void SetSceneToLoad(SceneType type) { sceneToLoad = type; }
 	SceneType GetSceneToLoad() const { return sceneToLoad; }
+
+	bool GetDrawQuadTree()const;
+	void SetDrawQuadTree(bool should);
+
 private:
 	void CheckRayIntersectionWithGameObjectAndChildren(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected);
 	bool CheckRayIntersectionWithGameObject(const LineSegment& ray, GameObject* a, const GameObject* currentSelected);
