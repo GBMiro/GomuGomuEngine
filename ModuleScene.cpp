@@ -38,7 +38,7 @@ ModuleScene::~ModuleScene() {
 bool ModuleScene::Init() {
 
 	root = new GameObject(nullptr, "Fake root node");
-	quadTree = new Quadtree(AABB(float3(-10, 0, -10), float3(10, 20, 10)));
+	quadTree = new Quadtree(AABB(float3(-60, 0, -60), float3(60, 20, 60)));
 	return true;
 }
 
@@ -339,7 +339,7 @@ void ModuleScene::DestroyScene() {
 
 void ModuleScene::RegenerateQuadTree() {
 	RELEASE(quadTree);
-	quadTree = new Quadtree(AABB(float3(-15, 0, -15), float3(15, 20, 15)));
+	quadTree = new Quadtree(AABB(float3(-60, 0, -60), float3(60, 20, 60)));
 	std::vector<GameObject*>objs;
 	GetChildrenGameObjects(root, objs);
 

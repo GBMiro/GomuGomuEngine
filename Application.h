@@ -45,9 +45,11 @@ public:
 
 	bool GetUseFrameCap()const;
 	void SetUseFrameCap(bool should);
+	bool GetUseVSync()const;
+	void SetUseVSync(bool should);
 
 private:
-	bool isFrameRateCapped;
+	bool isFrameRateCapped, useVSync;
 	unsigned int frameCap, millisPerFrame;
 	float lastDeltaTime;
 	std::list<Module*> modules;

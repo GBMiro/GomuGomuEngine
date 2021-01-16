@@ -63,12 +63,25 @@ void WindowConfiguration::Draw() {
 			App->SetUseFrameCap(dummyBool);
 		}
 
+		int dummyFrameCap = App->GetFrameCap();
+
+
+		if (ImGui::SliderInt("Max Frame Rate", &dummyFrameCap, 15, 240)) {
+			App->SetFrameCap(dummyFrameCap);
+		}
+
+
 		dummyBool = App->editor->GetDrawQuadTree();
 
 		if (ImGui::Checkbox("Draw Quad Tree", &dummyBool)) {
 			App->editor->SetDrawQuadTree(dummyBool);
 		}
 
+		dummyBool = App->GetUseVSync();
+
+		if (ImGui::Checkbox("VSync", &dummyBool)) {
+			App->SetUseVSync(dummyBool);
+		}
 
 		//TO DO VSync
 		//TO DO FrameCap	
@@ -109,14 +122,16 @@ void WindowConfiguration::Draw() {
 		if (ImGui::InputFloat2("Mouse position", &pos[0], "%.0f", ImGuiInputTextFlags_ReadOnly));
 	} // Mouse Position
 	if (ImGui::CollapsingHeader("Renderer")) {
+#ifdef _DEBUG
 		static float gridColor[3] = { 0.0f, 0.0f, 1.0f };
-		static float backgroundColor[3] = { 0.1f, 0.1f, 0.1f };
-		float currentColor[3];
-		App->renderer->getGridColor(currentColor);
 		ImGui::ColorEdit3("Grid Color", gridColor);
 		if (currentColor != gridColor) {
 			App->renderer->setGridColor(gridColor);
 		}
+#endif
+		float currentColor[3];
+		static float backgroundColor[3] = { 0.1f, 0.1f, 0.1f };
+		App->renderer->getGridColor(currentColor);
 		App->renderer->getBackgroundColor(currentColor);
 		ImGui::ColorEdit3("Background Color", backgroundColor);
 		if (currentColor != backgroundColor) {
@@ -168,7 +183,7 @@ void WindowConfiguration::Draw() {
 					indexMax = i;
 					ImGui::SetItemDefaultFocus();
 					App->textures->SetMagFilter(indexMax);
- 				}
+				}
 			}
 			ImGui::EndCombo();
 		}
@@ -179,7 +194,7 @@ void WindowConfiguration::Draw() {
 					indexWrap = i;
 					ImGui::SetItemDefaultFocus();
 					App->textures->SetWrapMode(indexWrap);
- 				}
+				}
 			}
 			ImGui::EndCombo();
 		}

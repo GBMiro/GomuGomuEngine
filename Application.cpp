@@ -120,3 +120,13 @@ bool Application::GetUseFrameCap()const {
 void Application::SetUseFrameCap(bool should) {
 	isFrameRateCapped = should;
 }
+
+bool Application::GetUseVSync()const {
+	return SDL_GL_GetSwapInterval() == 1;
+}
+
+void Application::SetUseVSync(bool should) {
+	SDL_GL_SetSwapInterval(should ? 1 : 0);
+}
+
+
