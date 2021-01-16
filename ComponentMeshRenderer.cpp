@@ -82,7 +82,7 @@ void ComponentMeshRenderer::CreateTexture(TextureType type) {
 	unsigned texture;
 	Material::Texture* tex = type ? material->specularTexture : material->diffuseTexture; // Can change all switch for this I think
 	if (!App->textures->ExistsTexture("black.jpg", texture)) {
-		unsigned read = App->FS->Load(std::string("Assets/Library/Textures/black.jpg").c_str(), &ddsTexture);
+		unsigned read = App->FS->Load(std::string("Assets/Library/Textures/black.dds").c_str(), &ddsTexture);
 		ImporterTextures::Load(tex, ddsTexture, read);
 		RELEASE(ddsTexture);
 	}
@@ -181,7 +181,9 @@ void ComponentMeshRenderer::ChangeMaterialTexture(Material::Texture* tex, std::s
 	else {
 		char* buffer;
 		std::string path("Assets/Library/Textures/");
-		path.append(name);
+		std::string fileNoExtension;
+		App->FS->GetFileNameNoExtension(textureName, fileNoExtension);
+		path.append(fileNoExtension).append(".dds");
 		unsigned read = App->FS->Load(path.c_str(), &buffer);
 		if (read != 0) {
 			tex->name = textureName;

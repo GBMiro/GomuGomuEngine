@@ -49,7 +49,7 @@ void ImporterTextures::Load(Material::Texture* text, const char* buffer, unsigne
 
 		App->textures->InsertTexturePath(text->name, texture);
 		text->id = texture;
-		LOG("New texture generated");
+		LOG("New texture generated %s", text->name.c_str());
 	}
 }
 
@@ -67,10 +67,12 @@ void ImporterTextures::ImportTexture(const char* path) {
 			unsigned read = App->FS->Load((dest + filename).c_str(), &buffer);
 			if (read != 0) {
 				Import(buffer, read);
-				unsigned size = Save(&buffer);
-				std::string libraryPath("Assets/Library/Textures/");
-				App->FS->Save((libraryPath + ddsName).c_str(), buffer, size);
 				RELEASE(buffer);
+				char* ddsBuffer;
+				unsigned size = Save(&ddsBuffer);
+				std::string libraryPath("Assets/Library/Textures/");
+				App->FS->Save((libraryPath + ddsName).c_str(), ddsBuffer, size);
+				RELEASE(ddsBuffer);
 			}
 			else {
 				LOG("Could not load texture");

@@ -77,23 +77,25 @@ void ImporterScene::LoadScene(const char* scene) {
 						char* bufferMesh;
 						uint32_t meshFile = component["Mesh File"].GetUint();
 						unsigned bytesRead = App->FS->Load((std::string("Assets/Library/Meshes/").append(std::to_string(meshFile))).c_str(), &bufferMesh);
-						//Check bytes read
-						ImporterMesh imp;
-						meshRenderer->mesh = new Mesh();
-						meshRenderer->mesh->SetFileID(meshFile);
-						imp.Load(bufferMesh, meshRenderer->mesh);
-						meshRenderer->mesh->Load();
-						meshRenderer->GenerateAABB();
-						RELEASE(bufferMesh);
+						
+						if (bytesRead > 0) {
+							ImporterMesh imp;
+							meshRenderer->mesh = new Mesh();
+							meshRenderer->mesh->SetFileID(meshFile);
+							imp.Load(bufferMesh, meshRenderer->mesh);
+							meshRenderer->mesh->Load();
+							meshRenderer->GenerateAABB();
+							RELEASE(bufferMesh);
 
-						std::string material = component["Material File"].GetString();
-						meshRenderer->material = new Material();
-						char* bufferMaterial;
-						ImporterMaterial im;
-						bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
-						im.Load(bufferMaterial, meshRenderer->material);
-						RELEASE(bufferMaterial);
-						App->scene->GetQuadTree()->InsertGameObject(node);
+							std::string material = component["Material File"].GetString();
+							meshRenderer->material = new Material();
+							char* bufferMaterial;
+							ImporterMaterial im;
+							bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
+							im.Load(bufferMaterial, meshRenderer->material);
+							RELEASE(bufferMaterial);
+							App->scene->GetQuadTree()->InsertGameObject(node);
+						}
 						break;
 					}
 					case ComponentType::CTCamera: {

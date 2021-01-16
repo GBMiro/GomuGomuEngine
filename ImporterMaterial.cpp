@@ -17,7 +17,9 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 		
 		char* ddsTexture;
 		unsigned read = 0;
-		if (!App->FS->Exists((std::string("Assets/Library/Textures/") + file.C_Str()).c_str())) {
+		std::string filename;
+		App->FS->GetFileNameNoExtension(std::string(file.C_Str()), filename);
+		if (!App->FS->Exists((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str())) {
 			char* buffer;
 			read = App->FS->Load(file.C_Str(), &buffer);
 			if (read == 0) read = App->FS->Load((std::string("Resources/Textures/") + file.C_Str()).c_str(), &buffer);
@@ -26,26 +28,46 @@ void ImporterMaterial::Import(aiMaterial* material, Material* ourMaterial) { // 
 			RELEASE(buffer);
 			unsigned size = ImporterTextures::Save(&ddsTexture);
 			read = size;
-			unsigned written = App->FS->Save((std::string("Assets/Library/Textures/") + file.C_Str()).c_str(), ddsTexture, size);
+			unsigned written = App->FS->Save((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str(), ddsTexture, size);
 		}
 		else {
-			read = App->FS->Load((std::string("Assets/Library/Textures/") + file.C_Str()).c_str(), &ddsTexture);
+			read = App->FS->Load((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str(), &ddsTexture);
 		}
 		ourMaterial->diffuseTexture->path = file.C_Str();
 		ourMaterial->diffuseTexture->name = file.C_Str();
 		ImporterTextures::Load(ourMaterial->diffuseTexture, ddsTexture, read);
 		
-		//ourMaterial->diffuseTexture->id = App->textures->LoadTexture(file.C_Str(), file.C_Str(), ourMaterial->diffuseTexture->texSize);
 		RELEASE(ddsTexture);
-		// Call import texture and then save
 	}
 
 	if (material->GetTextureCount(aiTextureType_SPECULAR) > 0) {
 		material->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		ourMaterial->specularTexture = new Material::Texture();
-		ourMaterial->specularTexture->id = App->textures->LoadTexture(file.C_Str(), file.C_Str(), ourMaterial->specularTexture->texSize);
+
+		char* ddsTexture;
+		unsigned read = 0;
+
+		std::string filename;
+		App->FS->GetFileNameNoExtension(std::string(file.C_Str()), filename);
+		if (!App->FS->Exists((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str())) {
+			char* buffer;
+			read = App->FS->Load(file.C_Str(), &buffer);
+			if (read == 0) read = App->FS->Load((std::string("Resources/Textures/") + file.C_Str()).c_str(), &buffer);
+			if (read == 0) read = App->FS->Load(std::string("Resources/Textures/black.jpg").c_str(), &buffer);
+			ImporterTextures::Import(buffer, read);
+			RELEASE(buffer);
+			unsigned size = ImporterTextures::Save(&ddsTexture);
+			read = size;
+			unsigned written = App->FS->Save((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str(), ddsTexture, size);
+		}
+		else {
+			read = App->FS->Load((std::string("Assets/Library/Textures/").append(filename).append(".dds")).c_str(), &ddsTexture);
+		}
 		ourMaterial->specularTexture->path = file.C_Str();
-		ourMaterial->diffuseTexture->name = file.C_Str();
+		ourMaterial->specularTexture->name = file.C_Str();
+		ImporterTextures::Load(ourMaterial->specularTexture, ddsTexture, read);
+
+		RELEASE(ddsTexture);
 	}
 }
 
@@ -142,18 +164,18 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		char* name = new char[header[2]];
 		memcpy(name, cursor, bytes);
 		ourMaterial->diffuseTexture->name = name;
+		std::string filename;
+		App->FS->GetFileName(name, filename);
+		std::string textureName;
+		App->FS->GetFileNameNoExtension(filename, textureName);
 		char* bufferTexture;
-		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/") + name).c_str(), &bufferTexture);
+		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/").append(textureName).append(".dds")).c_str(), &bufferTexture);
 		if (read != 0) {
 			ImporterTextures::Load(ourMaterial->diffuseTexture, bufferTexture, read);
-			//		ourMaterial->diffuseTexture->id = App->textures->LoadTexture(name, name, ourMaterial->diffuseTexture->texSize);	
 			RELEASE(bufferTexture);
 		}
 		cursor += bytes;
 		RELEASE_ARRAY(name);
-		//LOG("Diffuse texture's name: %s", ourMaterial->diffuseTexture->name.c_str());
-
-		// Call texture importer to load texture named name
 	}
 
 	bytes = sizeof(char) * header[3];
@@ -162,8 +184,12 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 		char* name = new char[header[3]];
 		memcpy(name, cursor, bytes);
 		ourMaterial->specularTexture->name = std::string(name);
+		std::string filename;
+		App->FS->GetFileName(name, filename);
+		std::string textureName;
+		App->FS->GetFileNameNoExtension(filename, textureName);
 		char* bufferTexture;
-		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/") + name).c_str(), &bufferTexture);
+		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/").append(textureName).append(".dds")).c_str(), &bufferTexture);
 		if (read != 0) {
 			ImporterTextures::Load(ourMaterial->specularTexture, bufferTexture, read);
 			RELEASE(bufferTexture);
@@ -177,5 +203,4 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 	ourMaterial->name = std::string(name);
 	cursor += bytes;
 	RELEASE_ARRAY(name);
-	//LOG("Material name: %s", ourMaterial->name.c_str());
 }
