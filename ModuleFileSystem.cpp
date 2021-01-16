@@ -66,7 +66,10 @@ bool ModuleFileSystem::Exists(const char* file) const {
 }
 
 bool ModuleFileSystem::Copy(const char* source, const char* destination) {
-	return false;
+	std::ifstream src(source, std::ios::binary);
+	std::ofstream dest(destination, std::ios::binary);
+	dest << src.rdbuf();
+	return src && dest;
 }
 
 bool ModuleFileSystem::MakeDirectory(const char* directory) {

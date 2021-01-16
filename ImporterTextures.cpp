@@ -3,6 +3,7 @@
 #include "GL/glew.h"
 #include "Application.h"
 #include "ModuleTextures.h"
+#include "ModuleFileSystem.h"
 #include "Material.h"
 #include "Leaks.h"
 
@@ -49,5 +50,34 @@ void ImporterTextures::Load(Material::Texture* text, const char* buffer, unsigne
 		App->textures->InsertTexturePath(text->name, texture);
 		text->id = texture;
 		LOG("New texture generated");
+	}
+}
+
+void ImporterTextures::ImportTexture(const char* path) {
+	std::string filename;
+	App->FS->GetFileName(path, filename);
+	std::string dest("Assets/Textures/");
+	if (!App->FS->Exists((dest + filename).c_str())) {
+		if (App->FS->Copy(path, (dest + filename).c_str())) {
+			LOG("Texture copied to assets folder");
+			char* buffer;
+			unsigned read = App->FS->Load((dest + filename).c_str(), &buffer);
+			if (read != 0) {
+				Import(buffer, read);
+				unsigned size = Save(&buffer);
+				std::string libraryPath("Assets/Library/Textures/");
+				App->FS->Save((libraryPath + filename).c_str(), buffer, size);
+				RELEASE(buffer);
+			}
+			else {
+				LOG("Could not load texture");
+			}
+		}
+		else {
+			LOG("Could not copy texture");
+		}
+	}
+	else {
+		LOG("Texture already in assets");
 	}
 }

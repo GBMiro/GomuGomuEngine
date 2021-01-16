@@ -158,14 +158,18 @@ void ImporterMaterial::Load(const char* buffer, Material* ourMaterial) {
 
 	bytes = sizeof(char) * header[3];
 	if (bytes > 0) {
-		//Repeat diffuse texture lines for specular texture
 		ourMaterial->specularTexture = new Material::Texture();
-		char* name = new char[bytes];
+		char* name = new char[header[3]];
 		memcpy(name, cursor, bytes);
 		ourMaterial->specularTexture->name = std::string(name);
+		char* bufferTexture;
+		unsigned read = App->FS->Load((std::string("Assets/Library/Textures/") + name).c_str(), &bufferTexture);
+		if (read != 0) {
+			ImporterTextures::Load(ourMaterial->specularTexture, bufferTexture, read);
+			RELEASE(bufferTexture);
+		}
 		cursor += bytes;
-		//LOG("Specular texture's name: %s", ourMaterial->specularTexture->name.c_str());
-		// Call texture importer to load texture named name
+		RELEASE_ARRAY(name);
 	}
 	bytes = sizeof(char) * header[4];
 	char* name = new char[bytes];

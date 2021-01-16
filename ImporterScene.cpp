@@ -21,7 +21,7 @@
 #include <vector>
 #include <map>
 #include "Leaks.h"
-
+// Refactor this 
 void ImporterScene::LoadScene(const char* scene) {
 	std::map<std::uint32_t, GameObject*> nodeSceneID;
 	char* buffer;
@@ -77,6 +77,7 @@ void ImporterScene::LoadScene(const char* scene) {
 						char* bufferMesh;
 						uint32_t meshFile = component["Mesh File"].GetUint();
 						unsigned bytesRead = App->FS->Load((std::string("Assets/Library/Meshes/").append(std::to_string(meshFile))).c_str(), &bufferMesh);
+						//Check bytes read
 						ImporterMesh imp;
 						meshRenderer->mesh = new Mesh();
 						meshRenderer->mesh->SetFileID(meshFile);

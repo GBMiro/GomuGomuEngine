@@ -12,6 +12,10 @@
 #include "ComponentPointLight.h"
 #include "ModuleScene.h"
 #include "ModuleRender.h"
+#include "ModuleFileSystem.h"
+#include "ModuleTextures.h"
+#include "ImporterTextures.h"
+#include "ImporterMaterial.h"
 #include "Leaks.h"
 
 ComponentMeshRenderer::ComponentMeshRenderer(GameObject* anOwner) : RenderingComponent(ComponentType::CTMeshRenderer, anOwner) {
@@ -51,7 +55,7 @@ void ComponentMeshRenderer::Draw() {
 }
 
 const AABB& ComponentMeshRenderer::GetAABB() {
-	return localAxisAlignedBoundingBox;
+return localAxisAlignedBoundingBox;
 }
 
 
@@ -59,13 +63,40 @@ void ComponentMeshRenderer::SetMaterial(Material* mat) {
 	material = mat;
 }
 
+void ComponentMeshRenderer::CreateTexture(TextureType type) {
+	switch (type) {
+	case DIFFUSE:
+		material->diffuseTexture = new Material::Texture();
+		material->diffuseTexture->name = "black.jpg";
+		material->diffuseTexture->path = "black.jpg";
+		break;
+	case SPECULAR:
+		material->specularTexture = new Material::Texture();
+		material->specularTexture->name = "black.jpg";
+		material->specularTexture->path = "black.jpg";
+		break;
+	default:
+		break;
+	}
+	char* ddsTexture;
+	unsigned texture;
+	Material::Texture* tex = type ? material->specularTexture : material->diffuseTexture; // Can change all switch for this I think
+	if (!App->textures->ExistsTexture("black.jpg", texture)) {
+		unsigned read = App->FS->Load(std::string("Assets/Library/Textures/black.jpg").c_str(), &ddsTexture);
+		ImporterTextures::Load(tex, ddsTexture, read);
+		RELEASE(ddsTexture);
+	}
+	LOG("Black texture created");
+}
+
 void ComponentMeshRenderer::DrawOnEditor() {
 	bool dummyEnabled = enabled;
-	ImGui::PushID(1);
+	ImGui::PushID(this);
 	if (ImGui::Checkbox("", &dummyEnabled)) {
 		if (dummyEnabled) {
 			Enable();
-		} else {
+		}
+		else {
 			Disable();
 		}
 	}
@@ -84,10 +115,28 @@ void ComponentMeshRenderer::DrawOnEditor() {
 				material->SetSpecularColor(specularDummy);
 			}
 			if (material->diffuseTexture) {
-				ImGui::LabelText("Diffuse Texture", material->diffuseTexture->name.c_str());
+				ShowTextureInfo("Diffuse texture", material->diffuseTexture);
+			}
+			else {
+				if (ImGui::Button("Create Diffuse Texture")) {
+					CreateTexture(DIFFUSE);
+				}
 			}
 			if (material->specularTexture) {
-				ImGui::LabelText("Specular Texture", material->specularTexture->name.c_str());
+				ShowTextureInfo("Specular Texture", material->specularTexture);
+			}
+			else {
+				if (ImGui::Button("Create Specular Texture")) {
+					CreateTexture(SPECULAR);
+				}
+			}
+			if (ImGui::Button("Save Material")) {
+				char* materialBuffer;
+				ImporterMaterial iM;
+				unsigned bytes = iM.Save(material, &materialBuffer);
+				if (bytes > 0) {
+					unsigned written = App->FS->Save((std::string("Assets/Library/Materials/") + material->name).c_str(), materialBuffer, bytes);
+				}
 			}
 			ImGui::TreePop();
 		}
@@ -97,6 +146,48 @@ void ComponentMeshRenderer::DrawOnEditor() {
 
 void ComponentMeshRenderer::OnTransformChanged() {
 	GenerateAABB();
+}
+
+void ComponentMeshRenderer::ShowTextureInfo(const char* type, Material::Texture* tex) {
+	ImGui::PushID(this);
+	std::vector<std::string> textureFiles;
+	App->FS->GetDirectoryFiles("Assets/Textures", textureFiles);
+	std::vector<const char*> strings;
+	static int texture = 0;
+	int currentSelection = texture;
+	for (int i = 0; i < textureFiles.size(); ++i) {
+		if (textureFiles[i].compare(tex->name) == 0) texture = i;
+		strings.push_back(textureFiles[i].c_str());
+	}
+	ImGui::Combo(type, &texture, strings.data(), strings.size());
+	if (texture != currentSelection) {
+		ChangeMaterialTexture(tex, textureFiles[texture]);
+		currentSelection = texture;
+	}
+	ImGui::PopID();
+}
+
+void ComponentMeshRenderer::ChangeMaterialTexture(Material::Texture* tex, std::string& textureName) {
+	unsigned texture;
+	const char* name = textureName.c_str();
+	if (App->textures->ExistsTexture(textureName.c_str(), texture)) {
+		tex->name = textureName;
+		tex->id = texture;
+	}
+	else {
+		char* buffer;
+		std::string path("Assets/Library/Textures/");
+		path.append(name);
+		unsigned read = App->FS->Load(path.c_str(), &buffer);
+		if (read != 0) {
+			tex->name = textureName;
+			ImporterTextures::Load(tex, buffer, read);
+			RELEASE(buffer);
+		}
+		else {
+			LOG("Could not load texture");
+		}
+	}
 }
 
 void ComponentMeshRenderer::WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {

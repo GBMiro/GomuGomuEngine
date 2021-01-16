@@ -1,10 +1,10 @@
 #pragma once
 #include "RenderingComponent.h"
 #include <string>
+#include "Material.h" // Talk with David enum
 #include "../MathGeoLib/MathGeoLib.h"
 
 class Mesh;
-class Material;
 
 class ComponentMeshRenderer : public RenderingComponent {
 
@@ -21,6 +21,8 @@ public:
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void OnTransformChanged() override;
+	void ShowTextureInfo(const char* type, Material::Texture* tex);
+	void ChangeMaterialTexture(Material::Texture* tex, std::string& textureName);
 	//void SetTextureName(std::string name) { textureName = name; }
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	const AABB& GetAABB();
@@ -31,6 +33,9 @@ public:
 	OBB localOrientedBoundingBox;
 public:
 	void SetMaterial(Material* mat);
+
+private:
+	void CreateTexture(TextureType type);
 
 };
 
