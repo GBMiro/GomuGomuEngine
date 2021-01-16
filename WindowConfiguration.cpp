@@ -83,9 +83,6 @@ void WindowConfiguration::Draw() {
 			App->SetUseVSync(dummyBool);
 		}
 
-		//TO DO VSync
-		//TO DO FrameCap	
-
 	}
 
 	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -122,14 +119,13 @@ void WindowConfiguration::Draw() {
 		if (ImGui::InputFloat2("Mouse position", &pos[0], "%.0f", ImGuiInputTextFlags_ReadOnly));
 	} // Mouse Position
 	if (ImGui::CollapsingHeader("Renderer")) {
-#ifdef _DEBUG
 		static float gridColor[3] = { 0.0f, 0.0f, 1.0f };
 		ImGui::ColorEdit3("Grid Color", gridColor);
+		float currentColor[3];
 		if (currentColor != gridColor) {
 			App->renderer->setGridColor(gridColor);
 		}
-#endif
-		float currentColor[3];
+
 		static float backgroundColor[3] = { 0.1f, 0.1f, 0.1f };
 		App->renderer->getGridColor(currentColor);
 		App->renderer->getBackgroundColor(currentColor);

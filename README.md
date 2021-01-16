@@ -34,7 +34,7 @@ You can find the code in the following link: https://github.com/GBMiro/GomuGomuE
 
 The editor has a main bar with 3 tabs:
 
-- **File:** Right now shows the option to quit the engine
+- **File:** Right now shows the option to quit the engine, save the current scene, load the last saved scene and load the default scene.
 - **Windows:** You can show/hide editor windows through this tab. By default all windows are close
 - **About:** Contains a link to the source code and you can read a short description of the engine.
 
@@ -42,7 +42,7 @@ The editor has a main bar with 3 tabs:
 
 - **Configuration:** You can toggle various options from the camera (zNear/zFar, FOV, camera speed...), textures (Min/Mag filter, MipMap, WRAP...), window (width, height...),input(mouse sensitivity), rendererer (tonemapping/Gamma correction), Scene (Ambient light, Frustum Culling), Editor (How the Mouse picking is done, wether via QuadTree accel or directly, Frame rate capping, Vsync toggling).
 - **Monitor:** Shows information about the hardware the engine is running on, libraries that are being used and some performance data
-- **GameObject Hierarchy:** Current scene GameObjects will be displayed here in a hierarchichal way, users can drag/drop GameObjects on top of others to modify the hierarchy. Right clicking on hierarchy will show an option to Create a GameObject, if a GameObject was selected, the Destroy button will also be shown. This can also be done by perssing Supr with a selected GameObject
+- **GameObject Hierarchy:** Current scene GameObjects will be displayed here in a hierarchichal way, GameObjects can be selected by clicking on them here. users can drag/drop GameObjects on top of others to modify the hierarchy. Right clicking on hierarchy will show an option to Create a GameObject, if a GameObject was selected, the Destroy button will also be shown. This can also be done by perssing Supr with a selected GameObject
 - **Properties:** If users have a slected GameObject on the hierarchy window, this window will display all components contained withing the GameObject, each Component with its different exposed variables.
 - **Console:** Shows all LOGs made by the code, can be cleared by right clicking on it and pressing button named clear
 

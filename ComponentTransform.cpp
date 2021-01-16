@@ -131,20 +131,20 @@ void ComponentTransform::DrawOnEditor() {
 				ImGui::EndPopup();
 			}
 			float3 localPositionDummy = localPosition;
-			if (ImGui::DragFloat3("Position", &localPositionDummy.x, 0.1f, 0, 0, "%.3f")) {
+			if (ImGui::DragFloat3("Position", &localPositionDummy.x, 0.5f, 0, 0, "%.3f")) {
 				SetLocalPosition(localPositionDummy);
 			}
 
 			float3 rotDummy = localRotation.ToEulerXYZ();
 			rotDummy = RadToDeg(rotDummy);
 
-			if (ImGui::DragFloat3("Rotation", rotDummy.ptr(), 0.1, -360, 360)) {
+			if (ImGui::DragFloat3("Rotation", rotDummy.ptr(), 0.5f, -360, 360)) {
 				Quat localRotationDummy = Quat::FromEulerXYZ(DegToRad(rotDummy.x), DegToRad(rotDummy.y), DegToRad(rotDummy.z));
 				SetLocalRotation(localRotationDummy);
 			}
 
 			float3 scaleDummy = localScale;
-			if (ImGui::DragFloat3("Scale", &scaleDummy.x, 0.1f, 0, 0, "%.3f")) {
+			if (ImGui::DragFloat3("Scale", &scaleDummy.x, 0.5f, 0, 0, "%.3f")) {
 				SetLocalScale(scaleDummy);
 			}
 
