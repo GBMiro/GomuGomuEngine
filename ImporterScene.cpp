@@ -130,7 +130,6 @@ void ImporterScene::LoadScene(const char* scene) {
 								dirLight->lightIntensity = intensity;
 
 								dirLight->CreateDebugLines();
-								App->scene->dirLight = dirLight;
 								break;
 							}
 							case ComponentLight::LightType::POINT: {
@@ -163,7 +162,6 @@ void ImporterScene::LoadScene(const char* scene) {
 									transform->SetPosition(position);
 								}
 								pointLight->CreateDebugLines();
-								App->scene->pointLight = pointLight;
 								break;
 							}
 							break;

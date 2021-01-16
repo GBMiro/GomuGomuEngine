@@ -10,11 +10,11 @@
 class GameObject;
 class aiNode;
 class aiScene;
-class ComponentPointLight;
-class ComponentDirectionalLight;
+//class ComponentPointLight;
+//class ComponentDirectionalLight;
 class Quadtree;
 class QuadtreeNode;
-
+class ComponentLight;
 enum SceneType {
 	USER_SCENE,
 	DEFAULT_SCENE,
@@ -54,14 +54,20 @@ public:
 
 
 public:
-	ComponentPointLight* pointLight = nullptr;
+	//ComponentPointLight* pointLight = nullptr;
 	float3 ambientLight = { 0,0,0 };
-	ComponentDirectionalLight* dirLight = nullptr;
+	//ComponentDirectionalLight* dirLight = nullptr;
 	float ambientIntensity = 0.1f;
+
+	std::vector<ComponentLight*> sceneLights;
+	void AddLightComponent(ComponentLight* newLight);
+	void RemoveLightComponent(ComponentLight* newLight);
+
 private:
 	void UpdateGameObjects(GameObject* gameObject);
 	void DrawGameObjects();
-	void RecursiveDraw(GameObject* gameObject);
+	void RecursivelyDrawGameObjects(GameObject* gameObject);
+	void RecursivelyRecalculateLightning(GameObject* gameObject);
 private:
 	GameObject* root = nullptr;
 	Quadtree* quadTree = nullptr;

@@ -27,7 +27,7 @@ public:
 	~ComponentLight();
 	void DrawOnEditor()override;
 	LightType GetLightType() const { return type; }
-	virtual void SendValuesToShadingProgram(const unsigned& programID)const;
+	virtual void SendValuesToShadingProgram(const unsigned& programID, int id = 0)const;
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc);
 
 private:

@@ -16,7 +16,7 @@ public:
 	void Disable()override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
-	void SendValuesToShadingProgram(const unsigned& programID) const override;
+	void SendValuesToShadingProgram(const unsigned& programID, int id = 0) const override;
 	void ComponentPointLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	void CreateDebugLines() { GenerateDebugLines(); }
 	//void OnNewParent(GameObject* prevParent, GameObject* newParent)override;

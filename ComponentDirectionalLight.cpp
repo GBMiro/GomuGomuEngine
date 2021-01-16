@@ -63,7 +63,7 @@ void ComponentDirectionalLight::GenerateDebugLines() {
 	}
 }
 
-void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& program) const {
+void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& program, int id) const {
 	glUniform3fv(glGetUniformLocation(program, "dirLight.color"), 1, (const float*)lightColor.ptr());
 	glUniform3fv(glGetUniformLocation(program, "dirLight.direction"), 1, (const float*)direction.ptr());
 

@@ -70,12 +70,19 @@ void ComponentPointLight::GenerateDebugLines() {
 	}
 }
 
-void ComponentPointLight::SendValuesToShadingProgram(const unsigned& program) const {
+void ComponentPointLight::SendValuesToShadingProgram(const unsigned& program, int id) const {
 	ComponentTransform* pointTransform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
-	glUniform3fv(glGetUniformLocation(program, "pointLight.position"), 1, (const float*)&pointTransform->Position());
-	glUniform3fv(glGetUniformLocation(program, "pointLight.color"), 1, (const float*)lightColor.ptr());
-	glUniform3f(glGetUniformLocation(program, "pointLight.attenuation"), constantAtt, linearAtt, quadraticAtt);
-	glUniform1f(glGetUniformLocation(program, "pointLight.intensity"), lightIntensity);
+
+	std::string pointLightShaderString = "pointLights[";
+	pointLightShaderString += std::to_string(id);
+	pointLightShaderString += "].";
+
+
+
+	glUniform3fv(glGetUniformLocation(program, (pointLightShaderString + "position").c_str()), 1, (const float*)&pointTransform->Position());
+	glUniform3fv(glGetUniformLocation(program, (pointLightShaderString + "color").c_str()), 1, (const float*)lightColor.ptr());
+	glUniform3f(glGetUniformLocation(program, (pointLightShaderString + "attenuation").c_str()), constantAtt, linearAtt, quadraticAtt);
+	glUniform1f(glGetUniformLocation(program, (pointLightShaderString + "intensity").c_str()), lightIntensity);
 }
 
 void ComponentPointLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {

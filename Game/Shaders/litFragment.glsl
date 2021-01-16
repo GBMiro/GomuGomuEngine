@@ -1,5 +1,5 @@
 #version 440
-
+#define MAX_POINT_LIGHTS 8
 in vec3 Normal;
 in vec3 FragPos;  
 in vec2 TexCoords;
@@ -40,7 +40,10 @@ float GetAttenuation(PointLight p,float d){
     return 1.0 / (p.attenuation.x + p.attenuation.y * d + p.attenuation.z * d * d);
 }
 
-uniform PointLight pointLight;
+uniform int nPointLights;
+uniform PointLight[MAX_POINT_LIGHTS] pointLights;
+
+uniform bool directionalLightFound;
 uniform DirectionalLight dirLight;
 
 uniform vec3 ambientColor;
@@ -154,9 +157,15 @@ vec4 CalcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir, vec3 diffColo
 	vec3 V = normalize(viewPos-FragPos);
 	
 	//Here we would iterate through all Point lights
-	vec4 hdr = CalcPointLight(pointLight,norm,V,diffColor,RF0.rgb,shininess) + CalcDirLight(dirLight,norm,V,diffColor,RF0.rgb,shininess);
 	
+	vec4 hdr = vec4(0,0,0,0);
+	for(int i=0;i<nPointLights;i++){
+		hdr += CalcPointLight(pointLights[i],norm,V,diffColor,RF0.rgb,shininess);
+	}	
 	
+	if(directionalLightFound){
+		hdr += CalcDirLight(dirLight,norm,V,diffColor,RF0.rgb,shininess);
+	}	
 	
 	hdr += vec4(ambient,1);
 	

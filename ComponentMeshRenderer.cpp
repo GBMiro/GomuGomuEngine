@@ -16,7 +16,10 @@
 #include "ModuleTextures.h"
 #include "ImporterTextures.h"
 #include "ImporterMaterial.h"
+#include "ComponentPointLight.h"
+#include "ComponentDirectionalLight.h"
 #include "Leaks.h"
+
 
 ComponentMeshRenderer::ComponentMeshRenderer(GameObject* anOwner) : RenderingComponent(ComponentType::CTMeshRenderer, anOwner) {
 	owner->AddRenderingComponent(this);
@@ -51,11 +54,11 @@ void ComponentMeshRenderer::Disable() {
 
 void ComponentMeshRenderer::Draw() {
 	if (!Enabled()) return;
-	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, App->scene->dirLight, App->scene->pointLight);
+	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, directionalLight, closestPointLights);
 }
 
 const AABB& ComponentMeshRenderer::GetAABB() {
-return localAxisAlignedBoundingBox;
+	return localAxisAlignedBoundingBox;
 }
 
 
@@ -96,8 +99,7 @@ void ComponentMeshRenderer::DrawOnEditor() {
 	if (ImGui::Checkbox("", &dummyEnabled)) {
 		if (dummyEnabled) {
 			Enable();
-		}
-		else {
+		} else {
 			Disable();
 		}
 	}
@@ -126,16 +128,14 @@ void ComponentMeshRenderer::DrawOnEditor() {
 
 			if (material->diffuseTexture) {
 				ShowTextureInfo("Diffuse texture", material->diffuseTexture);
-			}
-			else {
+			} else {
 				if (ImGui::Button("Create Diffuse Texture")) {
 					CreateTexture(DIFFUSE);
 				}
 			}
 			if (material->specularTexture) {
 				ShowTextureInfo("Specular Texture", material->specularTexture);
-			}
-			else {
+			} else {
 				if (ImGui::Button("Create Specular Texture")) {
 					CreateTexture(SPECULAR);
 				}
@@ -156,6 +156,7 @@ void ComponentMeshRenderer::DrawOnEditor() {
 
 void ComponentMeshRenderer::OnTransformChanged() {
 	GenerateAABB();
+	CalculateClosestLights();
 }
 
 void ComponentMeshRenderer::ShowTextureInfo(const char* type, Material::Texture* tex) {
@@ -183,8 +184,7 @@ void ComponentMeshRenderer::ChangeMaterialTexture(Material::Texture* tex, std::s
 	if (App->textures->ExistsTexture(textureName.c_str(), texture)) {
 		tex->name = textureName;
 		tex->id = texture;
-	}
-	else {
+	} else {
 		char* buffer;
 		std::string path("Assets/Library/Textures/");
 		std::string fileNoExtension;
@@ -195,8 +195,7 @@ void ComponentMeshRenderer::ChangeMaterialTexture(Material::Texture* tex, std::s
 			tex->name = textureName;
 			ImporterTextures::Load(tex, buffer, read);
 			RELEASE(buffer);
-		}
-		else {
+		} else {
 			LOG("Could not load texture");
 		}
 	}
@@ -216,4 +215,5 @@ void ComponentMeshRenderer::DrawGizmos() {
 		App->debugDraw->DrawAABB(localAxisAlignedBoundingBox);
 	}
 }
+
 

@@ -132,10 +132,11 @@ void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
 	}
 }
 
-void ModuleScene::RecursiveDraw(GameObject* gameObject) {
+
+void ModuleScene::RecursivelyDrawGameObjects(GameObject* gameObject) {
 	gameObject->Draw();
 	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
-		RecursiveDraw(*it);
+		RecursivelyDrawGameObjects(*it);
 	}
 }
 
@@ -151,7 +152,7 @@ void ModuleScene::DrawGameObjects() {
 		}
 	} else {
 		//No frustum culling required
-		RecursiveDraw(root);
+		RecursivelyDrawGameObjects(root);
 	}
 
 }
@@ -359,4 +360,33 @@ void ModuleScene::ReestablishGameObjectOnQuadTree(GameObject* obj) {
 
 	if (!obj->Active())return;
 	quadTree->root->InsertGameObject(obj);
+}
+
+void ModuleScene::AddLightComponent(ComponentLight* newLight) {
+	if (newLight == nullptr)return;
+	std::vector<ComponentLight*>::iterator lightIt = std::find(sceneLights.begin(), sceneLights.end(), newLight);
+	if (lightIt == sceneLights.end()) {
+		sceneLights.push_back(newLight);
+	}
+	RecursivelyRecalculateLightning(root);
+}
+
+void ModuleScene::RemoveLightComponent(ComponentLight* newLight) {
+	std::vector<ComponentLight*>::iterator lightIt = std::find(sceneLights.begin(), sceneLights.end(), newLight);
+	if (lightIt != sceneLights.end()) {
+		sceneLights.erase(lightIt);
+	}
+	RecursivelyRecalculateLightning(root);
+}
+
+void ModuleScene::RecursivelyRecalculateLightning(GameObject* gameObject) {
+	if (gameObject == nullptr)return;
+	for (std::vector<RenderingComponent*>::iterator it = gameObject->renderingComponents.begin(); it != gameObject->renderingComponents.end(); ++it) {
+		(*it)->CalculateClosestLights();
+	}
+
+	for (std::vector<GameObject*>::const_iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
+		RecursivelyRecalculateLightning(*it);
+	}
+
 }
