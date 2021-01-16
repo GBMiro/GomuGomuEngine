@@ -94,6 +94,10 @@ void ModuleFileSystem::GetFileName(const char* path, std::string& name) const {
 	name = std::string(filename);
 }
 
+void ModuleFileSystem::GetFileNameNoExtension(const std::string& filename, std::string& name) const {
+	name = filename.substr(0, filename.find_last_of("."));
+}
+
 void ModuleFileSystem::GetDirectoryFiles(const std::string& path, std::vector<std::string>& files) const {
 	std::string pattern(path);
 	pattern.append("\\*");

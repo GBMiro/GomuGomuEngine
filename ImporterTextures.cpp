@@ -56,6 +56,9 @@ void ImporterTextures::Load(Material::Texture* text, const char* buffer, unsigne
 void ImporterTextures::ImportTexture(const char* path) {
 	std::string filename;
 	App->FS->GetFileName(path, filename);
+	std::string ddsName;
+	App->FS->GetFileNameNoExtension(filename, ddsName);
+	ddsName.append(".dds");
 	std::string dest("Assets/Textures/");
 	if (!App->FS->Exists((dest + filename).c_str())) {
 		if (App->FS->Copy(path, (dest + filename).c_str())) {
@@ -66,7 +69,7 @@ void ImporterTextures::ImportTexture(const char* path) {
 				Import(buffer, read);
 				unsigned size = Save(&buffer);
 				std::string libraryPath("Assets/Library/Textures/");
-				App->FS->Save((libraryPath + filename).c_str(), buffer, size);
+				App->FS->Save((libraryPath + ddsName).c_str(), buffer, size);
 				RELEASE(buffer);
 			}
 			else {

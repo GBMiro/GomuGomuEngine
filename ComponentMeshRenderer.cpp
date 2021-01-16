@@ -140,6 +140,7 @@ void ComponentMeshRenderer::DrawOnEditor() {
 				unsigned bytes = iM.Save(material, &materialBuffer);
 				if (bytes > 0) {
 					unsigned written = App->FS->Save((std::string("Assets/Library/Materials/") + material->name).c_str(), materialBuffer, bytes);
+					RELEASE(materialBuffer);
 				}
 			}
 			ImGui::TreePop();

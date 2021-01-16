@@ -24,6 +24,7 @@ public:
 	bool IsDirectory(const char* file) const;
 
 	void GetFileName(const char* path, std::string& name) const;
+	void GetFileNameNoExtension(const std::string& filename, std::string& name) const;
 	void GetDirectoryFiles(const std::string& path, std::vector<std::string>& files) const;
 };
 
