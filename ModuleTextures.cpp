@@ -29,23 +29,30 @@ bool ModuleTextures::CleanUp() {
 	return true;
 }
 
-void ModuleTextures::setMinFilter(unsigned index, unsigned textureID) const {
-	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilters[index]);
-	glBindTexture(GL_TEXTURE_2D, 0);
+void ModuleTextures::SetMinFilter(unsigned index) const {
+	for (std::map<std::string, int>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it) {
+		glBindTexture(GL_TEXTURE_2D, (GLuint)(*it).second);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilters[index]);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
 }
 
-void ModuleTextures::setMagFilter(unsigned index, unsigned textureID) const {
-	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilters[index]);
-	glBindTexture(GL_TEXTURE_2D, 0);
+void ModuleTextures::SetMagFilter(unsigned index) const {
+	for (std::map<std::string, int>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it) {
+		glBindTexture(GL_TEXTURE_2D, (GLuint)(*it).second);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilters[index]);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
-void ModuleTextures::setWrapMode(unsigned index, unsigned textureID) const {
-	glBindTexture(GL_TEXTURE_2D, (GLuint)textureID);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapsModes[index]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapsModes[index]);
-	glBindTexture(GL_TEXTURE_2D, 0);
+void ModuleTextures::SetWrapMode(unsigned index) const {
+	for (std::map<std::string, int>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it) {
+		glBindTexture(GL_TEXTURE_2D, (GLuint)(*it).second);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapsModes[index]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapsModes[index]);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 bool ModuleTextures::ExistsTexture(const char* path, unsigned int& retID) const {

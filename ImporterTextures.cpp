@@ -32,8 +32,7 @@ void ImporterTextures::Load(Material::Texture* text, const char* buffer, unsigne
 	if (App->textures->ExistsTexture(text->name.c_str(), texture)) {
 		text->id = texture;
 		LOG("Texture already loaded");
-	}
-	else {
+	} else {
 		ilGenImages(1, &imageId);
 		ilBindImage(imageId);
 		ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
@@ -42,6 +41,8 @@ void ImporterTextures::Load(Material::Texture* text, const char* buffer, unsigne
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
 		glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -73,16 +74,13 @@ void ImporterTextures::ImportTexture(const char* path) {
 				std::string libraryPath("Assets/Library/Textures/");
 				App->FS->Save((libraryPath + ddsName).c_str(), ddsBuffer, size);
 				RELEASE(ddsBuffer);
-			}
-			else {
+			} else {
 				LOG("Could not load texture");
 			}
-		}
-		else {
+		} else {
 			LOG("Could not copy texture");
 		}
-	}
-	else {
+	} else {
 		LOG("Texture already in assets");
 	}
 }

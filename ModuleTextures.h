@@ -17,9 +17,9 @@ public:
 	bool CleanUp();
 
 
-	void setMinFilter(unsigned index, unsigned textureID) const;
-	void setMagFilter(unsigned index, unsigned textureID) const;
-	void setWrapMode(unsigned index, unsigned textureID) const;
+	void SetMinFilter(unsigned index) const;
+	void SetMagFilter(unsigned index) const;
+	void SetWrapMode(unsigned index ) const;
 
 	bool ExistsTexture(const char* path, unsigned int& retID) const;
 	void InsertTexturePath(const std::string& path, int textureID);

@@ -176,6 +176,12 @@ void ModuleScene::DestroyGameObject(GameObject* go) {
 	if (go->parent != nullptr) {
 		go->RemoveFromParent();
 	}
+	if (App) {
+		if (App->scene) {
+			quadTree->EraseGameObject(go);
+		}
+	}
+
 	RELEASE(go);
 }
 
