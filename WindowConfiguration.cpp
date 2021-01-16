@@ -13,6 +13,7 @@
 #include "GL/glew.h"
 #include "Leaks.h"
 #include "ModuleEditor.h"
+#include "ModuleTextures.h"
 
 constexpr char* filterMinModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
 constexpr char* filterMagModes[] = { "Linear", "Nearest" };
@@ -155,7 +156,7 @@ void WindowConfiguration::Draw() {
 				if (ImGui::Selectable(filterMinModes[i], is_selected)) {
 					indexMin = i;
 					ImGui::SetItemDefaultFocus();
-					//App->model->setMinFilter(indexMin);
+					App->textures->SetMinFilter(indexMin);
 				}
 			}
 			ImGui::EndCombo();
@@ -166,8 +167,8 @@ void WindowConfiguration::Draw() {
 				if (ImGui::Selectable(filterMagModes[i], is_selected)) {
 					indexMax = i;
 					ImGui::SetItemDefaultFocus();
-					//App->model->setMagFilter(indexMax);
-				}
+					App->textures->SetMagFilter(indexMax);
+ 				}
 			}
 			ImGui::EndCombo();
 		}
@@ -177,8 +178,8 @@ void WindowConfiguration::Draw() {
 				if (ImGui::Selectable(wrapModes[i], is_selected)) {
 					indexWrap = i;
 					ImGui::SetItemDefaultFocus();
-					//App->model->setWrapMode(indexWrap);
-				}
+					App->textures->SetWrapMode(indexWrap);
+ 				}
 			}
 			ImGui::EndCombo();
 		}
