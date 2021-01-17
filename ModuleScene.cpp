@@ -232,8 +232,13 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 					RELEASE(buffer);
 					meshRenderer->mesh->Load();
 					meshRenderer->GenerateAABB();
-					App->scene->GetQuadTree()->InsertGameObject(object);
 
+					ComponentTransform* transform = (ComponentTransform*)object->GetComponentOfType(ComponentType::CTTransform);
+
+					if (transform) {
+						meshRenderer->mesh->CalculateScaledTriangles(transform->GetGlobalMatrix(), meshRenderer->mesh->scaledTriangles);
+					}
+					App->scene->GetQuadTree()->InsertGameObject(object);
 					Material* newMat = new Material();
 					ImporterMaterial::Import(scene->mMaterials[scene->mMeshes[i]->mMaterialIndex], newMat);
 					char* bufferMaterial;

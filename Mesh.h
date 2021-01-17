@@ -32,8 +32,9 @@ public:
 
 	void SetFileID(size_t file) { fileID = file; }
 	size_t GetFileID() const { return fileID; }
-	std::vector<Triangle> GetTransformedTriangles(const float4x4& modelMat)const;
-	std::vector<Triangle> GetTriangles()const;
+	const std::vector<Triangle>& GetTransformedTriangles()const;
+	const std::vector<Triangle>& GetTriangles()const;
+	void CalculateScaledTriangles(const float4x4& modelMat, std::vector<Triangle>& tris);
 
 public:
 	int materialIndex;
@@ -44,12 +45,16 @@ public:
 	float* textureCoords = nullptr;
 	float* normals = nullptr;
 	unsigned* indices = nullptr;
-
+	std::vector<Triangle>unscaledTriangles;
+	std::vector<Triangle>scaledTriangles;
 private:
 	AABB axisAlignedBB;
 	unsigned int VBO;
 	unsigned int EBO;
 	unsigned int VAO;
 	size_t fileID;
+
+	void CalculateTriangles(std::vector<Triangle>& tris);
+
 };
 
