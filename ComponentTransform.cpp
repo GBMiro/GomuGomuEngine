@@ -120,6 +120,16 @@ void ComponentTransform::Disable() {
 	enabled = false;
 }
 
+void ComponentTransform::OnEnable() {
+
+}
+
+void ComponentTransform::OnDisable() {
+
+}
+
+
+
 void ComponentTransform::DrawOnEditor() {
 	if (owner->parent) {
 		if (ImGui::CollapsingHeader("Transformations")) {

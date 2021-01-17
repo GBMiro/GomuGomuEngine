@@ -14,10 +14,12 @@ ComponentType Component::GetType() const {
 
 void Component::Enable() {
 	enabled = true;
+	OnEnable();
 }
 
 void Component::Disable() {
 	enabled = false;
+	OnDisable();
 }
 
 

@@ -321,6 +321,18 @@ void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::
 void GameObject::SetActive(bool should) {
 	active = should;
 	App->scene->ReestablishGameObjectOnQuadTree(this);
+
+	if (active) {
+		for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
+			if ((*it)->enabled) {
+				(*it)->OnEnable();
+			}
+		}
+	} else {
+		for (std::vector<Component*>::const_iterator it = components.begin(); it != components.end(); ++it) {
+			(*it)->OnDisable();
+		}
+	}
 }
 
 /// <summary>

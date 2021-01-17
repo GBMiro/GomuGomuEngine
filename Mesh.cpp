@@ -208,17 +208,33 @@ std::vector<Triangle> Mesh::GetTransformedTriangles(const float4x4& modelMat)con
 
 std::vector<Triangle> Mesh::GetTriangles()const {
 	std::vector<Triangle> tris;
-	tris.reserve(numIndices / (3 * 3));
 
-	for (int i = 0; i < numIndices - 9; i += 3 * 3) {
-		float3 triVertices[3];
+	if (numIndices % 3 == 0) {
+		tris.reserve(numIndices / (3 * 3));
 
-		triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);
-		triVertices[1] = float3(vertices[i + 3], vertices[i + 4], vertices[i + 5]);
-		triVertices[2] = float3(vertices[i + 6], vertices[i + 7], vertices[i + 8]);
+		for (int i = 0; i < numIndices ; i += 3 * 3) {
+			float3 triVertices[3];
 
-		Triangle newTri = Triangle(triVertices[0], triVertices[1], triVertices[2]);
-		tris.push_back(newTri);
+			triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);
+			triVertices[1] = float3(vertices[i + 3], vertices[i + 4], vertices[i + 5]);
+			triVertices[2] = float3(vertices[i + 6], vertices[i + 7], vertices[i + 8]);
+
+			Triangle newTri = Triangle(triVertices[0], triVertices[1], triVertices[2]);
+			tris.push_back(newTri);
+		}
+	} else {
+		tris.reserve(numIndices / (3 * 3));
+
+		for (int i = 0; i < numIndices - 9; i += 3 * 3) {
+			float3 triVertices[3];
+
+			triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);
+			triVertices[1] = float3(vertices[i + 3], vertices[i + 4], vertices[i + 5]);
+			triVertices[2] = float3(vertices[i + 6], vertices[i + 7], vertices[i + 8]);
+
+			Triangle newTri = Triangle(triVertices[0], triVertices[1], triVertices[2]);
+			tris.push_back(newTri);
+		}
 	}
 
 

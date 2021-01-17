@@ -15,23 +15,30 @@ ComponentDirectionalLight::~ComponentDirectionalLight() {
 
 }
 
-void ComponentDirectionalLight::Enable() {
-
-}
-
 void ComponentDirectionalLight::Update() {
 
 }
 
-void ComponentDirectionalLight::Disable() {
-
-}
 
 void ComponentDirectionalLight::DrawOnEditor() {
+
+	bool dummyEnabled = enabled;
+	ImGui::PushID(this);
+
+	if (ImGui::Checkbox("", &dummyEnabled)) {
+		if (dummyEnabled) {
+			Enable();
+		} else {
+			Disable();
+		}
+	}
+
+	ImGui::SameLine();
+	ImGui::PopID();
+
 	if (ImGui::CollapsingHeader("Directional Light")) {
 		ComponentLight::DrawOnEditor();
 		if (ImGui::InputFloat3("Direction", direction.ptr())) {}
-
 	}
 
 }

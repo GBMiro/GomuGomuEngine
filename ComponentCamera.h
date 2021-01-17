@@ -13,6 +13,8 @@ public:
 	void Enable() override;
 	void Update()override;
 	void Disable()override;
+	void OnEnable()override;
+	void OnDisable()override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void OnNewParent(GameObject* prevParent, GameObject* newParent)override;
