@@ -28,6 +28,7 @@ public:
 	void ChangeMaterialTexture(Material::Texture* tex, std::string& textureName);
 	//void SetTextureName(std::string name) { textureName = name; }
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
+	void LoadFromJSON(const rapidjson::Value& component) override;
 	const AABB& GetAABB();
 public:
 	Mesh* mesh = nullptr;

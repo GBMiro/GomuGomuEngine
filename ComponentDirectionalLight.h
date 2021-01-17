@@ -13,6 +13,7 @@ public:
 	void DrawGizmos() override;
 	void OnNewParent(GameObject* prevParent, GameObject* newParent)override;
 	void SendValuesToShadingProgram(const unsigned& programID, int id = 0) const override;
+	void LoadFromJSON(const rapidjson::Value& component) override;
 	void WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc);
 	void CreateDebugLines() { GenerateDebugLines(); }
 	void SetDirection(const float3& newDirection) { direction = newDirection; }

@@ -95,26 +95,8 @@ void ImporterModel::Load(const std::string& name) {
 			switch (type) {
 			case ComponentType::CTMeshRenderer:
 				ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)node->CreateComponent((ComponentType)component["Component Type"].GetInt());
-				char* bufferMesh;
-				uint32_t meshFile = component["Mesh File"].GetUint();
-				unsigned bytesRead = App->FS->Load((std::string("Assets/Library/Meshes/").append(std::to_string(meshFile))).c_str(), &bufferMesh);
-				ImporterMesh imp;
-				meshRenderer->mesh = new Mesh();
-				meshRenderer->mesh->SetFileID(meshFile);
-				imp.Load(bufferMesh, meshRenderer->mesh);
-				meshRenderer->mesh->Load();
-				RELEASE(bufferMesh);
-
-				std::string material = component["Material File"].GetString();
-				meshRenderer->material = new Material();
-				char* bufferMaterial;
-				ImporterMaterial im;
-				bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
-				im.Load(bufferMaterial, meshRenderer->material);
-				meshRenderer->GenerateAABB();
-				RELEASE(bufferMaterial);
+				meshRenderer->LoadFromJSON(component);
 				App->scene->GetQuadTree()->InsertGameObject(node);
-				LOG("Inserted node: %s", node->GetName());
 				break;
 			}
 

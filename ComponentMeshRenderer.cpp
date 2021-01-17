@@ -16,6 +16,7 @@
 #include "ModuleTextures.h"
 #include "ImporterTextures.h"
 #include "ImporterMaterial.h"
+#include "ImporterMesh.h"
 #include "ComponentPointLight.h"
 #include "ComponentDirectionalLight.h"
 #include "Leaks.h"
@@ -215,6 +216,29 @@ void ComponentMeshRenderer::WriteToJSON(rapidjson::Value& component, rapidjson::
 	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
 	component.AddMember("Mesh File", mesh->GetFileID(), alloc);
 	component.AddMember("Material File", (rapidjson::Value)rapidjson::StringRef(material->name.c_str()), alloc);
+}
+
+void ComponentMeshRenderer::LoadFromJSON(const rapidjson::Value& component) {
+	char* bufferMesh;
+	uint32_t meshFile = component["Mesh File"].GetUint();
+	unsigned bytesRead = App->FS->Load((std::string("Assets/Library/Meshes/").append(std::to_string(meshFile))).c_str(), &bufferMesh);
+
+	if (bytesRead > 0) {
+		mesh = new Mesh();
+		mesh->SetFileID(meshFile);
+		ImporterMesh::Load(bufferMesh, mesh);
+		mesh->Load();
+		GenerateAABB();
+		RELEASE(bufferMesh);
+
+		std::string material = component["Material File"].GetString();
+		this->material = new Material();
+		char* bufferMaterial;
+		bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
+		ImporterMaterial::Load(bufferMaterial, this->material);
+		RELEASE(bufferMaterial);
+	}
+
 }
 
 void ComponentMeshRenderer::DrawGizmos() {

@@ -220,10 +220,9 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 					App->FS->GetFileName(path, filename);
 					std::hash<std::string> str_hash;
 					meshRenderer->mesh->SetFileID(str_hash(filename + std::string(name).append(std::to_string(i))));
-					ImporterMesh a;
-					a.Import(scene->mMeshes[node->mMeshes[i]], meshRenderer->mesh);
+					ImporterMesh::Import(scene->mMeshes[node->mMeshes[i]], meshRenderer->mesh);
 					char* buffer;
-					unsigned size = a.Save(meshRenderer->mesh, &buffer);
+					unsigned size = ImporterMesh::Save(meshRenderer->mesh, &buffer);
 					unsigned written = App->FS->Save((std::string("Assets/Library/Meshes/") + std::string(std::to_string(meshRenderer->mesh->GetFileID()))).c_str(), buffer, size);
 					if (written != size) {
 						LOG("Error writing the mesh file");
@@ -233,12 +232,12 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 					RELEASE(buffer);
 					meshRenderer->mesh->Load();
 					meshRenderer->GenerateAABB();
+					App->scene->GetQuadTree()->InsertGameObject(object);
 
 					Material* newMat = new Material();
-					ImporterMaterial ai;
-					ai.Import(scene->mMaterials[scene->mMeshes[i]->mMaterialIndex], newMat);
+					ImporterMaterial::Import(scene->mMaterials[scene->mMeshes[i]->mMaterialIndex], newMat);
 					char* bufferMaterial;
-					size = ai.Save(newMat, &bufferMaterial);
+					size = ImporterMaterial::Save(newMat, &bufferMaterial);
 					written = App->FS->Save(std::string("Assets/Library/Materials/").append(newMat->name).c_str(), bufferMaterial, size);
 					if (written != size) {
 						LOG("Error writing the material file");

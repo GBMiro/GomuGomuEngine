@@ -15,6 +15,7 @@ public:
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void SendValuesToShadingProgram(const unsigned& programID, int id = 0) const override;
+	void LoadFromJSON(const rapidjson::Value& component) override;
 	void ComponentPointLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	void CreateDebugLines() { GenerateDebugLines(); }
 	//void OnNewParent(GameObject* prevParent, GameObject* newParent)override;

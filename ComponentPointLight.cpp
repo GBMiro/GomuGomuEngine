@@ -92,6 +92,32 @@ void ComponentPointLight::SendValuesToShadingProgram(const unsigned& program, in
 	glUniform1f(glGetUniformLocation(program, (pointLightShaderString + "intensity").c_str()), lightIntensity);
 }
 
+void ComponentPointLight::LoadFromJSON(const rapidjson::Value& component) {
+
+	float3 lightColor;
+	lightColor.x = component["Light Color"][0].GetFloat();
+	lightColor.y = component["Light Color"][1].GetFloat();
+	lightColor.z = component["Light Color"][2].GetFloat();
+
+	float intensity;
+	intensity = component["Light Intensity"].GetFloat();
+
+	float cAtt;
+	cAtt = component["Constant Att"].GetFloat();
+
+	float lAtt;
+	lAtt = component["Linear Att"].GetFloat();
+
+	float qAtt;
+	qAtt = component["Quadratic Att"].GetFloat();
+
+	this->lightColor = lightColor;
+	this->lightIntensity = intensity;
+	constantAtt = cAtt;
+	linearAtt = lAtt;
+	quadraticAtt = qAtt;
+}
+
 void ComponentPointLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
 
 	component.AddMember("Constant Att", constantAtt, alloc);

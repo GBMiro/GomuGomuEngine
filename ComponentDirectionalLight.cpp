@@ -77,6 +77,27 @@ void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& progr
 	glUniform1f(glGetUniformLocation(program, "dirLight.intensity"), lightIntensity);
 }
 
+void ComponentDirectionalLight::LoadFromJSON(const rapidjson::Value& component) {
+	float3 direction;
+	direction.x = component["Direction"][0].GetFloat();
+	direction.y = component["Direction"][1].GetFloat();
+	direction.z = component["Direction"][2].GetFloat();
+
+	float3 lightColor;
+	lightColor.x = component["Light Color"][0].GetFloat();
+	lightColor.y = component["Light Color"][1].GetFloat();
+	lightColor.z = component["Light Color"][2].GetFloat();
+
+	float intensity;
+	intensity = component["Light Intensity"].GetFloat();
+
+	SetDirection(direction);
+	this->lightColor = lightColor;
+	this->lightIntensity = intensity;
+
+	CreateDebugLines();
+}
+
 void ComponentDirectionalLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {
 
 	rapidjson::Value direction(rapidjson::kArrayType);

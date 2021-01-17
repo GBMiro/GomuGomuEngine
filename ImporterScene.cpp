@@ -6,10 +6,6 @@
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleFileSystem.h"
-#include "ImporterMesh.h"
-#include "ImporterMaterial.h"
-#include "Material.h"
-#include "Mesh.h"
 #include "ComponentMeshRenderer.h"
 #include "ComponentLight.h"
 #include "ComponentDirectionalLight.h"
@@ -21,14 +17,14 @@
 #include <vector>
 #include <map>
 #include "Leaks.h"
-// Refactor this 
+
 void ImporterScene::LoadScene(const char* scene) {
 	std::map<std::uint32_t, GameObject*> nodeSceneID;
 	char* buffer;
 	unsigned read = App->FS->Load(scene, &buffer);
 	if (read != 0) {
 		rapidjson::Document jsonScene;
-		jsonScene.Parse<rapidjson::kParseStopWhenDoneFlag>(buffer).GetParseError(); //Whit this flag works- Null terminated missing?
+		jsonScene.Parse<rapidjson::kParseStopWhenDoneFlag>(buffer).GetParseError();
 		LOG("Scene parsed");
 		assert(jsonScene.IsObject());
 		const rapidjson::Value& objects = jsonScene["Game Objects"];
@@ -66,36 +62,14 @@ void ImporterScene::LoadScene(const char* scene) {
 			GameObject* node = new GameObject(parent, name.c_str(), position, rotation, scale);
 			nodeSceneID.insert(std::pair<std::uint32_t, GameObject*>(uuid, node));
 
-			int k = components.Size();
-
 			for (rapidjson::SizeType j = 1; j < components.Size(); ++j) {
 				const rapidjson::Value& component = components[j];
 				int type = component["Component Type"].GetInt();
 				switch (type) {
 					case ComponentType::CTMeshRenderer: {
-						ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)node->CreateComponent((ComponentType)component["Component Type"].GetInt());
-						char* bufferMesh;
-						uint32_t meshFile = component["Mesh File"].GetUint();
-						unsigned bytesRead = App->FS->Load((std::string("Assets/Library/Meshes/").append(std::to_string(meshFile))).c_str(), &bufferMesh);
-						
-						if (bytesRead > 0) {
-							ImporterMesh imp;
-							meshRenderer->mesh = new Mesh();
-							meshRenderer->mesh->SetFileID(meshFile);
-							imp.Load(bufferMesh, meshRenderer->mesh);
-							meshRenderer->mesh->Load();
-							meshRenderer->GenerateAABB();
-							RELEASE(bufferMesh);
-
-							std::string material = component["Material File"].GetString();
-							meshRenderer->material = new Material();
-							char* bufferMaterial;
-							ImporterMaterial im;
-							bytesRead = App->FS->Load(std::string("Assets/Library/Materials/").append(material).c_str(), &bufferMaterial);
-							im.Load(bufferMaterial, meshRenderer->material);
-							RELEASE(bufferMaterial);
-							App->scene->GetQuadTree()->InsertGameObject(node);
-						}
+						ComponentMeshRenderer* meshRenderer = (ComponentMeshRenderer*)node->CreateComponent((ComponentType)type);
+						meshRenderer->LoadFromJSON(component);
+						App->scene->GetQuadTree()->InsertGameObject(node);
 						break;
 					}
 					case ComponentType::CTCamera: {
@@ -111,52 +85,12 @@ void ImporterScene::LoadScene(const char* scene) {
 						switch ((ComponentLight::LightType)lightType) {
 							case ComponentLight::LightType::DIRECTIONAL: {
 								ComponentDirectionalLight* dirLight = (ComponentDirectionalLight*)node->CreateComponent((ComponentType)type, (ComponentLight::LightType)lightType);
-
-								float3 direction;
-								direction.x = component["Direction"][0].GetFloat();
-								direction.y = component["Direction"][1].GetFloat();
-								direction.z = component["Direction"][2].GetFloat();
-
-								float3 lightColor;
-								lightColor.x = component["Light Color"][0].GetFloat();
-								lightColor.y = component["Light Color"][1].GetFloat();
-								lightColor.z = component["Light Color"][2].GetFloat();
-
-								float intensity;
-								intensity = component["Light Intensity"].GetFloat();
-
-								dirLight->SetDirection(direction);
-								dirLight->lightColor = lightColor;
-								dirLight->lightIntensity = intensity;
-
-								dirLight->CreateDebugLines();
+								dirLight->LoadFromJSON(component);
 								break;
 							}
 							case ComponentLight::LightType::POINT: {
 								ComponentPointLight* pointLight = (ComponentPointLight*)node->CreateComponent((ComponentType)type, (ComponentLight::LightType)lightType);
-
-								float3 lightColor;
-								lightColor.x = component["Light Color"][0].GetFloat();
-								lightColor.y = component["Light Color"][1].GetFloat();
-								lightColor.z = component["Light Color"][2].GetFloat();
-
-								float intensity;
-								intensity = component["Light Intensity"].GetFloat();
-
-								float cAtt;
-								cAtt = component["Constant Att"].GetFloat();
-
-								float lAtt;
-								lAtt = component["Linear Att"].GetFloat();
-
-								float qAtt;
-								qAtt = component["Quadratic Att"].GetFloat();
-
-								pointLight->lightColor = lightColor;
-								pointLight->lightIntensity = intensity;
-								pointLight->constantAtt = cAtt;
-								pointLight->linearAtt = lAtt;
-								pointLight->quadraticAtt = qAtt;
+								pointLight->LoadFromJSON(component);	
 								ComponentTransform* transform = (ComponentTransform*)node->GetComponentOfType(ComponentType::CTTransform);
 								if (transform != nullptr) {
 									transform->SetPosition(position);
