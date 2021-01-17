@@ -61,7 +61,12 @@ void ImporterScene::LoadScene(const char* scene) {
 
 			GameObject* node = new GameObject(parent, name.c_str(), position, rotation, scale);
 			nodeSceneID.insert(std::pair<std::uint32_t, GameObject*>(uuid, node));
-
+			if (object.HasMember("Enabled")) {
+				node->active = object["Enabled"].GetBool();
+			}
+			else {
+				node->active = true;
+			}
 			for (rapidjson::SizeType j = 1; j < components.Size(); ++j) {
 				const rapidjson::Value& component = components[j];
 				int type = component["Component Type"].GetInt();

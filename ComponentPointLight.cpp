@@ -94,6 +94,15 @@ void ComponentPointLight::SendValuesToShadingProgram(const unsigned& program, in
 
 void ComponentPointLight::LoadFromJSON(const rapidjson::Value& component) {
 
+	if (component.HasMember("Enabled")) {
+		enabled = component["Enabled"].GetBool();
+	}
+	else {
+		enabled = true;
+	}
+	if (enabled) OnEnable();
+	else OnDisable();
+
 	float3 lightColor;
 	lightColor.x = component["Light Color"][0].GetFloat();
 	lightColor.y = component["Light Color"][1].GetFloat();

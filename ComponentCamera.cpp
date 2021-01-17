@@ -72,6 +72,7 @@ void ComponentCamera::WriteToJSON(rapidjson::Value& component, rapidjson::Docume
 	component.AddMember("Component Type", GetType(), alloc);
 	component.AddMember("UUID", GetUUID(), alloc);
 	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+	component.AddMember("Enabled", enabled, alloc);
 	component.AddMember("Horizontal FOV", RadToDeg(frustum.HorizontalFov()), alloc);
 	component.AddMember("Aspect Ratio", frustum.AspectRatio(), alloc);
 	component.AddMember("Near Distance", frustum.NearPlaneDistance(), alloc);
@@ -82,6 +83,12 @@ void ComponentCamera::LoadFromJSON(const rapidjson::Value& component) {
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
 	frustum.SetViewPlaneDistances(component["Near Distance"].GetFloat(), component["Far Distance"].GetFloat());
 	frustum.SetHorizontalFovAndAspectRatio(DegToRad(component["Horizontal FOV"].GetFloat()), component["Aspect Ratio"].GetFloat());
+	if (component.HasMember("Enabled")) {
+		enabled = component["Enabled"].GetBool();
+	}
+	else {
+		enabled = true;
+	}
 }
 
 

@@ -304,6 +304,7 @@ void GameObject::RemoveParticularComponent(Component* c) {
 void GameObject::WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc) {
 	gameObject.AddMember("UUID", GetUUID(), alloc);
 	gameObject.AddMember("Parent UUID", parent->GetUUID(), alloc);
+	gameObject.AddMember("Enabled", active, alloc);
 	gameObject.AddMember("Name", (rapidjson::Value)rapidjson::StringRef(name.c_str()), alloc);
 	if (components.size() > 0) {
 		rapidjson::Value gameObjectComponents(rapidjson::kArrayType);

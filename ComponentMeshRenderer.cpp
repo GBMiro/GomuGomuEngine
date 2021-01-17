@@ -214,6 +214,7 @@ void ComponentMeshRenderer::WriteToJSON(rapidjson::Value& component, rapidjson::
 	component.AddMember("Component Type", GetType(), alloc);
 	component.AddMember("UUID", GetUUID(), alloc);
 	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+	component.AddMember("Enabled", enabled, alloc);
 	component.AddMember("Mesh File", mesh->GetFileID(), alloc);
 	component.AddMember("Material File", (rapidjson::Value)rapidjson::StringRef(material->name.c_str()), alloc);
 }
@@ -238,7 +239,12 @@ void ComponentMeshRenderer::LoadFromJSON(const rapidjson::Value& component) {
 		ImporterMaterial::Load(bufferMaterial, this->material);
 		RELEASE(bufferMaterial);
 	}
-
+	if (component.HasMember("Enabled")) {
+		enabled = component["Enabled"].GetBool();
+	}
+	else {
+		enabled = true;
+	}
 }
 
 void ComponentMeshRenderer::DrawGizmos() {

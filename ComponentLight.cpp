@@ -33,6 +33,7 @@ void ComponentLight::WriteToJSON(rapidjson::Value& component, rapidjson::Documen
 	component.AddMember("Component Type", GetType(), alloc);
 	component.AddMember("UUID", GetUUID(), alloc);
 	component.AddMember("ParentUUID", owner->GetUUID(), alloc);
+	component.AddMember("Enabled", enabled, alloc);
 	component.AddMember("Light Component Type", GetLightType(), alloc);
 
 	rapidjson::Value lightColor(rapidjson::kArrayType);

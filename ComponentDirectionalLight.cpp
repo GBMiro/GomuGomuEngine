@@ -78,6 +78,13 @@ void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& progr
 }
 
 void ComponentDirectionalLight::LoadFromJSON(const rapidjson::Value& component) {
+	if (component.HasMember("Enabled")) {
+		enabled = component["Enabled"].GetBool();
+	}
+	else {
+		enabled = true;
+	}
+
 	float3 direction;
 	direction.x = component["Direction"][0].GetFloat();
 	direction.y = component["Direction"][1].GetFloat();
