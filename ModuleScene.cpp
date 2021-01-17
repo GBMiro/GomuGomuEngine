@@ -53,6 +53,7 @@ update_status ModuleScene::PreUpdate() {
 		App->editor->SetSceneToLoad(NO_SCENE);
 		RegenerateQuadTree();
 		App->camera->FocusOnSelected();
+		App->editor->SetGameObjectSelected(nullptr);
 	}
 
 	return UPDATE_CONTINUE;

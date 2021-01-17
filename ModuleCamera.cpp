@@ -149,12 +149,11 @@ void ModuleCamera::LookAt(const float3& point) {
 	pitch = 0.0f;
 }
 
-float4x4 ModuleCamera::GetProjectionMatrix() const {
+const float4x4& ModuleCamera::GetProjectionMatrix() const {
 	return camera->GetFrustum().ProjectionMatrix();
 }
 
-float4x4 ModuleCamera::GetViewMatrix() const {
-
+const float4x4& ModuleCamera::GetViewMatrix() const {
 	return float4x4(camera->GetFrustum().ViewMatrix());
 }
 
@@ -218,10 +217,9 @@ void ModuleCamera::ProcessKeyboardInput(float deltaTime, float speed, float came
 
 		transform->SetPosition(camera->GetFrustum().Pos() + motion * movementSpeed);
 
-
 	}
 
-	//Rotation
+	//Rotation via arrows
 	if (App->input->GetKey(SDL_SCANCODE_LEFT)) {
 		yaw += cameraRotationSpeed * deltaTime;
 		float3x3 rotationMatrix = camera->GetFrustum().ViewMatrix().RotatePart();
@@ -309,10 +307,10 @@ void ModuleCamera::ProcessMouseInput(float deltaTime) {
 }
 
 
-float3 ModuleCamera::GetUpVector() const { return camera->GetFrustum().Up(); }
-float3 ModuleCamera::GetRightVector() const { return camera->GetFrustum().WorldRight(); }
-float3 ModuleCamera::GetFrontVector() const { return camera->GetFrustum().Front(); }
-float3 ModuleCamera::GetCameraPosition() const { return camera->GetFrustum().Pos(); }
+const float3& ModuleCamera::GetUpVector() const { return camera->GetFrustum().Up(); }
+const float3& ModuleCamera::GetRightVector() const { return camera->GetFrustum().WorldRight(); }
+const float3& ModuleCamera::GetFrontVector() const { return camera->GetFrustum().Front(); }
+const float3& ModuleCamera::GetCameraPosition() const { return camera->GetFrustum().Pos(); }
 float ModuleCamera::GetAspectRatio() const { return camera->GetFrustum().AspectRatio(); }
 float ModuleCamera::GetFOV() const { return fov; }
 const Frustum& ModuleCamera::GetFrustum() { return camera->GetFrustum(); }

@@ -41,7 +41,7 @@ void WindowScene::Draw() {
 		if (ImGui::IsWindowHovered()) App->editor->SetGameWindowStatus(true);
 		else App->editor->SetGameWindowStatus(false);
 
-	ImGui::Image((ImTextureID)App->renderer->getFrameTexture(), windowSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((ImTextureID)App->renderer->GetFrameTexture(), windowSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	App->editor->ManageGizmos();
 

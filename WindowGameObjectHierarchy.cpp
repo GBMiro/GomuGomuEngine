@@ -9,6 +9,7 @@
 #include "MathGeoLib/Math/float3.h"
 
 WindowGameObjectHierarchy::WindowGameObjectHierarchy(std::string name, int windowID) : Window(name, windowID) {
+	gameObjectSelected = nullptr;
 }
 
 WindowGameObjectHierarchy::~WindowGameObjectHierarchy() {

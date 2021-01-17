@@ -2,7 +2,6 @@
 #define MATERIAL_H
 #include <vector>
 #include <string>
-#include <assimp/material.h>
 #include "../MathGeoLib/Math/float2.h"
 #include "../MathGeoLib/Math/float3.h"
 

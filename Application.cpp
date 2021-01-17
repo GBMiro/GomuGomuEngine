@@ -83,7 +83,7 @@ update_status Application::Update() {
 	}
 
 	lastDeltaTime = capTimer->Read() / 1000;
-	editor->registerFPS(lastDeltaTime);
+	editor->RegisterFPS(lastDeltaTime);
 
 	return ret;
 }

@@ -105,9 +105,6 @@ void Mesh::CreateAABB() {
 
 void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirectionalLight* dirLight, const std::vector<ComponentPointLight*>& pointLights) {
 
-	//unsigned program = App->renderer->getDefaultProgram();
-	//unsigned program = App->renderer->unLitProgram->GetID();
-
 	unsigned program = App->renderer->litProgram->GetID();
 
 	const float4x4& view = App->camera->GetViewMatrix();
@@ -130,10 +127,6 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 	glUniform1i(glGetUniformLocation(program, "useGammaCorrection"), App->renderer->GetUseGammaCorrection());
 
 	//Lightning values 
-
-	//if (pointLight) {
-	//	pointLight->SendValuesToShadingProgram(program);
-	//}
 	glUniform1i(glGetUniformLocation(program, "nPointLights"), (int)pointLights.size());
 	glUniform1i(glGetUniformLocation(program, "directionalLightFound"), dirLight != nullptr);
 
@@ -144,9 +137,9 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 	if (dirLight) {
 		dirLight->SendValuesToShadingProgram(program);
 	}
-	//Material values
 
-	//Texture binding
+
+	//Material values
 	glActiveTexture(GL_TEXTURE0);
 	unsigned int texID;
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "assimp/scene.h"
 #include "MathGeoLib/Math/float4x4.h"
 #include "MathGeoLib/Geometry/AABB.h"
 #include <string.h>
@@ -8,6 +7,7 @@
 class ComponentPointLight;
 class ComponentDirectionalLight;
 class Material;
+
 class Mesh {
 
 public:
@@ -17,8 +17,8 @@ public:
 	void Load();
 
 	void Draw(const Material* material, const float4x4& model, const ComponentDirectionalLight* dirLight, const std::vector<ComponentPointLight* >& pointLight);
+	
 	void CreateAABB();
-
 
 	int GetNumVertex() const { return numVertex; }
 
@@ -29,9 +29,13 @@ public:
 	const AABB& GetAABB() const { return axisAlignedBB; }
 
 	void SetFileID(size_t file) { fileID = file; }
+
 	size_t GetFileID() const { return fileID; }
+
 	const std::vector<Triangle>& GetTransformedTriangles()const;
+
 	const std::vector<Triangle>& GetTriangles()const;
+
 	void CalculateScaledTriangles(const float4x4& modelMat, std::vector<Triangle>& tris);
 
 public:

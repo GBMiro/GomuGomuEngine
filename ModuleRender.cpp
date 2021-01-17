@@ -151,14 +151,12 @@ update_status ModuleRender::Update() {
 
 	//Draw Grid
 	dd::xzSquareGrid(-10, 10, 0.0f, 1.0f, gridColor);
-	float4x4 proj = App->camera->GetProjectionMatrix();
-	float4x4 view = App->camera->GetViewMatrix();
 	GLsizei h, w;
 
 	SDL_GetWindowSize(App->window->window, &w, &h);
 
 	//DebugDraw call
-	App->debugDraw->Draw(view, proj, w, h);
+	App->debugDraw->Draw(App->camera->GetViewMatrix(), App->camera->GetProjectionMatrix(), w, h);
 
 	//Now we pass on to draw on the viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -206,31 +204,31 @@ void ModuleRender::WindowResized(unsigned width, unsigned height) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void* ModuleRender::getContext() const {
+void* ModuleRender::GetContext() const {
 	return context;
 }
 
-const unsigned& ModuleRender::getDefaultProgram() const {
+unsigned ModuleRender::GetDefaultProgram() const {
 	return defaultProgram->GetID();
 }
 
-void ModuleRender::getGridColor(float* color) const {
+void ModuleRender::GetGridColor(float* color) const {
 	color[0] = gridColor.x;
 	color[1] = gridColor.y;
 	color[2] = gridColor.z;
 }
 
-void ModuleRender::getBackgroundColor(float* color) const {
+void ModuleRender::GetBackgroundColor(float* color) const {
 	color[0] = backgroundColor.x;
 	color[1] = backgroundColor.y;
 	color[2] = backgroundColor.z;
 }
 
-void ModuleRender::setGridColor(const float* color) {
+void ModuleRender::SetGridColor(const float* color) {
 	gridColor = float3(color[0], color[1], color[2]);
 }
 
-void ModuleRender::setBackgroundColor(const float* color) {
+void ModuleRender::SetBackgroundColor(const float* color) {
 	backgroundColor = float3(color[0], color[1], color[2]);
 }
 
@@ -238,11 +236,11 @@ const float3& ModuleRender::GetDefaultColor() {
 	return defaultColor;
 }
 
-const bool& ModuleRender::GetUseToneMapping() {
+bool ModuleRender::GetUseToneMapping() {
 	return useToneMapping;
 }
 
-const bool& ModuleRender::GetUseGammaCorrection() {
+bool ModuleRender::GetUseGammaCorrection() {
 	return useGammaCorrection;
 }
 

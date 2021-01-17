@@ -1,13 +1,14 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "Window.h"
 #include <vector>
 #include "imgui.h"
 #include "ImGuizmo.h"
 #include "MathGeoLib/Geometry/LineSegment.h"
 #include "ModuleScene.h"
 #include <map>
+
+class Window;
 class WindowMonitor;
 class WindowConfiguration;
 class WindowConsole;
@@ -47,10 +48,9 @@ public:
 
 	bool CleanUp();
 
-	void registerFPS(float deltaTime) const;
-	void registerLog(const char* log) const;
-	void cleanProperties() const;
-	void fileDropped(const char* filename) const;
+	void RegisterFPS(float deltaTime) const;
+	void RegisterLog(const char* log) const;
+	void FileDropped(const char* filename) const;
 	void SetGameWindowStatus(bool state) { gameWindowSelectedOrHovered = state; }
 	bool GetGameWindowStatus() const { return gameWindowSelectedOrHovered; }
 

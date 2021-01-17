@@ -102,9 +102,21 @@ void WindowConfiguration::Draw() {
 		ImGui::NewLine();
 		if (ImGui::InputFloat3("Position", &pos[0], "%.3f", ImGuiInputTextFlags_ReadOnly));
 		ImGui::NewLine();
-		if (ImGui::SliderFloat("Movement Speed", &App->camera->cameraSpeed, 1.0f, MaxMovSpeed));
-		if (ImGui::SliderFloat("Rotation Speed", &App->camera->angleSpeed, 1.0f, MaxRotSpeed));
-		if (ImGui::SliderFloat("Zoom Speed", &App->camera->zoomSpeed, 1.0f, MaxZoomSpeed));
+
+		float dummySpeed = App->camera->GetCameraSpeed();
+		float dummmyAngleSpeed = App->camera->GetAngleSpeed();
+		float dummyZoomSpeed = App->camera->GetZoomSpeed();
+
+		if (ImGui::SliderFloat("Movement Speed", &dummySpeed, 1.0f, MaxMovSpeed)) {
+			App->camera->SetCameraSpeed(dummySpeed);
+		}
+		if (ImGui::SliderFloat("Rotation Speed", &dummmyAngleSpeed, 1.0f, MaxRotSpeed)) {
+			App->camera->SetAngleSpeed(dummmyAngleSpeed);
+		}
+		if (ImGui::SliderFloat("Zoom Speed", &dummyZoomSpeed, 1.0f, MaxZoomSpeed)) {
+			App->camera->SetZoomSpeed(dummyZoomSpeed);
+		}
+
 		ImGui::NewLine();
 		if (ImGui::SliderFloat("zNear", &zNear, 0.1f, MaxZNear)) App->camera->SetPlanes(zNear, zFar);
 		if (ImGui::SliderFloat("zFar", &zFar, 0.1f, MaxZFar)) App->camera->SetPlanes(zNear, zFar);
@@ -126,15 +138,15 @@ void WindowConfiguration::Draw() {
 		ImGui::ColorEdit3("Grid Color", gridColor);
 		float currentColor[3];
 		if (currentColor != gridColor) {
-			App->renderer->setGridColor(gridColor);
+			App->renderer->SetGridColor(gridColor);
 		}
 
 		static float backgroundColor[3] = { 0.1f, 0.1f, 0.1f };
-		App->renderer->getGridColor(currentColor);
-		App->renderer->getBackgroundColor(currentColor);
+		App->renderer->GetGridColor(currentColor);
+		App->renderer->GetBackgroundColor(currentColor);
 		ImGui::ColorEdit3("Background Color", backgroundColor);
 		if (currentColor != backgroundColor) {
-			App->renderer->setBackgroundColor(backgroundColor);
+			App->renderer->SetBackgroundColor(backgroundColor);
 		}
 
 		bool dummyToneMapping = App->renderer->GetUseToneMapping();

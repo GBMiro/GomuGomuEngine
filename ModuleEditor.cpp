@@ -1,4 +1,5 @@
 #include "ModuleEditor.h"
+#include "Window.h"
 #include "backends/imgui_impl_sdl.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "Application.h"
@@ -52,7 +53,7 @@ bool ModuleEditor::Init() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer->getContext());
+	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer->GetContext());
 	ImGui_ImplOpenGL3_Init();
 	ImGuizmo::Enable(true);
 	return true;
@@ -235,20 +236,17 @@ void ModuleEditor::Draw() {
 	}
 }
 
-void ModuleEditor::registerFPS(float deltaTime) const {
-	monitor->addData(deltaTime);
+void ModuleEditor::RegisterFPS(float deltaTime) const {
+	monitor->AddData(deltaTime);
 }
 
-void ModuleEditor::registerLog(const char* log) const {
-
-	console->addLog(log);
+void ModuleEditor::RegisterLog(const char* log) const {
+	console->AddLog(log);
 }
 
-void ModuleEditor::cleanProperties() const {
-	properties->cleanProperties();
-}
 
-void ModuleEditor::fileDropped(const char* filename) const {
+
+void ModuleEditor::FileDropped(const char* filename) const {
 	std::string file(filename);
 	int posExtension = file.find_last_of(".") + 1;
 	std::string extension = file.substr(posExtension);
@@ -256,6 +254,8 @@ void ModuleEditor::fileDropped(const char* filename) const {
 		App->scene->AddModel(filename);
 	} else if (_stricmp(extension.c_str(), "dds") == 0 || _stricmp(extension.c_str(), "png") == 0 || _stricmp(extension.c_str(), "jpg") == 0 || _stricmp(extension.c_str(), "tif") == 0) {
 		ImporterTextures::ImportTexture(filename);
+	} else {
+		LOG("File format not supported");
 	}
 }
 
@@ -315,27 +315,6 @@ GameObject* ModuleEditor::TryToSelectGameObject(const LineSegment& picking, bool
 				}
 				++id;
 			}
-
-
-			//std::reverse(possibleObjs.begin(), possibleObjs.end());
-			//int id = 0;
-
-			//while (selected == nullptr && id < possibleObjs.size()) {
-			//	if (possibleObjs[id] != App->scene->GetRoot()) {
-			//		if (hierarchy->GetGameObjectSelected() == possibleObjs[id]) {
-			//			for (std::vector<GameObject*>::iterator it = possibleObjs.begin(); it != possibleObjs.end() && selected == nullptr; ++it) {
-			//				if (CheckRayIntersectionWithMeshRenderer(picking, *it)) {
-			//					selected = *it;
-			//				}
-			//			}
-			//		} else if (!PreviouslySelected(possibleObjs[id])) {
-			//			selected = possibleObjs[id];
-			//		}
-			//	}
-
-			//	id++;
-			//}
-
 		}
 	} else {
 		if (useMultiMap) {
@@ -379,9 +358,6 @@ GameObject* ModuleEditor::TryToSelectGameObject(const LineSegment& picking, bool
 					}
 					++id;
 				}
-
-
-
 			}
 
 		}
@@ -433,8 +409,6 @@ bool ModuleEditor::PreviouslySelected(GameObject* obj)const {
 	return found;
 }
 
-
-
 bool ModuleEditor::CheckRayIntersectionWithMeshRenderer(const LineSegment& picking, const GameObject* o) {
 	ComponentMeshRenderer* mesh = (ComponentMeshRenderer*)o->GetComponentOfType(ComponentType::CTMeshRenderer);
 	if (!mesh)return false;
@@ -461,7 +435,6 @@ bool ModuleEditor::CheckRayIntersectionWithMeshRenderer(const LineSegment& picki
 
 
 void ModuleEditor::CheckRayIntersectionWithGameObjectAndChildren(const LineSegment& ray, std::vector<GameObject*>& possibleAABBs, GameObject* o, const GameObject* currentSelected) {
-	//Use multi map
 	if (o != currentSelected) {
 		AABB aabb = o->GetAABB();
 		Ray realRay = ray.ToRay();
@@ -515,23 +488,7 @@ void ModuleEditor::CheckRayIntersectionWithQuadTreeNode(const LineSegment& picki
 bool ModuleEditor::GetDrawQuadTree()const {
 	return drawQuadTree;
 }
+
 void ModuleEditor::SetDrawQuadTree(bool should) {
 	drawQuadTree = should;
 }
-
-//
-//void ModuleEditor::CheckRayIntersectionWithQuadTreeNode(const LineSegment& picking, std::vector<QuadtreeNode>& possibleQTrees, QuadtreeNode& node) {
-//	AABB aabb = node.boundingBox;
-//	Ray realRay = picking.ToRay();
-//
-//	if (realRay.Intersects(aabb)) {
-//		possibleQTrees.push_back(node);
-//	}
-//
-//	if (node.subdivided) {
-//		for (std::vector<QuadtreeNode>::iterator it = node.childNodes.begin(); it != node.childNodes.end(); ++it) {
-//			CheckRayIntersectionWithQuadTreeNode(picking, possibleQTrees, *it);
-//		}
-//	}
-//
-//}

@@ -84,21 +84,17 @@ update_status ModuleInput::PreUpdate() {
 			break;
 
 		case SDL_DROPFILE:
-			App->editor->fileDropped(event.drop.file);
-			App->editor->cleanProperties();
-			App->camera->FocusOnSelected();
+			App->editor->FileDropped(event.drop.file);
 			break;
 
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
-				//case SDL_WINDOWEVENT_LEAVE:
 			case SDL_WINDOWEVENT_HIDDEN:
 			case SDL_WINDOWEVENT_MINIMIZED:
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 				windowEvents[WE_HIDE] = true;
 				break;
 
-				//case SDL_WINDOWEVENT_ENTER:
 			case SDL_WINDOWEVENT_SHOWN:
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 			case SDL_WINDOWEVENT_MAXIMIZED:
@@ -106,11 +102,9 @@ update_status ModuleInput::PreUpdate() {
 				windowEvents[WE_SHOW] = true;
 				break;
 			case SDL_WINDOWEVENT_RESIZED:
-				//App->camera->SetAspectRatio(event.window.data1/(float)event.window.data2);
 				App->window->width = event.window.data1;
 				App->window->height = event.window.data2;
 				App->renderer->WindowResized(App->window->width, App->window->height);
-				LOG("Input: %d,    %d", App->window->width, App->window->height);
 				break;
 			}
 			break;
@@ -150,7 +144,6 @@ bool ModuleInput::CleanUp() {
 	return true;
 }
 
-// ---------
 bool ModuleInput::GetWindowEvent(EventWindow ev) const {
 	return windowEvents[ev];
 }

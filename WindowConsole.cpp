@@ -10,7 +10,7 @@ WindowConsole::~WindowConsole() {
 	buffer.clear();
 }
 
-void WindowConsole::addLog(const char* fmt, ...) IM_FMTARGS(2) {
+void WindowConsole::AddLog(const char* fmt, ...) IM_FMTARGS(2) {
 
 	int old_size = buffer.size();
 	va_list args;
