@@ -147,8 +147,19 @@ void WindowConfiguration::Draw() {
 		}
 	}
 	if (ImGui::CollapsingHeader("Scene Settings")) {
-		ImGui::DragFloat3("Ambient light Color", App->scene->ambientLight.ptr());
-		ImGui::DragFloat("Ambient light intensity ", &App->scene->ambientIntensity);
+
+		float3 dummyAmbientColor = App->scene->GetAmbientColor();
+		float dummyAmbientIntensity = App->scene->GetAmbientIntensity();
+
+		if (ImGui::DragFloat3("Ambient light Color", dummyAmbientColor.ptr())) {
+			App->scene->SetAmbientColor(dummyAmbientColor);
+		}
+
+		if (ImGui::DragFloat("Ambient light intensity ", &dummyAmbientIntensity, 0.01f, 0, 2.0f)) {
+			App->scene->SetAmbientIntensity(dummyAmbientIntensity);
+		}
+
+
 		ImGui::Text("Culling Camera:");
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(1.0, 1.0, 0.0, 1.0), App->renderer->GetCullingCamera() == nullptr ? "None" : App->renderer->GetCullingCamera()->owner->GetName());

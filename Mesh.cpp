@@ -120,8 +120,9 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 
 
 	//General values
-	glUniform3fv(glGetUniformLocation(program, "ambientColor"), 1, App->scene->ambientLight.ptr());
-	glUniform1fv(glGetUniformLocation(program, "ambientIntensity"), 1, &App->scene->ambientIntensity);
+	glUniform3fv(glGetUniformLocation(program, "ambientColor"), 1, App->scene->GetAmbientColor().ptr());
+
+	glUniform1f(glGetUniformLocation(program, "ambientIntensity"), App->scene->GetAmbientIntensity());
 
 	glUniform1i(glGetUniformLocation(program, "useToneMapping"), App->renderer->GetUseToneMapping());
 	glUniform1i(glGetUniformLocation(program, "useGammaCorrection"), App->renderer->GetUseGammaCorrection());
@@ -152,10 +153,12 @@ void Mesh::Draw(const Material* mat, const float4x4& model, const ComponentDirec
 	if (mat->GetTextureID(texID, TextureType::DIFFUSE)) {
 		glBindTexture(GL_TEXTURE_2D, texID);
 		hasDiffTex = true;
+		glUniform1i(glGetUniformLocation(program, "material.diffuseTex"), 0);
+	} else {
+		glUniform3fv(glGetUniformLocation(program, "objectColor"), 1, mat->GetDiffuseColor().ptr());
 	}
 
 	glUniform1i(glGetUniformLocation(program, "material.useDiffuseTexture"), hasDiffTex);
-	glUniform1i(glGetUniformLocation(program, "material.diffuseTex"), 0);
 
 	glUniform3fv(glGetUniformLocation(program, "viewPos"), 1, App->camera->GetCameraPosition().ptr());
 
@@ -212,7 +215,7 @@ std::vector<Triangle> Mesh::GetTriangles()const {
 	if (numIndices % 3 == 0) {
 		tris.reserve(numIndices / (3 * 3));
 
-		for (int i = 0; i < numIndices ; i += 3 * 3) {
+		for (int i = 0; i < numIndices; i += 3 * 3) {
 			float3 triVertices[3];
 
 			triVertices[0] = float3(vertices[i], vertices[i + 1], vertices[i + 2]);

@@ -80,7 +80,7 @@ void ModuleCamera::FocusOnSelected() {
 	GameObject* selection = App->editor->GetGameObjectSelected();
 	if (!selection)return;
 
-	float distance = 1;
+	float distance = 0.8f;
 	vec center = vec(0, 0, 0);
 
 	ComponentTransform* selectedTransform = (ComponentTransform*)selection->GetComponentOfType(ComponentType::CTTransform);
@@ -90,8 +90,11 @@ void ModuleCamera::FocusOnSelected() {
 	}
 
 	AABB aaBB = selection->GetAABB();
-	distance += (aaBB.MinimalEnclosingSphere().Diameter() / 3) / Abs(sin(DEGTORAD * fov / 2));
-	center = aaBB.CenterPoint();
+
+	if (aaBB.maxPoint.x > 0 && aaBB.minPoint.x < 0) {
+		distance += (aaBB.MinimalEnclosingSphere().Diameter() / 3) / Abs(sin(DEGTORAD * fov / 2));
+		center = aaBB.CenterPoint();
+	}
 
 	Frustum frustum = camera->GetFrustum();
 	transform->SetPosition(center + frustum.Front().Neg() * distance * 2);
@@ -106,8 +109,24 @@ void ModuleCamera::OrbitCamera(float xOffset, float yOffset) {
 	float3 right = frustum.WorldRight().Normalized();
 
 	vec center = vec(0, 0, 0);
+
 	GameObject* selection = App->editor->GetGameObjectSelected();
-	if (selection) center = selection->GetAABB().CenterPoint();
+
+	selection = selection ? selection : App->scene->GetRoot();
+
+	if (selection) {
+
+		AABB aaBB = selection->GetAABB();
+
+		if (aaBB.maxPoint.x > 0 && aaBB.minPoint.x < 0) {
+			center = aaBB.CenterPoint();
+		} else {
+			ComponentTransform* selectedTransform = (ComponentTransform*)selection->GetComponentOfType(ComponentType::CTTransform);
+			if (selectedTransform != nullptr) {
+				center = selectedTransform->Position();
+			}
+		}
+	}
 
 	float3 camFocusVector = frustum.Pos() - center;
 	float3x3 rotationMatrixY = frustum.ViewMatrix().RotatePart();

@@ -21,13 +21,14 @@
 #include "ComponentDirectionalLight.h"
 #include "ComponentSpotLight.h"
 #include "ModuleRender.h"
+#include "ModuleCamera.h"
 #include "Quadtree.h"
 #include "MathGeoLib/Geometry/AABB.h"
 #include "Leaks.h"
 
 
 ModuleScene::ModuleScene() {
-	ambientLight = float3(0.1f, 0.1f, 0.1f);
+	ambientLightColor = float3(0.1f, 0.1f, 0.1f);
 	ambientIntensity = 0.1f;
 }
 
@@ -36,64 +37,23 @@ ModuleScene::~ModuleScene() {
 }
 
 bool ModuleScene::Init() {
-
 	root = new GameObject(nullptr, "Fake root node");
 	quadTree = new Quadtree(AABB(float3(-60, 0, -60), float3(60, 20, 60)));
 	return true;
 }
 
 bool ModuleScene::Start() {
-	Timer* t = new Timer();
-	t->Start();
-	//ImporterScene::LoadScene("Scene.fbx");
-	//LOG("Scene loaded from json: %.f ms", t->Read());
-
-	t->Start();
-	//LOG("Second baker house from json: %.f ms", t->Read());
-
-	//GameObject* dummy = CreateGameObject("Dummy", root->children[1]);
-	//DestroyGameObject(dummy);
-	RELEASE(t);
-
-
-
-	/*GameObject* pointLightObj = CreateGameObject("PointLight", root);
-	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
-
-	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
-	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
-
-	/*
-
-	GameObject* pointLightObj = CreateGameObject("PointLight", root);
-	pointLight = (ComponentPointLight*)pointLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::POINT);
-
-	GameObject* dirLightObj = CreateGameObject("Directional Light", root);
-	dirLight = (ComponentDirectionalLight*)dirLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::DIRECTIONAL);*/
-
-	//GameObject* spotLightObj = CreateGameObject("SpotLight", root);
-	//ComponentSpotLight* spotLight = (ComponentSpotLight*)spotLightObj->CreateComponent(ComponentType::CTLight, ComponentLight::LightType::SPOT);
-
 	return true;
 }
 update_status ModuleScene::PreUpdate() {
-	// We calculate quadTree each frame. Try to find an efficient way.
 	SceneType scene = App->editor->GetSceneToLoad();
 	if (scene != NO_SCENE) {
 		LoadScene(scene);
 		App->editor->SetGameObjectSelected(root);
 		App->editor->SetSceneToLoad(NO_SCENE);
 		RegenerateQuadTree();
-	} else {
-		static bool once = false;
-		if (!once) {
-			RegenerateQuadTree();
-			once = true;
-		}
+		App->camera->FocusOnSelected();
 	}
-	//RELEASE(quadTree);
-	//quadTree = new Quadtree(AABB(float3(-15, 0, -15), float3(15, 20, 15)));
-
 
 	return UPDATE_CONTINUE;
 }
@@ -125,7 +85,6 @@ update_status ModuleScene::PostUpdate() {
 }
 
 void ModuleScene::UpdateGameObjects(GameObject* gameObject) {
-	//if (gameObject->GetComponentOfType(CTMeshRenderer)) quadTree->InsertGameObject(gameObject);
 	gameObject->Update();
 	for (std::vector<GameObject*>::iterator it = gameObject->children.begin(); it != gameObject->children.end(); ++it) {
 		UpdateGameObjects(*it);
@@ -143,6 +102,7 @@ void ModuleScene::RecursivelyDrawGameObjects(GameObject* gameObject) {
 
 
 void ModuleScene::DrawGameObjects() {
+	//Check for gameObjects whose QuadTree collides with camera frustum, draw those whose AABB collide with camera frustum
 	if (App->renderer->GetCullingCamera() && App->renderer->GetFrustumCulling()) {
 		std::vector<GameObject*>objectsToDraw;
 		App->renderer->CheckCullingFrustumIntersectionWithQuadTree(objectsToDraw, *quadTree->root);
@@ -151,14 +111,13 @@ void ModuleScene::DrawGameObjects() {
 			(*it)->Draw();
 		}
 	} else {
-		//No frustum culling required
+		//No frustum culling required, recursively draw everything
 		RecursivelyDrawGameObjects(root);
 	}
 
 }
 
 bool ModuleScene::CleanUp() {
-	//ImporterScene::SaveScene();
 	RELEASE(root);
 	RELEASE(quadTree);
 	return true;
@@ -172,22 +131,28 @@ GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent) 
 }
 
 void ModuleScene::DestroyGameObject(GameObject* go) {
+	//GameObject selected to prevent problems
 	App->editor->SetGameObjectSelected(nullptr);
 	if (go == nullptr)return;
 
+	//We remove the GameObject from its parent's vector
 	if (go->parent != nullptr) {
 		go->RemoveFromParent();
 	}
+
+	//GameObject is removed from QuadTree
 	if (App) {
 		if (App->scene) {
 			quadTree->EraseGameObject(go);
 		}
 	}
 
+	//Actually call Destroyer on GameObject
 	RELEASE(go);
 }
 
-GameObject* ModuleScene::AddObject(const char* path) {
+//This Adds an fbx with it's meshes to the scene, if it was previously loaded, it will load directly from custom file format
+GameObject* ModuleScene::AddModel(const char* path) {
 	GameObject* created = nullptr;
 	Timer* t = new Timer();
 	LOG("Loading object...");
@@ -222,6 +187,8 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 	aiQuaternion rotation;
 	node->mTransformation.Decompose(scale, rotation, position);
 	GameObject* object = nullptr;
+
+	//We consider GameObjects named with $Assimp prefix to be "noise", meaning that we need to acumulate their transforms and add them up in the final object to prevent too many GameObjects in scene
 	bool noise = std::string(node->mName.C_Str()).find("$Assimp") != std::string::npos;
 	if (!noise) {
 		float4x4 aux = float4x4::FromTRS(float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
@@ -230,17 +197,15 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 		Quat rot;
 		transf.Decompose(pos, rot, sc);
 		object = new GameObject(parent, name, pos, rot, sc);
-		//float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
 	}
-	//GameObject* object = new GameObject(parent, name, float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
+
 	if (node->mNumChildren > 0) {
 		for (unsigned i = 0; i < node->mNumChildren; ++i) {
 			if (noise) {
 				float4x4 aux = float4x4::FromTRS(float3(position.x, position.y, position.z), Quat(rotation.x, rotation.y, rotation.z, rotation.w), float3(scale.x / scale.x, scale.y / scale.y, scale.z / scale.z));
 				transf = transf * aux;
 				CreateGameObject(path, scene, node->mChildren[i], parent, transf);
-			}
-			else {
+			} else {
 				CreateGameObject(path, scene, node->mChildren[i], object, transf);
 			}
 		}
@@ -286,7 +251,6 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 						meshRenderer->SetMaterial(newMat);
 					}
 
-					//quadTree->InsertGameObject(object);
 				}
 			}
 		}
@@ -295,7 +259,8 @@ GameObject* ModuleScene::CreateGameObject(const char* path, const aiScene* scene
 	return object;
 }
 
-void ModuleScene::GetChildrenGameObjects(GameObject* obj, std::vector<GameObject*>& gameObjects, bool isRoot) {
+//Recursively adds gameObjects and their children to a vector passed by reference
+void ModuleScene::GetChildrenGameObjects(GameObject* obj, std::vector<GameObject*>& gameObjects, bool isRoot) const {
 	if (!isRoot) {
 		gameObjects.push_back(obj);
 	}
@@ -303,10 +268,6 @@ void ModuleScene::GetChildrenGameObjects(GameObject* obj, std::vector<GameObject
 	for (std::vector<GameObject*>::iterator it = obj->children.begin(); it != obj->children.end(); ++it) {
 		GetChildrenGameObjects(*it, gameObjects, false);
 	}
-
-	//for (std::vector<GameObject*>::iterator it = obj->children.begin(); it != root->children.end(); ++it) {
-	//	GetChildrenGameObjects(*it, gameObjects, false);
-	//}
 }
 
 void ModuleScene::LoadScene(SceneType type) {
@@ -345,9 +306,6 @@ void ModuleScene::RegenerateQuadTree() {
 	GetChildrenGameObjects(root, objs);
 
 	for (std::vector<GameObject*>::iterator it = objs.begin(); it != objs.end(); ++it) {
-
-		//ReestablishGameObjectOnQuadTree(*it);
-
 		if ((*it)->renderingComponents.size() > 0) {
 			quadTree->InsertGameObject(*it);
 		}
@@ -380,6 +338,7 @@ void ModuleScene::RemoveLightComponent(ComponentLight* newLight) {
 	RecursivelyRecalculateLightning(root);
 }
 
+//This recursively finds all RenderingComponents inside GameObjects and calls their CalculateClosestLights method
 void ModuleScene::RecursivelyRecalculateLightning(GameObject* gameObject) {
 	if (gameObject == nullptr)return;
 	for (std::vector<RenderingComponent*>::iterator it = gameObject->renderingComponents.begin(); it != gameObject->renderingComponents.end(); ++it) {

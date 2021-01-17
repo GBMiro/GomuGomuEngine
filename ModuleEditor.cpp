@@ -253,7 +253,7 @@ void ModuleEditor::fileDropped(const char* filename) const {
 	int posExtension = file.find_last_of(".") + 1;
 	std::string extension = file.substr(posExtension);
 	if (_stricmp(extension.c_str(), "fbx") == 0) {
-		App->scene->AddObject(filename);
+		App->scene->AddModel(filename);
 	}
 	else if (_stricmp(extension.c_str(), "dds") == 0 || _stricmp(extension.c_str(), "png") == 0 || _stricmp(extension.c_str(), "jpg") == 0 || _stricmp(extension.c_str(), "tif") == 0) {
 		ImporterTextures::ImportTexture(filename);
