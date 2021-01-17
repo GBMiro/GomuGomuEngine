@@ -7,24 +7,25 @@
 #include "MathGeoLib/Math/float2.h"
 
 class ModuleTextures : public Module {
-
+private:
+	std::map<std::string, int> textureMap;
 public:
 	ModuleTextures();
+
 	~ModuleTextures();
 
 	bool Init();
 
 	bool CleanUp();
 
-	unsigned int LoadTexture(const char* path, const char* objectPath, float2 diffuseTexSize);
+	void SetMinFilter(unsigned index) const;
 
-	void setMinFilter(unsigned index, unsigned textureID) const;
-	void setMagFilter(unsigned index, unsigned textureID) const;
-	void setWrapMode(unsigned index, unsigned textureID) const;
+	void SetMagFilter(unsigned index) const;
+
+	void SetWrapMode(unsigned index) const;
 
 	bool ExistsTexture(const char* path, unsigned int& retID) const;
 
-private:
-	std::map<std::string, int> textureMap;
+	void InsertTexturePath(const std::string& path, int textureID);
 };
 

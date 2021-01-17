@@ -6,26 +6,58 @@
 #include "ModuleWindow.h"
 #include "ModuleCamera.h"
 #include "ModuleEditor.h"
+#include "Globals.h"
 
 WindowScene::WindowScene(std::string name, int windowID) : Window(name, windowID) {
-	flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar |ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollWithMouse;
+	flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollWithMouse;
 }
 
 WindowScene::~WindowScene() {
+
 }
 
 void WindowScene::Draw() {
 
+	//Push and Pop style var generate a crash when minimization happens
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	if (!active) return;
 	if (!ImGui::Begin(name.c_str(), &active, flags)) {
 		ImGui::End();
+		ImGui::PopStyleVar();
 		return;
 	}
-	ImVec2 size = ImGui::GetWindowSize();
-	App->camera->SetAspectRatio(size.x / (float)size.y);
-	if (ImGui::IsWindowHovered()) App->editor->SetGameWindowStatus(true);
-	else App->editor->SetGameWindowStatus(false);
-	//LOG("Window Hovered %d, Focus: %d", App->editor->GetGameWindowStatus(), ImGui::IsWindowFocused());
-	ImGui::Image((ImTextureID)App->renderer->getFrameTexture(), size, ImVec2(0, 1), ImVec2(1, 0));
+
+	//This should only happen onWindowResize()
+	windowSize = ImGui::GetWindowSize();
+	mousePosInWindow = ImGui::GetIO().MousePos;
+	windowPos = ImGui::GetWindowPos();
+
+	mousePosInWindow.x -= windowPos.x;
+	mousePosInWindow.y -= windowPos.y;
+
+	mousePosInWindow.y -= 16;
+
+	App->camera->SetAspectRatio(windowSize.x / (float)windowSize.y);
+		if (ImGui::IsWindowHovered()) App->editor->SetGameWindowStatus(true);
+		else App->editor->SetGameWindowStatus(false);
+
+	ImGui::Image((ImTextureID)App->renderer->GetFrameTexture(), windowSize, ImVec2(0, 1), ImVec2(1, 0));
+
+	App->editor->ManageGizmos();
+
 	ImGui::End();
+	ImGui::PopStyleVar();
+
+}
+
+const ImVec2& WindowScene::GetSize()const {
+	return windowSize;
+}
+
+const ImVec2& WindowScene::GetMousePosInWindow()const {
+	return mousePosInWindow;
+}
+
+const ImVec2& WindowScene::GetPosition()const {
+	return windowPos;
 }

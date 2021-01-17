@@ -11,7 +11,7 @@ public:
 
 	void Draw();
 
-	void addLog(const char* fmt, ...) IM_FMTARGS(2);
+	void AddLog(const char* fmt, ...) IM_FMTARGS(2);
 
 private:
 	ImGuiTextBuffer buffer;

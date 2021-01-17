@@ -8,8 +8,7 @@
 
 void log(const char file[], int line, const char* format, ...);
 
-enum update_status
-{
+enum update_status {
 	UPDATE_CONTINUE = 1,
 	UPDATE_STOP,
 	UPDATE_ERROR
@@ -41,5 +40,5 @@ enum update_status
 #define FULLSCREEN false
 #define VSYNC true
 #define TITLE "Gomu Gomu Engine"
-
+#define MAX_POINT_LIGHTS 8
 #define DEGTORAD M_PI / 180.0

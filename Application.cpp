@@ -9,6 +9,7 @@
 #include "ModuleTextures.h"
 #include "ModuleScene.h"
 #include "Brofiler/include/Brofiler.h"
+#include "ModuleFileSystem.h"
 #include "Leaks.h"
 #include "Timer.h"
 
@@ -24,7 +25,9 @@ Application::Application() {
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(editor = new ModuleEditor());
 	modules.push_back(camera = new ModuleCamera());
+	modules.push_back(FS = new ModuleFileSystem());
 	capTimer = new Timer();
+	isFrameRateCapped = true;
 	SetFrameCap(60);
 }
 
@@ -69,17 +72,18 @@ update_status Application::Update() {
 		for (list<Module*>::iterator it = modules.begin(); it != modules.end() && ret == UPDATE_CONTINUE; ++it)
 			ret = (*it)->PostUpdate();
 
+	if (GetUseFrameCap()) {
+		if (millisPerFrame > (Uint32)0) {
+			Uint32 frameMillis = capTimer->Read();
 
-	if (millisPerFrame > (Uint32)0) {
-		Uint32 frameMillis = capTimer->Read();
-
-		if (frameMillis < millisPerFrame) {
-			SDL_Delay(millisPerFrame - frameMillis);
+			if (frameMillis < millisPerFrame) {
+				SDL_Delay(millisPerFrame - frameMillis);
+			}
 		}
 	}
 
 	lastDeltaTime = capTimer->Read() / 1000;
-	editor->registerFPS(lastDeltaTime);
+	editor->RegisterFPS(lastDeltaTime);
 
 	return ret;
 }
@@ -108,3 +112,21 @@ bool Application::CleanUp() {
 
 	return ret;
 }
+
+bool Application::GetUseFrameCap()const {
+	return isFrameRateCapped;
+}
+
+void Application::SetUseFrameCap(bool should) {
+	isFrameRateCapped = should;
+}
+
+bool Application::GetUseVSync()const {
+	return SDL_GL_GetSwapInterval() == 1;
+}
+
+void Application::SetUseVSync(bool should) {
+	SDL_GL_SetSwapInterval(should ? 1 : 0);
+}
+
+

@@ -2,12 +2,11 @@
 #include "imgui.h"
 #include "Leaks.h"
 
-WindowAbout::WindowAbout(std::string name, int windowID) : Window(name, windowID)
-{
+WindowAbout::WindowAbout(std::string name, int windowID) : Window(name, windowID) {
+	active = false;
 }
 
-WindowAbout::~WindowAbout()
-{
+WindowAbout::~WindowAbout() {
 }
 
 void WindowAbout::Draw() {
@@ -17,6 +16,7 @@ void WindowAbout::Draw() {
 		return;
 	}
 	ImGui::Text("GomuGomu Engine is being developed in the UPC's Masters Advanced Programming for AAA video games.");
-	ImGui::Text("This version is for the first assignment and uses a MIT license.");
+	ImGui::Text("This version is for the second assignment and uses a MIT license.");
+	ImGui::Text("Authors: Guillem Burgués Miró - https://github.com/GBMiro/ - David Sierra González - https ://github.com/devildrake");
 	ImGui::End();
 }

@@ -3,20 +3,31 @@
 #include <vector>
 #include "MathGeoLib/MathGeoLib.h"
 #include "Component.h"
-
-class Component;
+#include "RenderingComponent.h"
 
 class GameObject {
+public:
+	bool active;
+	std::string name;
+	GameObject* parent = nullptr;
+	std::vector<GameObject*> children;
+	std::vector<Component*> components;
+	std::vector<RenderingComponent*> renderingComponents;
+
+private:
+	AABB globalAABB;
+	uint32_t UUID;
 
 public:
-	//boolean for ctransform
 	GameObject(GameObject* parent, const char* name);
 	GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale);
 	~GameObject();
 
 	void Update();
 
-	Component* CreateComponent(ComponentType type);
+	void Draw();
+
+	Component* CreateComponent(ComponentType type, int additionalParam = 0);
 
 	void ChangeParent(GameObject* parent);
 	bool IsAChild(const GameObject* gameObject) const;
@@ -28,19 +39,22 @@ public:
 	const AABB& GetAABB() const;
 
 	Component* GetComponentOfType(ComponentType type) const;
-	Component* GetComponentInChildrenOfType(ComponentType type);
+	Component* GetComponentInChildrenOfType(ComponentType type) const;
 	void GetComponentsInChildrenOfType(ComponentType type, std::vector<Component*>& components) const;
 
 	void OnTransformChanged();
 	void RemoveFromParent();
 	void DrawGizmos();
 
-public:
-	bool active; //TODO
-	AABB globalAABB;
-	std::string name;
-	std::vector<GameObject*> children;
-	std::vector<Component*> components;
-	GameObject* parent = nullptr;
+	uint32_t GetUUID() const { return UUID; }
+
+	void GetAllChilds(std::vector<GameObject*>& children) const;
+	void WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc);
+	void RemoveParticularComponent(Component* c);
+	void SetActive(bool should);
+	bool Active() const;
+
+	void AddRenderingComponent(RenderingComponent* c);
+	void RemoveRenderingComponent(RenderingComponent* c);
 };
 

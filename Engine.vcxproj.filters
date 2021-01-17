@@ -201,6 +201,36 @@
     </ClCompile>
     <ClCompile Include="PreciseTimer.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="ComponentDirectionalLight.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSpotLight.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleFileSystem.cpp" />
+    <ClCompile Include="ImporterMaterial.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImporterMesh.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImporterModel.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImporterScene.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImporterTextures.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="ImGuizmo.cpp" />
+    <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -543,6 +573,36 @@
     </ClInclude>
     <ClInclude Include="PreciseTimer.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="ComponentDirectionalLight.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSpotLight.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleFileSystem.h" />
+    <ClInclude Include="ImporterMaterial.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterMesh.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterModel.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterScene.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterTextures.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="ImGuizmo.h" />
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MathGeoLib">
@@ -568,6 +628,9 @@
     </Filter>
     <Filter Include="Components">
       <UniqueIdentifier>{76e8b024-5128-4ceb-a282-e71a19644a39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importers">
+      <UniqueIdentifier>{3eecc816-d045-44c2-9a71-66bbb7ef3b03}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

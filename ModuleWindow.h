@@ -5,9 +5,18 @@
 #include "SDL/include/SDL.h"
 
 class Application;
+class ModuleWindow : public Module {
+public:
+	//The window we'll be rendering to
+	SDL_Window* window = NULL;
 
-class ModuleWindow : public Module
-{
+	//The surface contained by the window
+	SDL_Surface* screenSurface = NULL;
+
+	SDL_DisplayMode desktopSize;
+private:
+	int width;
+	int height;
 public:
 
 	ModuleWindow();
@@ -21,24 +30,20 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	float getBrightness() const;
+	float GetBrightness() const;
 
-	void setFlag(SDL_WindowFlags flag, bool state);
+	void SetFlag(SDL_WindowFlags flag, bool state);
 
-	void setBrightness(float brightness);
+	void SetBrightness(float brightness);
 
-	void setWindowSize(int width, int height);
+	void SetWindowSize(int width, int height);
 
-public:
-	//The window we'll be rendering to
-	SDL_Window* window = NULL;
+	void SetWidth(float newW) { width = newW; }
+	void SetHeight(float newH) { height = newH; }
 
-	//The surface contained by the window
-	SDL_Surface* screen_surface = NULL;
+	float GetWidth()const { return width; }
+	float GetHeight()const { return height; }
 
-	SDL_DisplayMode desktopSize;
-	int width;
-	int height;
 };
 
 #endif // __ModuleWindow_H__

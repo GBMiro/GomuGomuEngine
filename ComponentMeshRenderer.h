@@ -1,35 +1,48 @@
 #pragma once
-#include "Component.h"
+#include "RenderingComponent.h"
 #include <string>
-#include "../MathGeoLib/MathGeoLib.h"
+#include "Material.h"
+#include "../MathGeoLib/Geometry/AABB.h"
+#include "../MathGeoLib/Geometry/OBB.h"
+
 
 class Mesh;
-class Material;
 
-class ComponentMeshRenderer : public Component {
+class ComponentMeshRenderer : public RenderingComponent {
 
 public:
 	ComponentMeshRenderer(GameObject* parent);
 	~ComponentMeshRenderer();
 
 	void GenerateAABB();
-	void Enable()override;
-	void Update()override;
-	void Disable()override;
+	void Enable() override;
+	void OnEnable()override;
+	void OnDisable()override;
+	void Update() override;
+	void Disable() override;
 
-	void Draw();
+	void Draw() override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
-	void OnTransformChanged()override;
-	//void SetTextureName(std::string name) { textureName = name; }
-
+	void OnTransformChanged() override;
+	void ExposeTextureInfo(const char* type, Material::Texture* tex);
+	void ChangeMaterialTexture(Material::Texture* tex, const std::string& textureName);
+	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
+	void LoadFromJSON(const rapidjson::Value& component) override;
+	const AABB& GetAABB();
 public:
 	Mesh* mesh = nullptr;
-	Material* material = nullptr;
-	AABB localAxisAlignedBoundingBox;
-	OBB localOrientedBoundingBox;
+
 public:
 	void SetMaterial(Material* mat);
+
+private:
+	void CreateTexture(TextureType type);
+	void ShowTextureIcon(Material::Texture* tex);
+private:
+	AABB localAxisAlignedBoundingBox;
+	OBB localOrientedBoundingBox;
+	Material* material = nullptr;
 
 };
 

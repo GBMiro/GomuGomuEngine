@@ -89,6 +89,6 @@ unsigned ShadingProgram::CreateProgram(unsigned vtx_shader, unsigned frg_shader)
 	return programID;
 }
 
-const unsigned int& ShadingProgram::GetID()const {
+unsigned int ShadingProgram::GetID()const {
 	return id;
 }

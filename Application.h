@@ -13,6 +13,7 @@ class ModuleEditor;
 class ModuleDebugDraw;
 class ModuleTextures;
 class ModuleScene;
+class ModuleFileSystem;
 class Model;
 class Timer;
 
@@ -36,13 +37,19 @@ public:
 	ModuleDebugDraw* debugDraw = nullptr;
 	ModuleTextures* textures = nullptr;
 	ModuleScene* scene = nullptr;
+	ModuleFileSystem* FS = nullptr;
 
 	float GetDeltaTime();
 	void SetFrameCap(int frameCap);
 	const int& GetFrameCap()const;
 
+	bool GetUseFrameCap()const;
+	void SetUseFrameCap(bool should);
+	bool GetUseVSync()const;
+	void SetUseVSync(bool should);
 
 private:
+	bool isFrameRateCapped, useVSync;
 	unsigned int frameCap, millisPerFrame;
 	float lastDeltaTime;
 	std::list<Module*> modules;

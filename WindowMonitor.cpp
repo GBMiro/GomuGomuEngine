@@ -68,7 +68,7 @@ void WindowMonitor::Draw() {
 	ImGui::End();
 }
 
-void WindowMonitor::addData(float deltaTime) {
+void WindowMonitor::AddData(float deltaTime) {
 	
 	if (fps_log.size() == MAX_SIZE) {
 		for (unsigned i = 0; i < fps_log.size() - 1; ++i) {

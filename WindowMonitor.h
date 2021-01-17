@@ -18,7 +18,7 @@ public:
 
 	void Draw();
 
-	void addData(float deltaTime);
+	void AddData(float deltaTime);
 
 private:
 	hwInfo hw;

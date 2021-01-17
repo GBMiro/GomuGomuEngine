@@ -2,8 +2,6 @@
 #include "Window.h"
 #include <vector>
 
-class Mesh;
-
 class WindowProperties : public Window
 {
 public:
@@ -11,10 +9,5 @@ public:
 	~WindowProperties();
 
 	void Draw();
-	void cleanProperties();
-
-public:
-	std::vector<Mesh*> meshes;
-	std::vector<unsigned> textures;
 };
 
