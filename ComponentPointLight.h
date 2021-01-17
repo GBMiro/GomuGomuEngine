@@ -5,7 +5,7 @@
 class ComponentPointLight :public ComponentLight {
 private:
 	void GenerateDebugLines()override;
-public:
+private:
 	float constantAtt, linearAtt, quadraticAtt;
 
 public:
@@ -18,8 +18,13 @@ public:
 	void LoadFromJSON(const rapidjson::Value& component) override;
 	void ComponentPointLight::WriteLightTypeJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	void CreateDebugLines() { GenerateDebugLines(); }
-	//void OnNewParent(GameObject* prevParent, GameObject* newParent)override;
-	//void OnTransformModified()override;
+	float GetConstantAtt()const { return constantAtt; }
+	float GetLinearAtt()const { return linearAtt; }
+	float GetQuadraticAtt()const { return quadraticAtt; }
+
+	void GetConstantAtt(float newAtt) { constantAtt = newAtt; }
+	void GetLinearAtt(float newAtt) { linearAtt = newAtt; }
+	void GetQuadraticAt(float newAtt) { quadraticAtt = newAtt; }
 };
 
 #endif

@@ -17,7 +17,7 @@ public:
 	void OnDisable()override;
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
-	void OnNewParent(GameObject* prevParent, GameObject* newParent)override;
+	void OnNewParent(const GameObject* prevParent, const GameObject* newParent)override;
 	void OnTransformChanged()override;
 	Frustum& GetFrustum();
 	void ComponentCamera::SetUpFrustum(float nearDistance, float farDistance);

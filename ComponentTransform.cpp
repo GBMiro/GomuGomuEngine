@@ -78,11 +78,11 @@ float3 ComponentTransform::Position() {
 	return globalMatrix.TranslatePart();
 }
 
-float3 ComponentTransform::Scale() {
+float3 ComponentTransform::Scale() const {
 	return globalMatrix.GetScale();
 }
 
-Quat ComponentTransform::Rotation() {
+Quat ComponentTransform::Rotation()const {
 	float3x3 rotation = globalMatrix.RotatePart();
 
 	rotation.Orthonormalize(0, 1, 2);
@@ -90,26 +90,26 @@ Quat ComponentTransform::Rotation() {
 	return rotation.ToQuat();
 }
 
-float3 ComponentTransform::Forward() {
+float3 ComponentTransform::Forward()const {
 	return globalMatrix.WorldZ().Normalized();
 }
 
-float3 ComponentTransform::Up() {
+float3 ComponentTransform::Up()const {
 	return globalMatrix.WorldY().Normalized();
 }
 
-float3 ComponentTransform::Right() {
+float3 ComponentTransform::Right()const {
 	return  globalMatrix.WorldX().Normalized();
 }
 
-float3 ComponentTransform::Left() {
+float3 ComponentTransform::Left()const {
 	return -Right();
 }
 
-float3 ComponentTransform::LocalForward() { return localMatrix.WorldZ().Normalized(); }
-float3 ComponentTransform::LocalUp() { return localMatrix.WorldY().Normalized(); }
-float3 ComponentTransform::LocalRight() { return localMatrix.WorldX().Normalized(); }
-float3 ComponentTransform::LocalLeft() { return -LocalRight(); }
+float3 ComponentTransform::LocalForward()const { return localMatrix.WorldZ().Normalized(); }
+float3 ComponentTransform::LocalUp() const { return localMatrix.WorldY().Normalized(); }
+float3 ComponentTransform::LocalRight()const { return localMatrix.WorldX().Normalized(); }
+float3 ComponentTransform::LocalLeft() const { return -LocalRight(); }
 
 void ComponentTransform::UpdateLocalValues() {
 	UpdateLocalMatrix();
@@ -264,7 +264,7 @@ void ComponentTransform::Reset() {
 	owner->OnTransformChanged();
 }
 
-void ComponentTransform::OnNewParent(GameObject* oldParent, GameObject* newParent) {
+void ComponentTransform::OnNewParent(const GameObject* oldParent, const  GameObject* newParent) {
 	//if (oldParent == nullptr)return;
 
 	if (newParent == nullptr)return;

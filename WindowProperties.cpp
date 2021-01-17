@@ -49,6 +49,7 @@ void WindowProperties::Draw() {
 		}
 		ImGui::EndChild();
 	}
+	//Guillem has to move this to DrawOnEditor MeshRendererComponent
 	////All this goes to DrawOnEditor for each component
 	//if (ImGui::CollapsingHeader("Geometry")) {
 	//	//if (meshes.size() == 0) App->model->getMeshes(meshes);

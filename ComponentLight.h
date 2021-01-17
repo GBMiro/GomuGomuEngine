@@ -8,10 +8,9 @@
 class ComponentLight :public Component {
 
 public:
+	enum LightType { DIRECTIONAL, POINT, SPOT };
 	float3 lightColor;
 	float lightIntensity;
-public:
-	enum LightType { DIRECTIONAL, POINT, SPOT };
 private:
 	LightType type;
 

@@ -84,7 +84,7 @@ void ModuleEditor::ManageGizmos() {
 
 			float4x4 projectionMatrix = App->camera->GetProjectionMatrix().Transposed();
 
-			float4x4 modelProjection = gizmoMode == ImGuizmo::MODE::LOCAL ? selectedTransform->localMatrix.Transposed() : selectedTransform->globalMatrix.Transposed();
+			float4x4 modelProjection = gizmoMode == ImGuizmo::MODE::LOCAL ? selectedTransform->GetLocalMatrix().Transposed() : selectedTransform->GetGlobalMatrix().Transposed();
 
 			float modelPtr[16];
 			memcpy(modelPtr, modelProjection.ptr(), 16 * sizeof(float));
@@ -254,8 +254,7 @@ void ModuleEditor::fileDropped(const char* filename) const {
 	std::string extension = file.substr(posExtension);
 	if (_stricmp(extension.c_str(), "fbx") == 0) {
 		App->scene->AddModel(filename);
-	}
-	else if (_stricmp(extension.c_str(), "dds") == 0 || _stricmp(extension.c_str(), "png") == 0 || _stricmp(extension.c_str(), "jpg") == 0 || _stricmp(extension.c_str(), "tif") == 0) {
+	} else if (_stricmp(extension.c_str(), "dds") == 0 || _stricmp(extension.c_str(), "png") == 0 || _stricmp(extension.c_str(), "jpg") == 0 || _stricmp(extension.c_str(), "tif") == 0) {
 		ImporterTextures::ImportTexture(filename);
 	}
 }
@@ -441,7 +440,7 @@ bool ModuleEditor::CheckRayIntersectionWithMeshRenderer(const LineSegment& picki
 	if (!mesh)return false;
 	ComponentTransform* transform = (ComponentTransform*)o->GetComponentOfType(ComponentType::CTTransform);
 
-	float4x4 model = transform->globalMatrix;
+	float4x4 model = transform->GetGlobalMatrix();
 
 	LineSegment lineToUse = model.Inverted() * picking;
 

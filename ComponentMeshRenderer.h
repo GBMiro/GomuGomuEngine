@@ -1,11 +1,12 @@
 #pragma once
 #include "RenderingComponent.h"
 #include <string>
-#include "Material.h" // Talk with David enum
-#include "../MathGeoLib/MathGeoLib.h"
+#include "Material.h"
+#include "../MathGeoLib/Geometry/AABB.h"
+#include "../MathGeoLib/Geometry/OBB.h"
+
 
 class Mesh;
-
 
 class ComponentMeshRenderer : public RenderingComponent {
 
@@ -24,23 +25,23 @@ public:
 	void DrawOnEditor() override;
 	void DrawGizmos() override;
 	void OnTransformChanged() override;
-	void ShowTextureInfo(const char* type, Material::Texture* tex);
-	void ChangeMaterialTexture(Material::Texture* tex, std::string& textureName);
-	//void SetTextureName(std::string name) { textureName = name; }
+	void ExposeTextureInfo(const char* type, Material::Texture* tex);
+	void ChangeMaterialTexture(Material::Texture* tex, const std::string& textureName);
 	void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) override;
 	void LoadFromJSON(const rapidjson::Value& component) override;
 	const AABB& GetAABB();
 public:
 	Mesh* mesh = nullptr;
-	Material* material = nullptr;
-	AABB localAxisAlignedBoundingBox;
-	OBB localOrientedBoundingBox;
+
 public:
 	void SetMaterial(Material* mat);
 
 private:
 	void CreateTexture(TextureType type);
 private:
+	AABB localAxisAlignedBoundingBox;
+	OBB localOrientedBoundingBox;
+	Material* material = nullptr;
 
 };
 

@@ -1,19 +1,22 @@
 #include "WindowConfiguration.h"
 #include "imgui.h"
 #include "Application.h"
+
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
 #include "ModuleScene.h"
 #include "ModuleInput.h"
+#include "ModuleEditor.h"
+#include "ModuleTextures.h"
+
 #include "MathGeoLib/Math/float3.h"
 #include "ComponentCamera.h"
 #include "GameObject.h"
 #include "Point.h"
 #include "GL/glew.h"
 #include "Leaks.h"
-#include "ModuleEditor.h"
-#include "ModuleTextures.h"
+
 
 constexpr char* filterMinModes[] = { "Linear", "Nearest", "Linear mipmap linear", "Linear mipmap nearest", "Nearest mipmap linear", "Nearest mipmap nearest" };
 constexpr char* filterMagModes[] = { "Linear", "Nearest" };

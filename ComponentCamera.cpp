@@ -40,7 +40,7 @@ void ComponentCamera::DrawOnEditor() {
 	}
 }
 
-void ComponentCamera::OnNewParent(GameObject* prevParent, GameObject* newParent) {
+void ComponentCamera::OnNewParent(const GameObject* prevParent, const GameObject* newParent) {
 
 }
 
@@ -62,7 +62,7 @@ void ComponentCamera::SetUpFrustum(float nearDistance, float farDistance) {
 	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
 	frustum.SetViewPlaneDistances(nearDistance, farDistance);
 	frustum.SetHorizontalFovAndAspectRatio(DegToRad(90), 1.77f);
-	frustum.SetPos(transform->localPosition);
+	frustum.SetPos(transform->LocalPosition());
 	transform->SetLocalRotation(Quat::identity);
 	frustum.SetFront(float3::unitZ);
 	frustum.SetUp(float3::unitY);
@@ -85,8 +85,7 @@ void ComponentCamera::LoadFromJSON(const rapidjson::Value& component) {
 	frustum.SetHorizontalFovAndAspectRatio(DegToRad(component["Horizontal FOV"].GetFloat()), component["Aspect Ratio"].GetFloat());
 	if (component.HasMember("Enabled")) {
 		enabled = component["Enabled"].GetBool();
-	}
-	else {
+	} else {
 		enabled = true;
 	}
 }

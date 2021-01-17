@@ -26,7 +26,7 @@ public:
 
 
 	virtual void DrawOnEditor() = 0;
-	virtual void OnNewParent(GameObject* oldParent, GameObject* newParent) {};
+	virtual void OnNewParent(const GameObject* oldParent, const GameObject* newParent) {};
 	virtual void OnTransformChanged() {};
 	virtual void DrawGizmos() {};
 	ComponentType GetType() const;
@@ -38,10 +38,10 @@ public:
 
 public:
 	GameObject* owner;
-	ComponentType type;
 	bool enabled = true;
 	bool Enabled()const;
 private:
+	ComponentType type;
 	uint32_t UUID;
 };
 

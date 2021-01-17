@@ -51,7 +51,7 @@ void ComponentDirectionalLight::DrawGizmos() {
 	}
 }
 
-void ComponentDirectionalLight::OnNewParent(GameObject* prevParent, GameObject* newParent) {
+void ComponentDirectionalLight::OnNewParent(const GameObject* prevParent, const GameObject* newParent) {
 
 }
 
@@ -80,8 +80,7 @@ void ComponentDirectionalLight::SendValuesToShadingProgram(const unsigned& progr
 void ComponentDirectionalLight::LoadFromJSON(const rapidjson::Value& component) {
 	if (component.HasMember("Enabled")) {
 		enabled = component["Enabled"].GetBool();
-	}
-	else {
+	} else {
 		enabled = true;
 	}
 

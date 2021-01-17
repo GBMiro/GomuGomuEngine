@@ -54,3 +54,4 @@ The editor has a main bar with 3 tabs:
 - If you can't close the engine through the "X" in the upper bar, you may need to close all window editors that are not docked.
 - If you can't load a texture, take a look into the log window to get more details. The editor will load a black texture in case it could not find the one dropped
 - Sometimes the combo box for Min filters may not let you select a filter. Try resizing the configuration editor window
+- The second assignment was worked on Development branch and we used branches whenever our work differed too much and a big new feature was being implemented from scratch.

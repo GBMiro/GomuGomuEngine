@@ -7,7 +7,7 @@
 
 class GameObject {
 public:
-	bool active; //TODO
+	bool active;
 	std::string name;
 	GameObject* parent = nullptr;
 	std::vector<GameObject*> children;
@@ -18,7 +18,6 @@ private:
 	AABB globalAABB;
 
 public:
-	//boolean for ctransform
 	GameObject(GameObject* parent, const char* name);
 	GameObject(GameObject* parent, const char* name, const float3& position, const Quat& rotation, const float3& scale);
 	~GameObject();

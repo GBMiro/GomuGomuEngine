@@ -35,11 +35,9 @@ void WindowScene::Draw() {
 	mousePosInWindow.x -= windowPos.x;
 	mousePosInWindow.y -= windowPos.y;
 
-	//Hack to correct position
 	mousePosInWindow.y -= 15;
 
 	App->camera->SetAspectRatio(windowSize.x / (float)windowSize.y);
-	//LOG("ASpectRatioTrynaSetTo %f / %f = %f", (float)windowSize.x, (float)windowSize.y, (float)windowSize.x / (float)windowSize.y)
 		if (ImGui::IsWindowHovered()) App->editor->SetGameWindowStatus(true);
 		else App->editor->SetGameWindowStatus(false);
 
@@ -57,7 +55,6 @@ const ImVec2& WindowScene::GetSize()const {
 }
 
 const ImVec2& WindowScene::GetMousePosInWindow()const {
-	//LOG("Mouse Pos In Window %f %f", (float)mousePosition.x, (float)mousePosition.y);
 	return mousePosInWindow;
 }
 

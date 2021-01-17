@@ -152,7 +152,7 @@ void GameObject::GenerateAABB() {
 	GetComponentsInChildrenOfType(ComponentType::CTMeshRenderer, meshRenderers);
 	if (meshRenderers.size() > 0) {
 		for (std::vector<Component*>::const_iterator it = meshRenderers.begin(); it != meshRenderers.end(); ++it) {
-			AABB meshAABB = ((ComponentMeshRenderer*)(*it))->localAxisAlignedBoundingBox;
+			AABB meshAABB = ((ComponentMeshRenderer*)(*it))->GetAABB();
 
 			if (meshAABB.minPoint.x < absoluteMin.x) {
 				absoluteMin.x = meshAABB.minPoint.x;

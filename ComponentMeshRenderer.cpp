@@ -19,6 +19,7 @@
 #include "ImporterMesh.h"
 #include "ComponentPointLight.h"
 #include "ComponentDirectionalLight.h"
+#include "Material.h"
 #include "Leaks.h"
 
 
@@ -35,7 +36,7 @@ ComponentMeshRenderer::~ComponentMeshRenderer() {
 void ComponentMeshRenderer::GenerateAABB() {
 	localOrientedBoundingBox = mesh->GetAABB().ToOBB();
 	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
-	localOrientedBoundingBox.Transform(transform->globalMatrix);
+	localOrientedBoundingBox.Transform(transform->GetGlobalMatrix());
 	localAxisAlignedBoundingBox = localOrientedBoundingBox.MinimalEnclosingAABB();
 	owner->GenerateAABB();
 }
@@ -63,7 +64,7 @@ void ComponentMeshRenderer::OnDisable() {
 
 void ComponentMeshRenderer::Draw() {
 	if (!Enabled()) return;
-	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->globalMatrix, directionalLight, closestPointLights);
+	mesh->Draw(material, ((ComponentTransform*)owner->GetComponentOfType(CTTransform))->GetGlobalMatrix(), directionalLight, closestPointLights);
 }
 
 const AABB& ComponentMeshRenderer::GetAABB() {
@@ -136,14 +137,14 @@ void ComponentMeshRenderer::DrawOnEditor() {
 			}
 
 			if (material->diffuseTexture) {
-				ShowTextureInfo("Diffuse texture", material->diffuseTexture);
+				ExposeTextureInfo("Diffuse texture", material->diffuseTexture);
 			} else {
 				if (ImGui::Button("Create Diffuse Texture")) {
 					CreateTexture(DIFFUSE);
 				}
 			}
 			if (material->specularTexture) {
-				ShowTextureInfo("Specular Texture", material->specularTexture);
+				ExposeTextureInfo("Specular Texture", material->specularTexture);
 			} else {
 				if (ImGui::Button("Create Specular Texture")) {
 					CreateTexture(SPECULAR);
@@ -168,7 +169,7 @@ void ComponentMeshRenderer::OnTransformChanged() {
 	CalculateClosestLights();
 }
 
-void ComponentMeshRenderer::ShowTextureInfo(const char* type, Material::Texture* tex) {
+void ComponentMeshRenderer::ExposeTextureInfo(const char* type, Material::Texture* tex) {
 	ImGui::PushID(this);
 	std::vector<std::string> textureFiles;
 	App->FS->GetDirectoryFiles("Assets/Textures", textureFiles);
@@ -187,7 +188,7 @@ void ComponentMeshRenderer::ShowTextureInfo(const char* type, Material::Texture*
 	ImGui::PopID();
 }
 
-void ComponentMeshRenderer::ChangeMaterialTexture(Material::Texture* tex, std::string& textureName) {
+void ComponentMeshRenderer::ChangeMaterialTexture(Material::Texture* tex, const std::string& textureName) {
 	unsigned texture;
 	const char* name = textureName.c_str();
 	if (App->textures->ExistsTexture(textureName.c_str(), texture)) {
@@ -241,8 +242,7 @@ void ComponentMeshRenderer::LoadFromJSON(const rapidjson::Value& component) {
 	}
 	if (component.HasMember("Enabled")) {
 		enabled = component["Enabled"].GetBool();
-	}
-	else {
+	} else {
 		enabled = true;
 	}
 }
