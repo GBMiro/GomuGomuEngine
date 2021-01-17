@@ -32,7 +32,7 @@ bool ModuleCamera::Init() {
 
 	camera->GetFrustum().SetKind(FrustumSpaceGL, FrustumRightHanded);
 	camera->GetFrustum().SetViewPlaneDistances(nearPlane, farPlane);
-	camera->GetFrustum().SetHorizontalFovAndAspectRatio(DEGTORAD * fov, App->window->width / (float)App->window->height);
+	camera->GetFrustum().SetHorizontalFovAndAspectRatio(DEGTORAD * fov, App->window->GetWidth() / (float)App->window->GetHeight());
 	camera->GetFrustum().SetPos(float3(posX, posY, posZ));
 	camera->GetFrustum().SetFront(float3(float3::unitZ));
 	camera->GetFrustum().SetUp(float3(float3::unitY));
@@ -149,11 +149,11 @@ void ModuleCamera::LookAt(const float3& point) {
 	pitch = 0.0f;
 }
 
-const float4x4& ModuleCamera::GetProjectionMatrix() const {
+float4x4 ModuleCamera::GetProjectionMatrix() const {
 	return camera->GetFrustum().ProjectionMatrix();
 }
 
-const float4x4& ModuleCamera::GetViewMatrix() const {
+float4x4 ModuleCamera::GetViewMatrix() const {
 	return float4x4(camera->GetFrustum().ViewMatrix());
 }
 

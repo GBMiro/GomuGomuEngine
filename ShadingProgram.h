@@ -8,9 +8,7 @@ private:
 public:
 	ShadingProgram(const char* vsName, const char* fsName);
 	~ShadingProgram();
-	const unsigned int& GetID()const;
-
-
+	unsigned int GetID()const;
 private:
 	char* LoadShaderSource(const char* filename) const;
 	unsigned CompileShader(unsigned type, const char* source) const;

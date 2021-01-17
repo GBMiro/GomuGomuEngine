@@ -60,8 +60,8 @@ public:
 
 	void LookAt(const float3& point);
 
-	const float4x4& GetProjectionMatrix() const;
-	const float4x4& GetViewMatrix() const;
+	float4x4 GetProjectionMatrix() const;
+	float4x4 GetViewMatrix() const;
 	void GetPlanes(float* zNear, float* zFar) const;
 	const float3& GetUpVector() const;
 	const float3& GetRightVector() const;

@@ -41,8 +41,7 @@ unsigned int ModuleFileSystem::Load(const char* file, char** buffer) const {
 		myFile.seekg(0, std::ios::beg);
 		myFile.read(*buffer, size);
 		myFile.close();
-	}
-	else {
+	} else {
 		LOG("Could not open the file %s", file);
 	}
 	return (unsigned int)size;
@@ -76,8 +75,7 @@ bool ModuleFileSystem::MakeDirectory(const char* directory) {
 	bool success = mkdir(directory) == 0;
 	if (success) {
 		LOG("Directory %s created", directory);
-	}
-	else {
+	} else {
 		LOG("Could not create director %s or it already exists", directory);
 	}
 	return success;

@@ -1,9 +1,11 @@
 #include "ModuleTextures.h"
 #include "Globals.h"
-#include "DevIL/include/IL/il.h"
 #include "GL/glew.h"
-#include "Leaks.h"
 #include <string>
+//This is only included for initialization
+#include "DevIL/include/IL/il.h"
+
+#include "Leaks.h"
 
 constexpr GLint minFilters[] = { GL_LINEAR, GL_NEAREST, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_NEAREST };
 constexpr GLint magFilters[] = { GL_LINEAR, GL_NEAREST };

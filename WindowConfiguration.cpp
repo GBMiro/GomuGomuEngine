@@ -222,14 +222,14 @@ void WindowConfiguration::Draw() {
 		}
 	}
 	if (ImGui::CollapsingHeader("Window")) {
-		if (ImGui::Checkbox("Fullscreen", &fullscreen)) App->window->setFlag(SDL_WINDOW_FULLSCREEN_DESKTOP, fullscreen); ImGui::SameLine();
-		if (ImGui::Checkbox("Resizable", &windowResizable)) App->window->setFlag(SDL_WINDOW_RESIZABLE, windowResizable); ImGui::SameLine();
-		if (ImGui::Checkbox("Borderless", &windowBorderless)) App->window->setFlag(SDL_WINDOW_BORDERLESS, windowBorderless);
+		if (ImGui::Checkbox("Fullscreen", &fullscreen)) App->window->SetFlag(SDL_WINDOW_FULLSCREEN_DESKTOP, fullscreen); ImGui::SameLine();
+		if (ImGui::Checkbox("Resizable", &windowResizable)) App->window->SetFlag(SDL_WINDOW_RESIZABLE, windowResizable); ImGui::SameLine();
+		if (ImGui::Checkbox("Borderless", &windowBorderless)) App->window->SetFlag(SDL_WINDOW_BORDERLESS, windowBorderless);
 		if (!fullscreen) {
-			if (ImGui::SliderInt("Screen width", &width, 100, 1920)) App->window->setWindowSize(width, height);
-			if (ImGui::SliderInt("Screen height", &height, 100, 1080)) App->window->setWindowSize(width, height);
+			if (ImGui::SliderInt("Screen width", &width, 100, 1920)) App->window->SetWindowSize(width, height);
+			if (ImGui::SliderInt("Screen height", &height, 100, 1080)) App->window->SetWindowSize(width, height);
 		}
-		if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f, "%.3f")) App->window->setBrightness(brightness);
+		if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f, "%.3f")) App->window->SetBrightness(brightness);
 	}
 	ImGui::End();
 }

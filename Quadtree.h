@@ -3,6 +3,7 @@
 #include <list>
 
 #define NODE_MAX_CAPACITY 2
+#define CHILD_AMOUNT 4
 
 class GameObject;
 

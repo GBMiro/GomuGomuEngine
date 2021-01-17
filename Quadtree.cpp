@@ -31,19 +31,17 @@ void QuadtreeNode::InsertGameObject(GameObject* gameObject) {
 	}
 }
 
-// Right now not using it because I make the quadtree from scratch every frame. Inefficient
 void QuadtreeNode::EraseGameObject(GameObject* gameObject) {
 	std::vector<GameObject*>::iterator it = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
 
 	if (it != gameObjects.end()) { // Game Object found in node
 		gameObjects.erase(it);
-	} 
+	}
 
 	if (subdivided) {
 		for (int i = 0; i < childNodes.size(); ++i) {
 			childNodes[i].EraseGameObject(gameObject);
 		}
-
 	}
 
 	//This could be optimized by collecting the AMOUNT of gameobjects contained within children, if children contain less than the MAX_CAPACITY, then their gameObjects would
@@ -57,9 +55,6 @@ void QuadtreeNode::EraseGameObject(GameObject* gameObject) {
 		childNodes.clear();
 		subdivided = false;
 	}
-
-
-
 }
 
 bool QuadtreeNode::IsEmpty() const {
@@ -75,7 +70,7 @@ bool QuadtreeNode::IsEmpty() const {
 
 void QuadtreeNode::Draw() const {
 	dd::aabb(boundingBox.minPoint, boundingBox.maxPoint, float3::one);
-	if (subdivided) { // If pointer is valid, draw all children
+	if (subdivided) { // If subdivided, draw all children
 		for (std::vector<QuadtreeNode>::const_iterator it = childNodes.begin(); it != childNodes.end(); ++it) {
 			(*it).Draw();
 		}
@@ -87,7 +82,7 @@ void QuadtreeNode::Subdivide() {
 	float3 childSize = boundingBox.HalfSize();
 	childSize.y *= 2;
 
-	childNodes.reserve(4);
+	childNodes.reserve(CHILD_AMOUNT);
 
 	AABB aaBB;
 	float3 childCenter;
@@ -122,24 +117,25 @@ void QuadtreeNode::Subdivide() {
 	childNodes.push_back(QuadtreeNode(aaBB));
 
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < CHILD_AMOUNT; i++) {
 		childNodes[i].parent = this;
 	}
-
-
 
 	subdivided = true;
 }
 
+/// <summary>
+/// We split contained GameObjects among all child nodes
+/// </summary>
 void QuadtreeNode::Organize() {
 	for (std::vector<GameObject*>::iterator it = gameObjects.begin(); it != gameObjects.end();) {
 		GameObject* currentGO = *it;
 
-		bool intersections[4];
+		bool intersections[CHILD_AMOUNT];
 		unsigned intersectionsFound = 0;
 		AABB gameObjectAABB(currentGO->GetAABB().MinimalEnclosingAABB());
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < CHILD_AMOUNT; i++) {
 			intersections[i] = childNodes[i].boundingBox.Intersects(gameObjectAABB);
 			intersectionsFound = intersections[0] ? intersectionsFound + 1 : intersectionsFound;
 		}
@@ -148,16 +144,13 @@ void QuadtreeNode::Organize() {
 			++it;
 		} else {
 			it = gameObjects.erase(it);
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < CHILD_AMOUNT; i++) {
 				if (intersections[i]) {
 					childNodes[i].InsertGameObject(currentGO);
 				}
 			}
 		}
 	}
-
-
-
 }
 
 Quadtree::Quadtree(const AABB& boundingBox) {
