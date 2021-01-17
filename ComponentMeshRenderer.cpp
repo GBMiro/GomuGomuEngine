@@ -191,6 +191,8 @@ void ComponentMeshRenderer::DrawOnEditor() {
 void ComponentMeshRenderer::OnTransformChanged() {
 	GenerateAABB();
 	CalculateClosestLights();
+	ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
+	mesh->CalculateScaledTriangles(transform->GetGlobalMatrix(), mesh->scaledTriangles);
 }
 
 void ComponentMeshRenderer::ExposeTextureInfo(const char* type, Material::Texture* tex) {
@@ -255,6 +257,12 @@ void ComponentMeshRenderer::LoadFromJSON(const rapidjson::Value& component) {
 		mesh->SetFileID(meshFile);
 		ImporterMesh::Load(bufferMesh, mesh);
 		mesh->Load();
+
+		ComponentTransform* transform = (ComponentTransform*)owner->GetComponentOfType(ComponentType::CTTransform);
+
+		if (transform) {
+			mesh->CalculateScaledTriangles(transform->GetGlobalMatrix(), mesh->scaledTriangles);
+		}
 		GenerateAABB();
 		RELEASE(bufferMesh);
 

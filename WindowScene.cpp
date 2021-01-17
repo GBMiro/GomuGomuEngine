@@ -35,7 +35,7 @@ void WindowScene::Draw() {
 	mousePosInWindow.x -= windowPos.x;
 	mousePosInWindow.y -= windowPos.y;
 
-	mousePosInWindow.y -= 15;
+	mousePosInWindow.y -= 16;
 
 	App->camera->SetAspectRatio(windowSize.x / (float)windowSize.y);
 		if (ImGui::IsWindowHovered()) App->editor->SetGameWindowStatus(true);
