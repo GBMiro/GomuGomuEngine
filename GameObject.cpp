@@ -89,11 +89,8 @@ Component* GameObject::CreateComponent(ComponentType type, int additionalParam) 
 			ret = new ComponentSpotLight(this);
 			break;
 		}
-
-
 		break;
 	}
-
 
 	if (ret != nullptr) {
 		components.push_back(ret);
@@ -122,7 +119,6 @@ void GameObject::ChangeParent(GameObject* newParent) {
 				(*it)->OnNewParent(oldParent, newParent);
 			}
 
-			LOG("%s's new parent: %s", GetName(), newParent->GetName());
 		} else LOG("Same parent");
 	}
 }
@@ -135,7 +131,7 @@ bool GameObject::IsAChild(const GameObject* gameObject) const {
 			if ((*it)->IsAChild(gameObject)) found = true;
 		}
 	}
-	if (gameObject == this) found = true; //This should be remove
+	if (gameObject == this) found = true; 
 	return found;
 }
 
@@ -212,7 +208,7 @@ void GameObject::GetComponentsInChildrenOfType(ComponentType type, std::vector<C
 	}
 }
 
-Component* GameObject::GetComponentInChildrenOfType(ComponentType type) {
+Component* GameObject::GetComponentInChildrenOfType(ComponentType type) const {
 	Component* retComp = nullptr;
 
 	if (components.size() > 0)

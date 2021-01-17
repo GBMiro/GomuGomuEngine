@@ -16,6 +16,7 @@ public:
 
 private:
 	AABB globalAABB;
+	uint32_t UUID;
 
 public:
 	GameObject(GameObject* parent, const char* name);
@@ -38,25 +39,22 @@ public:
 	const AABB& GetAABB() const;
 
 	Component* GetComponentOfType(ComponentType type) const;
-	Component* GetComponentInChildrenOfType(ComponentType type);
+	Component* GetComponentInChildrenOfType(ComponentType type) const;
 	void GetComponentsInChildrenOfType(ComponentType type, std::vector<Component*>& components) const;
 
 	void OnTransformChanged();
 	void RemoveFromParent();
 	void DrawGizmos();
 
-	uint32_t GetUUID() { return UUID; }
+	uint32_t GetUUID() const { return UUID; }
 
 	void GetAllChilds(std::vector<GameObject*>& children) const;
 	void WriteToJSON(rapidjson::Value& gameObject, rapidjson::Document::AllocatorType& alloc);
 	void RemoveParticularComponent(Component* c);
 	void SetActive(bool should);
-	bool Active()const;
+	bool Active() const;
 
 	void AddRenderingComponent(RenderingComponent* c);
 	void RemoveRenderingComponent(RenderingComponent* c);
-
-private:
-	uint32_t UUID;
 };
 

@@ -23,7 +23,7 @@ bool Material::GetTextureID(unsigned int& texID, TextureType type)const {
 
 
 
-const float2& Material::GetTextureSize(TextureType type)const {
+const float2& Material::GetTextureSize(TextureType type) const {
 	float2 retVal = float2(0, 0);
 	switch (type) {
 	case TextureType::DIFFUSE:
@@ -41,7 +41,7 @@ const float2& Material::GetTextureSize(TextureType type)const {
 	return retVal;
 }
 
-const std::string& Material::GetTextureName(TextureType type)const {
+const std::string& Material::GetTextureName(TextureType type) const {
 	switch (type) {
 	case TextureType::DIFFUSE:
 		if (diffuseTexture) {
@@ -58,7 +58,7 @@ const std::string& Material::GetTextureName(TextureType type)const {
 }
 
 
-const std::string& Material::GetTexturePath(TextureType type)const {
+const std::string& Material::GetTexturePath(TextureType type) const {
 	switch (type) {
 	case TextureType::DIFFUSE:
 		if (diffuseTexture) {

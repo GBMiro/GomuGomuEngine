@@ -31,7 +31,7 @@ public:
 	virtual void DrawGizmos() {};
 	ComponentType GetType() const;
 
-	uint32_t GetUUID() { return UUID; }
+	uint32_t GetUUID() const { return UUID; }
 
 	virtual void WriteToJSON(rapidjson::Value& component, rapidjson::Document::AllocatorType& alloc) {}
 	virtual void LoadFromJSON(const rapidjson::Value& component) {}

@@ -275,7 +275,7 @@ void ModuleCamera::ProcessMouseInput(float deltaTime) {
 
 		if (App->input->GetMouseButtonDown(SDL_BUTTON_RIGHT) == KeyState::KEY_REPEAT) {
 			float totalMotion = motion.x + motion.y;
-			transform->SetPosition(transform->localPosition + camera->GetFrustum().Front() * totalMotion * 2.0 * App->GetDeltaTime());
+			transform->SetPosition(transform->LocalPosition() + camera->GetFrustum().Front() * totalMotion * 2.0 * App->GetDeltaTime());
 		}
 
 	} else {

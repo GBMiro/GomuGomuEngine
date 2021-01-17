@@ -11,7 +11,6 @@ enum TextureType { DIFFUSE, SPECULAR };
 class Material {
 public:
 	struct Texture {
-		//TO DO DESTROYER
 		unsigned int id;
 		float2 texSize;
 		std::string name;
@@ -35,10 +34,10 @@ public:
 	Material() {};
 	~Material();
 
-	bool  GetTextureID(unsigned int& texID, TextureType type = TextureType::DIFFUSE)const;
-	const float2& Material::GetTextureSize(TextureType type = TextureType::DIFFUSE)const;
-	const std::string& Material::GetTextureName(TextureType type = TextureType::DIFFUSE)const;
-	const std::string& Material::GetTexturePath(TextureType type = TextureType::DIFFUSE)const;
+	bool  GetTextureID(unsigned int& texID, TextureType type = TextureType::DIFFUSE) const;
+	const float2& Material::GetTextureSize(TextureType type = TextureType::DIFFUSE) const;
+	const std::string& Material::GetTextureName(TextureType type = TextureType::DIFFUSE) const;
+	const std::string& Material::GetTexturePath(TextureType type = TextureType::DIFFUSE) const;
 	const float& GetShininess()const;
 	void SetShininess(float newS);
 	const float3& GetSpecularColor()const;

@@ -38,6 +38,7 @@ public:
 
 private:
 	void CreateTexture(TextureType type);
+	void ShowTextureIcon(Material::Texture* tex);
 private:
 	AABB localAxisAlignedBoundingBox;
 	OBB localOrientedBoundingBox;

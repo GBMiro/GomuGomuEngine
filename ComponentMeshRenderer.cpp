@@ -102,6 +102,24 @@ void ComponentMeshRenderer::CreateTexture(TextureType type) {
 	LOG("Black texture created");
 }
 
+void ComponentMeshRenderer::ShowTextureIcon(Material::Texture* tex) {
+	static int textureW, textureH = 0;
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureW);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureH);
+	ImGui::Text("Width: %d", textureW);
+	ImGui::Text("Height: %d", textureH);
+	if (textureW > 50 || textureH > 50) {
+		if (textureH >= textureW) {
+			textureW = textureW * (50 / (float)textureH);
+			textureH = 50;
+		} else {
+			textureH = textureH * (50 / (float)textureW);
+			textureW = 50;
+		}
+	}
+	ImGui::Image((ImTextureID)tex->id, ImVec2(textureW, textureH), ImVec2(0, 1), ImVec2(1, 0));		
+}
+
 void ComponentMeshRenderer::DrawOnEditor() {
 	bool dummyEnabled = enabled;
 	ImGui::PushID(this);
@@ -120,6 +138,12 @@ void ComponentMeshRenderer::DrawOnEditor() {
 	ImGui::SameLine();
 
 	if (ImGui::CollapsingHeader("Mesh Renderer")) {
+		if (ImGui::TreeNode("Mesh Values")) {
+			ImGui::Text("Num. Vertex: %d", mesh->GetNumVertex());
+			ImGui::Text("Num. Triangles: %d", mesh->GetNumIndices()/3);
+			ImGui::Text("Num. Indices: %d", mesh->GetNumIndices());
+			ImGui::TreePop();
+		}
 		if (ImGui::TreeNode("Material Values")) {
 			float shininessDummy = material->GetShininess();
 			if (ImGui::DragFloat("Shininess", &shininessDummy)) {
@@ -171,6 +195,7 @@ void ComponentMeshRenderer::OnTransformChanged() {
 
 void ComponentMeshRenderer::ExposeTextureInfo(const char* type, Material::Texture* tex) {
 	ImGui::PushID(this);
+	ShowTextureIcon(tex);
 	std::vector<std::string> textureFiles;
 	App->FS->GetDirectoryFiles("Assets/Textures", textureFiles);
 	std::vector<const char*> strings;

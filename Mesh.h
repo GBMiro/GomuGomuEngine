@@ -20,11 +20,9 @@ public:
 	void CreateAABB();
 
 
-	int getNumVertex() const { return numVertex; }
+	int GetNumVertex() const { return numVertex; }
 
-	int getMaterialIndex() const { return materialIndex; }
-
-	int getNumIndices() const { return numIndices; }
+	int GetNumIndices() const { return numIndices; }
 
 	int GetMaterialIndex() const { return materialIndex; }
 

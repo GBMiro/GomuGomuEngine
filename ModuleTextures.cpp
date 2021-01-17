@@ -26,6 +26,9 @@ bool ModuleTextures::Init() {
 }
 
 bool ModuleTextures::CleanUp() {
+	for (std::map<std::string, int>::iterator it = textureMap.begin(); it != textureMap.end(); ++it) {
+		glDeleteTextures(1, (GLuint*)(*it).second);
+	}
 	return true;
 }
 

@@ -49,45 +49,7 @@ void WindowProperties::Draw() {
 		}
 		ImGui::EndChild();
 	}
-	//Guillem has to move this to DrawOnEditor MeshRendererComponent
-	////All this goes to DrawOnEditor for each component
-	//if (ImGui::CollapsingHeader("Geometry")) {
-	//	//if (meshes.size() == 0) App->model->getMeshes(meshes);
-	//	if (meshes.size() > 0) {
-	//		ImGui::Text("Total meshes: %d", meshes.size());
-	//		ImGui::NewLine();
-	//		for (unsigned i = 0; i < meshes.size(); ++i) {
-	//			ImGui::Text("Num. Vertex: %d", meshes[i]->getNumVertex());
-	//			ImGui::Text("Num. Triangles: %d", meshes[i]->getNumIndices() / 3);
-	//			ImGui::Text("Num. Indices: %d", meshes[i]->getNumIndices());
-	//			ImGui::Text("---------------------");
-	//		}
-	//	}
-	//}
-	//if (ImGui::CollapsingHeader("Textures")) {
-	//	//if (textures.size() == 0) App->model->getTextures(textures);
-	//	if (textures.size() > 0) {
-	//		ImGui::Text("Total textures: %d", textures.size());
-	//		ImGui::NewLine();
-	//		for (unsigned i = 0; i < textures.size(); ++i) {
-	//			static int textureW, textureH = 0;
-	//			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureW);
-	//			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureH);
-	//			ImGui::Text("Width: %d", textureW);
-	//			ImGui::Text("Height: %d", textureH);
-	//			if (textureW > 200 || textureH > 200) {
-	//				if (textureH >= textureW) {
-	//					textureW = textureW * (200 / (float)textureH);
-	//					textureH = 200;
-	//				} else {
-	//					textureH = textureH * (200 / (float)textureW);
-	//					textureW = 200;
-	//				}
-	//			}
-	//			ImGui::Image((ImTextureID)textures[i], ImVec2(textureW, textureH), ImVec2(0, 1), ImVec2(1, 0));
-	//		}
-	//	}
-	//}
+
 	ImGui::End();
 }
 
